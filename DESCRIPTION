@@ -1,0 +1,24 @@
+Package: mixedMem
+Type: Package
+Title: Tools for discrete multivariate mixed membership models
+Version: 1.0.0
+Date: 2015-01-05
+Authors@R: c( person("Y. Samuel", "Wang", email = "ysamwang@uw.edu", role =
+    c("aut","cre")), person("Elena A.", "Erosheva", email =
+    "Elena.A.Erosheva@uw.edu", role = "aut"))
+Description: mixedMem fits mixed membership models with discrete multivariate
+    data (with or withour replacements) following the general framework of
+    Erosheva 2004. mixedMem uses a Variational EM approach by approximating the
+    posterior distribution of latent memberships and selecting hyperparameters
+    through a pseudo-MLE procedure. Currently supported data types are
+    Bernoulli, multinomial and rank (Plackett-Luce).
+License: GPL (>= 2)
+Imports:
+    Rcpp (>= 0.11.3)
+Depends:
+    gtools
+LazyData: TRUE
+LinkingTo: Rcpp (>= 0.11.3), RcppArmadillo, BH
+VignetteBuilder: knitr
+Suggests:
+    knitr

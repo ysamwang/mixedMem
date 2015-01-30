@@ -1,0 +1,82 @@
+\begin{thebibliography}{12}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Airoldi et~al.(2009)Airoldi, Blei, Fienberg, and
+  Xing]{airoldi2009mixed}
+Edoardo~M Airoldi, David~M Blei, Stephen~E Fienberg, and Eric~P Xing.
+\newblock Mixed membership stochastic blockmodels.
+\newblock In \emph{Advances in Neural Information Processing Systems}, pages
+  33--40, 2009.
+
+\bibitem[Airoldi et~al.(2014)Airoldi, Blei, Erosheva, and
+  Fienberg]{Airoldi2014Handbook}
+Edoardo~M. Airoldi, David Blei, Elena~A. Erosheva, and Stephen~E. Fienberg.
+\newblock \emph{Handbook of Mixed Membership Models and Their Applications}.
+\newblock Chapman and Hall, 2014.
+
+\bibitem[ANES(1999)]{ANES}
+American National Election~Studies ANES.
+\newblock National election studies, 1983 pilot election study, 1999.
+\newblock URL
+  \url{http://www.electionstudies.org/studypages/1983pilot/1983pilot.htm}.
+
+\bibitem[Beal(2003)]{beal2003variational}
+Matthew~James Beal.
+\newblock \emph{Variational algorithms for approximate Bayesian inference}.
+\newblock PhD thesis, University of London, 2003.
+
+\bibitem[Blei et~al.(2003)Blei, Ng, and Jordan]{LDA}
+David~M Blei, Andrew~Y Ng, and Michael~I Jordan.
+\newblock Latent dirichlet allocation.
+\newblock \emph{The Journal of Machine Learning Research}, 3:\penalty0
+  993--1022, 2003.
+
+\bibitem[Erosheva et~al.(2004)Erosheva, Fienberg, and
+  Lafferty]{erosheva2004mixed}
+Elena Erosheva, Stephen Fienberg, and John Lafferty.
+\newblock Mixed-membership models of scientific publications.
+\newblock \emph{Proceedings of the National Academy of Sciences of the United
+  States of America}, 101\penalty0 (Suppl 1):\penalty0 5220--5227, 2004.
+
+\bibitem[Erosheva et~al.(2007)Erosheva, Fienberg, and
+  Joutard]{erosheva2007describing}
+Elena~A Erosheva, Stephen~E Fienberg, and Cyrille Joutard.
+\newblock Describing disability through individual-level mixture models for
+  multivariate binary data.
+\newblock \emph{The Annals of Applied Statistics}, 1\penalty0 (2):\penalty0
+  346, 2007.
+
+\bibitem[Feldman(1988)]{feldman1988structure}
+Stanley Feldman.
+\newblock Structure and consistency in public opinion: The role of core beliefs
+  and values.
+\newblock \emph{American Journal of Political Science}, pages 416--440, 1988.
+
+\bibitem[Gormley and Murphy(2009)]{gormley2009grade}
+Isobel~Claire Gormley and Thomas~Brendan Murphy.
+\newblock A grade of membership model for rank data.
+\newblock \emph{Bayesian Analysis}, 4\penalty0 (2):\penalty0 265--295, 2009.
+
+\bibitem[Jaakkola(2001)]{jaakkola200110}
+Tommi~S Jaakkola.
+\newblock 10 tutorial on variational approximation methods.
+\newblock \emph{Advanced mean field methods: theory and practice}, page 129,
+  2001.
+
+\bibitem[Pritchard et~al.(2000)Pritchard, Stephens, and
+  Donnelly]{pritchard2000inference}
+Jonathan~K Pritchard, Matthew Stephens, and Peter Donnelly.
+\newblock Inference of population structure using multilocus genotype data.
+\newblock \emph{Genetics}, 155\penalty0 (2):\penalty0 945--959, 2000.
+
+\bibitem[Stephens(2000)]{stephens2000dealing}
+Matthew Stephens.
+\newblock Dealing with label switching in mixture models.
+\newblock \emph{Journal of the Royal Statistical Society: Series B (Statistical
+  Methodology)}, 62\penalty0 (4):\penalty0 795--809, 2000.
+
+\end{thebibliography}
