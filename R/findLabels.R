@@ -96,6 +96,7 @@ findLabels = function(model, training,  exhaustive = TRUE)
  
     optimal.perm = c(1:K)
     weight = model$alpha/sum(model$alpha)
+    loss = 0
     if(exhaustive)
     {
     perms = gtools::permutations(K,K)
@@ -103,7 +104,7 @@ findLabels = function(model, training,  exhaustive = TRUE)
     
     for(i in 2:factorial(K))
       {
-        loss.i = sum((fitted.set[,perms[i,],]-training[,c(1:K),])^2*weight)
+        loss.i = sum(sweep((fitted.set[,perms[i,],]-training[,c(1:K),])^2, MARGIN = 2,weight, '*'))
         if(loss.i<loss)
         {
           loss = loss.i
@@ -118,11 +119,11 @@ findLabels = function(model, training,  exhaustive = TRUE)
       {
         for(j in 1:K)
         {
-          loss.j[j] = (fitted.set[,priority[i],] - training[,j,])^2*weight[i] 
+          loss.j[j] = sum((fitted.set[,priority[i],] - training[,j,])^2)*weight[i] 
         }
         loss.j[selected] = max(loss.j)+1
         selected = c(selected, which.min(loss.j))
-        optimal.perm[i] = which.min(loss.j)
+        optimal.perm[priority[i]] = which.min(loss.j)
         loss = loss + min(loss.j)
       }
     }
