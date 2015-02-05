@@ -1,4 +1,4 @@
-\begin{thebibliography}{12}
+\begin{thebibliography}{13}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -60,6 +60,13 @@ Stanley Feldman.
 Isobel~Claire Gormley and Thomas~Brendan Murphy.
 \newblock A grade of membership model for rank data.
 \newblock \emph{Bayesian Analysis}, 4\penalty0 (2):\penalty0 265--295, 2009.
+
+\bibitem[Gross and Manrique-Vallier(2014)]{grossManriqueVallier}
+Justin Gross and Daniel Manrique-Vallier.
+\newblock \emph{Handbook of Mixed Membership Models and Its Applications},
+  chapter A Mixed Membership Approach to the Assessment of Political Ideology
+  from Survey Responses, pages 119--139.
+\newblock Chapman \& Hall/CRC Press, 2014.
 
 \bibitem[Jaakkola(2001)]{jaakkola200110}
 Tommi~S Jaakkola.
