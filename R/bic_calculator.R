@@ -19,7 +19,7 @@
 #' @export
 computeBIC= function(model)
 {
-  elbo = computeElbo(model)
+  elbo = computeELBO(model)
   num_param = model$K
   for(j in 1:model$J)
   {

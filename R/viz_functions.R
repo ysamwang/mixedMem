@@ -16,6 +16,7 @@
 vizTheta = function(model, truth = NULL, main = "Estimated Theta",
                     highlight = NULL, varNames = NULL, groupNames = NULL)
 {
+  par(oma = c(3,3,3,1))
   if(is.null(varNames))
   {
     varNames = paste("Var", c(1:model$J))
@@ -24,7 +25,7 @@ vizTheta = function(model, truth = NULL, main = "Estimated Theta",
   {
     groupNames = paste("Group", c(1:model$K))
   }
-  par(mfrow = c(min(model$J,10), model$K), mar = c(1.5, 1.5 ,.3,.3), oma = c(.5,.5,2,.5))
+  par(mfrow = c(min(model$J,10), model$K), mar = rep(.1,4))
   for(j in 1:model$J)
   {
     if(model$dist[j]=="multinomial"|model$dist[j]=="rank")
@@ -35,7 +36,7 @@ vizTheta = function(model, truth = NULL, main = "Estimated Theta",
              yaxt = "n", xaxt = "n")
         if(!is.null(truth))
         {
-          points(c(1:model$Vj[j]), truth[j,k,], col = "green", pch = 19)
+          points(c(1:model$Vj[j]), truth[j,k,], col = "blue", pch = 16)
         }
         if(k==1)
         {
@@ -43,7 +44,7 @@ vizTheta = function(model, truth = NULL, main = "Estimated Theta",
         }
         if(j ==model$J| (j %%10)==0)
         {
-          mtext(paste(groupNames[k], sep = " "), line = .2, side = 1, cex = .8)
+          mtext(paste(groupNames[k], sep = " "), line = .2, side = 1, cex = 1-min(model$J,10)*.4)
         }
         if(!is.null(highlight))
         {

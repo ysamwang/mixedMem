@@ -180,7 +180,7 @@ summary.mixedMemModel = function(model)
 {
   cat("==Summary for Mixed Membership Model==\n")
   cat(paste("Total: ", model$Total, "\t\t K: ",model$K, "\t\t ELBO: ",round(computeELBO(model),2),"\n\n" ,sep = ""))
-  df = data.frame(paste("  ",c(1:J),sep = ""), model$dist, model$Rj,
+  df = data.frame(paste("  ",c(1:model$J),sep = ""), model$dist, model$Rj,
                model$Vj)
   colnames(df) = c("Variable  ", "Variable Type    ", "Replicates    ", "Categories  ")
   print(df, row.names = FALSE, right = FALSE)
