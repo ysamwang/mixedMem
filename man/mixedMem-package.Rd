@@ -47,6 +47,8 @@ PNAS, 101 (suppl 1), 5220-5227. doi:10.1073/pnas.0307760101. \url{http://www.pna
 
 Gormley, Isobel C.; Murphy, Thomas B. (2009). A grade of membership model for rank data. Bayesian Analysis, 4, 265 - 296. DOI:10.1214/09-BA410. \url{http://ba.stat.cmu.edu/journal/2009/vol04/issue02/gormley.pdf}
 
+National Election Studies, 1983 Pilot Election Study. Ann Arbor, MI: University of Michigan, Center for Political Studies, 1999
+
 Pritchard, Jonathan K., Matthew Stephens, and Peter Donnelly. Inference of population structure using multilocus genotype data. Genetics 155.2 (2000): 945-959.
 
 }

@@ -60,3 +60,21 @@
 #' 
 #' National Election Studies, 1983 Pilot Election Study. Ann Arbor, MI: University of Michigan, Center for Political Studies, 1999
 NULL
+
+#' Point estimates from Gross and Manrique-Vallier 2014 
+#'
+#' The point estimates for theta from the original Gross and
+#' Manrique-Vallier 2014 analysis. It is a 3 by 19 by 3 dimensional array with
+#' the first dimension corresponding to group, the second dimension corresponding to
+#' variable, and the 3rd dimension corresponding to candidate choices (Agree, Can't Decide,
+#' Disagree).
+#'   
+#' @name gmv_theta
+#' @docType data
+#' @usage data(gmv_theta)
+#' 
+#' @references
+#' Gross, J.H. and Manrique-Vallier, D. "A Mixed-Membership Approach to the Assessment of Political Ideology from Survey Responses." 
+#' in Airoldi, E. M., Blei, D. M., Erosheva, E. A., and Fienberg, S. E.
+#' Handbook of Mixed Membership Models and Its Applications. Chapman & Hall/CRC, 2014
+NULL

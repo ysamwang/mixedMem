@@ -173,15 +173,16 @@ mixedMemModel = function(Total, J, Rj, Nijr, K, Vj, alpha, theta, phi = NULL, de
 #' Prints summary data for a mixedMemModel object which includes the
 #' ELBO, the dimensions of the model and details about each variable.
 #'  
-#' @param model the mixedMemModel object to be summarized
+#' @param object the mixedMemModel object to be summarized
+#' @param ... additional parameters passed to vizTheta
 #' @seealso mixedMemModel
 #' @export
-summary.mixedMemModel = function(model)
+summary.mixedMemModel = function(object,...)
 {
   cat("==Summary for Mixed Membership Model==\n")
-  cat(paste("Total: ", model$Total, "\t\t K: ",model$K, "\t\t ELBO: ",round(computeELBO(model),2),"\n\n" ,sep = ""))
-  df = data.frame(paste("  ",c(1:model$J),sep = ""), model$dist, model$Rj,
-               model$Vj)
+  cat(paste("Total: ", object$Total, "\t\t K: ",object$K, "\t\t ELBO: ",round(computeELBO(object),2),"\n\n" ,sep = ""))
+  df = data.frame(paste("  ",c(1:object$J),sep = ""), object$dist, object$Rj,
+                  object$Vj)
   colnames(df) = c("Variable  ", "Variable Type    ", "Replicates    ", "Categories  ")
   print(df, row.names = FALSE, right = FALSE)
 }
@@ -192,11 +193,12 @@ summary.mixedMemModel = function(model)
 #' 
 #' Calls the vizTheta function to plot the values of \eqn{\theta} for each variable and sub-population. 
 #'  
-#' @param model the mixedMemModel object to be plotted
+#' @param x the mixedMemModel object to be plotted
+#' @param ... additional parameters passed to vizTheta
 #' @seealso vizTheta, mixedMemModel
 #' @export
-plot.mixedMemModel = function(model)
+plot.mixedMemModel = function(x,...)
 {
-  vizTheta(model)
+  vizTheta(x)
 }
 

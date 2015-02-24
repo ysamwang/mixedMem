@@ -3,10 +3,12 @@
 \alias{summary.mixedMemModel}
 \title{Summary of a Mixed Membership Model}
 \usage{
-\method{summary}{mixedMemModel}(model)
+\method{summary}{mixedMemModel}(object, ...)
 }
 \arguments{
-\item{model}{the mixedMemModel object to be summarized}
+\item{object}{the mixedMemModel object to be summarized}
+
+\item{...}{additional parameters passed to vizTheta}
 }
 \description{
 Summary of a mixedMemModel object

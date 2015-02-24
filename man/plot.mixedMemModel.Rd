@@ -3,10 +3,12 @@
 \alias{plot.mixedMemModel}
 \title{Plot a Mixed Membership Model}
 \usage{
-\method{plot}{mixedMemModel}(model)
+\method{plot}{mixedMemModel}(x, ...)
 }
 \arguments{
-\item{model}{the mixedMemModel object to be plotted}
+\item{x}{the mixedMemModel object to be plotted}
+
+\item{...}{additional parameters passed to vizTheta}
 }
 \description{
 Visual representation of a mixedMemModel object

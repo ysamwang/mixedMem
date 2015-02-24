@@ -24,7 +24,7 @@ This vignette is a tutorial for the \texttt{mixedMem} R package that allows user
 \normalsize
 \section{Mixed Membership Modeling} \label{MMM}
 \subsection{Mixed Membership Background}
-Mixed membership models provide a useful framework for analyzing multivariate data from heterogeneous populations \citep{Airoldi2014Handbook}. Similar to mixture models, mixed membership models assume that the overall population is comprised of several latent sub-populations or groups. Mixture models, however, assume that each individual within the population belongs to a single group, whereas mixed membership models allow for an individual to belong to multiple groups simultaneously and explicitly specify an individual's degree of membership in each group. (ELENA TO FILL IN)
+Mixed membership models provide a useful framework for analyzing multivariate data from heterogeneous populations \citep{Airoldi2014Handbook}. Similar to mixture models, mixed membership models assume that the overall population is comprised of several latent sub-populations or groups. Mixture models, however, assume that each individual within the population belongs to a single group, whereas mixed membership models allow for an individual to belong to multiple groups simultaneously and explicitly specify an individual's degree of membership in each group.
 
 Mixed membership models have been used to analyze to a wide variety of data types. For example, mixed membership analysis of text data \citep{LDA, erosheva2004mixed} can illustrate the latent structure of topics/subjects within a body of documents; analysis of genotype sequences \citep{pritchard2000inference} can describe individuals sharing ancestry across various origin populations; analysis of survey data \citep{erosheva2007describing, grossManriqueVallier} can show how survey respondents belong to various sub-populations; and analysis of ranked votes \citep{gormley2009grade} can characterize latent voting blocs and voting tendencies. The \texttt{mixedMem} package allows for fitting these specific cases of mixed membership models as well as their extensions, using a general framework described by \cite{erosheva2004mixed} with the estimation carried out via a variational EM algorithm.
 
@@ -105,7 +105,7 @@ colnames(ANES)
 table(unlist(ANES))
 @
 
-\subsection*{Step 1: Initializing the \texttt{mixedMemModel} Object}
+\subsection{Step 1: Initializing the \texttt{mixedMemModel} Object}
 To fit a mixed membership model, we must first initialize a \texttt{mixedMemModel} object using the class constructor. The \texttt{mixedMemModel} object contains the dimensions of our mixed membership model, the observed data and initialization points for $\alpha$ and $\theta$. Creating a \texttt{mixedMemModel} object provides a vehicle for passing this information to the \texttt{mmVarFit} function in step 2. This is similar to how one might specify the formula for an \texttt{lm} object. Although initialization points for $\phi$ and $\delta$ can be passed to the constructor as well, these by default are initialized uniformly across the sub-populations, and unless there is very strong prior knowledge, we recommend that the default values be used. For this particular model, all the variables are multinomials; an example showing an initialization of mixed data types can be accessed through \texttt{help(mixedMemModel)}.
 
 As mentioned previously, because the lower bound function is not convex, different initializations may result in convergence to different local modes. After initializing at various point, we found that the initialization of $\alpha = \left(.2, .2, .2\right)$ and $\theta \sim \text{Dirichlet}(.8)$ using seed 123 resulted in the highest lower bound at convergence.  
@@ -149,7 +149,7 @@ initial <- mixedMemModel(Total = Total, J = J, Rj = Rj,
                          theta = theta, dist = dist, obs = obs)
 @
 
-\subsection*{Step 2: Fitting the Model}
+\subsection{Step 2: Fitting the Model}
 Now we can fit the model using the \texttt{mmVarFit} function. When we call \texttt{mmVarFit}, the function first checks for internal consistency in the input model, \texttt{initial} (i.e., it checks whether the dimensions of the observation match the specified number of variables, etc). If the model check passes, the function begins to iterate through the E-step and M-step described in subsection \ref{VI}. When the algorithm converges\footnote{The maximum iterations before the algorithim terminates is 500}, \texttt{mmVarFit} prints the value of the lower bound at convergence as well as the number of EM iterations needed for convergence.
 
 <<>>=
@@ -188,6 +188,38 @@ optimal.perm
 out.permute <- permuteLabels(out, optimal.perm$perm)
 @
 
+\subsection{Step 4: Model Evaluation}
+In order to evaluate the goodness of fit for our estimated values of $\theta$ and $\alpha$,
+we can calculate a $\chi^2$ statistic by comparing the expected responses from our fitted model to the observed counts. Since the total number of responses for each variable is fixed, this yields a $\chi^2$ statistic with $3 \times (19-1)$ degrees of freedom. 
+<<>>=
+# calculate the expected value
+model.exp <- matrix(0, nrow = J, ncol = max(Vj))
+for(j in 1:J)
+{
+  model.exp[j,]<-(out.permute$alpha/sum(out.permute$alpha)) %*% out.permute$theta[j,,]
+}
+model.exp <- model.exp*out.permute$Total
+
+# aggregate the observed counts
+obs.counts <- t(apply(obs[,,1,1]+1, MARGIN = 2, tabulate))
+chi.squared <- sum((obs.counts - model.exp)^2/model.exp)
+@
+
+<<results = 'asis', echo = FALSE>>=
+rownames(model.exp) <- colnames(ANES)
+colnames(model.exp) <- c("Agree", "Can't Decide", "Disagree")
+xtable(model.exp, digits = 1, caption = "Expected responses based on fitted parameters")
+@
+
+Using this $\chi^2$ statistic, we calculate a p-value of \Sexpr{round(pchisq(chi.squared, df = (J-1)*max(Vj)),3)}, which would lead us to fail to reject the null hypothesis that the observed data was generated by the fitted model.  
+<<>>=
+# The chi squared statistic
+chi.squared
+# p-value
+pchisq(chi.squared, df = (J-1)*max(Vj))
+@
+
+
 \subsection{Step 4: Interpretation}
 Visualizations of the fitted model can be highly context-specific and each of the estimated quantities can be extracted from the output model for further analysis tailored to the scientific question of interest.
 <<>>=
@@ -198,7 +230,7 @@ out$alpha
 In the following subsections, we show a few visualizations and tools which may be of general interest.
 \subsubsection{Visual Representation of $\hat \theta$}
 
-We can now plot our estimated $\hat \theta$ values and compare them to the values found in the original analysis. In figures \ref{fig:theta1} and  \ref{fig:theta2}, each row of plots represents an individual question, the columns represent each of the identified sub-populations and the plots show the sub-population's response probability for each variable. The black bars indicate the values estimated using \texttt{mixedMem} and the green dots indicate the values reported by \citep{grossManriqueVallier}. Note that Gross and Manrique-Vallier do not report values for group 3 for reasons discussed in subsection \ref{alphaHat}. Recall that 0 indicates ``agree" and 2 indicates ``disagree".
+We can now plot our estimated $\hat \theta$ values and compare them to the values found in the original analysis. In figures \ref{fig:theta1} and  \ref{fig:theta2}, each row of plots represents an individual question, the columns represent each of the identified sub-populations and the plots show the sub-population's response probability for each variable. The black bars indicate the values estimated using \texttt{mixedMem} and the bluw dots indicate the values reported by \citep{grossManriqueVallier}. Note that Gross and Manrique-Vallier do not report values for group 3 for reasons discussed in subsection \ref{alphaHat}. Recall that 0 indicates ``agree" and 2 indicates ``disagree".
 
 <<theta, fig.height = 7, fig.width = 7, fig.align = 'center', fig.cap = "Individuals were asked to indicate their level of agreement with 19 opinion based statements. The fitted multinomial response probabilities for each ideology bloc to each of the 19 statements are displayed. On the horizontal axis, 0 indicates agree, 1 indicates can't decide, and 2 indicates disagree. The estimates from our variational analysis are denoted by the black bars, the Gross and Manrique-Vallier results using MCMC are shown by the green circles">>=
 vizTheta(out.permute, gmv_theta, varNames = colnames(ANES),
