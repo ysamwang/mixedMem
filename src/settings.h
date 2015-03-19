@@ -5,7 +5,7 @@
 #include <math.h>
 #include <RcppArmadillo.h>
 const int PRINT_MOD = 1;
-const int PRINT = 0;
+const int PRINT = 1;
 const int SUB_PRINT = 0;
 
 
@@ -30,10 +30,10 @@ const double TAU =  .899; //if conditions are not met, scale step size by this f
 higher than this, then use gradient ascent instead
 */
 const double COND_BOUND =  1e18;
-const int B_MAX = 5; //the number of iterations in interior point method
-const double B_NAUGHT = 100.0; //initial approximation to hard boundary
-const double B_MULT = 100.0; //value to scale approximation to hard boundary
-const int V_CUTOFF = 10; //cutoff at which to perform gradient ascent instead of inverting matrix
+const int B_MAX = 3; //the number of iterations in interior point method
+const double B_NAUGHT = 1000.0; //initial approximation to hard boundary
+const double B_MULT = 1000.0; //value to scale approximation to hard boundary
+const int V_CUTOFF = 13; //cutoff at which to perform gradient ascent instead of inverting matrix
 
 
 const std::string BERNOULLI =  "bernoulli"; //value for dist when identifying distribution type

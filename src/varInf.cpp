@@ -45,6 +45,15 @@ double varInfC(mm_model model)
     return(elbo_T);
 }
 
+double heldOutC(mm_model model)
+{
+    double elbo_T;
+    elbo_T = eStep_C(model, PRINT, 0.0);
+    return(elbo_T);
+}
+
+
+
 double compute_ELBO(mm_model model)
 {
     double t1,t2,t3,t4;
@@ -141,7 +150,7 @@ double compute_logf(mm_model model)
                     for(k = 0; k < model.getK(); k++)
                     {
                         logf += ( model.getObs(i,j,r,n) ? model.getDelta(i,j,r,n,k)*log(model.getTheta(j,k,v)) :
-                                  model.getDelta(i,j,r,n,k)*log(1 - model.getTheta(j,k,v)) ) ;
+                                  model.getDelta(i,j,r,n,k)*log(1.0 - model.getTheta(j,k,v))) ;
                     }
                 }
             } //end bernoulli
@@ -163,10 +172,10 @@ double compute_logf(mm_model model)
                     Nijr = model.getN(i,j,r);
                     for(k = 0; k < model.getK(); k++)
                     {
-                        back_term =0.0;
+                        back_term = 0.0;
                         for(n = 0; n < Nijr; n++)
                         {
-                            logf += -model.getDelta(i,j,r,n,k)*log(1.0-back_term);
+                            logf += -model.getDelta(i,j,r,n,k)*log(1.0 - back_term);
                             logf += model.getDelta(i,j,r,n,k)*log(model.getTheta(j,k,model.getObs(i,j,r,n))) ;
                             back_term += model.getTheta(j,k,model.getObs(i,j,r,n));
                         }

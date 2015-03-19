@@ -118,19 +118,19 @@ mixedMemModel = function(Total, J, Rj, Nijr, K, Vj, alpha, theta, phi = NULL, de
   
   if(is.null(theta))
   {
-      theta = array(0, dim = c(J,K,max(Vj)))
-      for(j in 1:J)
+    theta = array(0, dim = c(J,K,max(Vj)))
+    for(j in 1:J)
+    {
+      if(dist[j] != "bernoulli")
       {
-        if(dist[j] != "bernoulli")
+        for(k in 1:K)
         {
-          for(k in 1:K)
-          {
-            theta[j,k,] = c(gtools::rdirichlet(1,rep(1,Vj[j])), rep(0, max(Vj)-Vj[j]))
-          }
-        } else {
-          theta[j,,1] =rbeta(K,1,1)
+          theta[j,k,] = c(gtools::rdirichlet(1,rep(1,Vj[j])), rep(0, max(Vj)-Vj[j]))
         }
+      } else {
+        theta[j,,1] =rbeta(K,1,1)
       }
+    }
   }
   
   if(is.null(delta))
@@ -160,6 +160,33 @@ mixedMemModel = function(Total, J, Rj, Nijr, K, Vj, alpha, theta, phi = NULL, de
   names(model_obj) = c("Total", "J", "Rj", "Nijr", "K", "Vj", "alpha","theta", "phi", "delta", "dist" ,"obs")
   class(model_obj) = "mixedMemModel"
   
+  dimnames(model_obj$theta) <- list(paste("Var", c(1:J)),
+                                    paste("Group", c(1:K)),
+                                    paste("Cand", c(1:max(Vj))))
+  
+  names(model_obj$alpha) <- paste("Group", c(1:K))
+  
+  names(model_obj$Vj) <- paste("Var", c(1:J))
+  names(model_obj$Rj) <- paste("Var", c(1:J))
+  names(model_obj$dist) <- paste("Var", c(1:J))
+  
+  dimnames(model_obj$phi) <- list(paste("Ind", c(1:Total)),
+                                  paste("Group", c(1:K)))
+  
+  dimnames(model_obj$delta) <- list(paste("Ind", c(1:Total)),
+                                    paste("Var", c(1:J)),
+                                    paste("Rep", c(1:max(Rj))),
+                                    paste("Rank", c(1:max(Nijr))),
+                                    paste("Group", c(1:K)))
+  
+  dimnames(model_obj$Nijr) <- list(paste("Ind", c(1:Total)),
+                                   paste("Var", c(1:J)),
+                                   paste("Rep", c(1:max(Rj))))
+  
+  dimnames(model_obj$obs) <- list(paste("Ind", c(1:Total)),
+                                  paste("Var", c(1:J)),
+                                  paste("Rep", c(1:max(Rj))),
+                                  paste("Rank", c(1:max(Nijr))))
   #check for valid model parameters
   checkModel(model_obj)
   return(model_obj)
@@ -174,7 +201,6 @@ mixedMemModel = function(Total, J, Rj, Nijr, K, Vj, alpha, theta, phi = NULL, de
 #' ELBO, the dimensions of the model and details about each variable.
 #'  
 #' @param object the mixedMemModel object to be summarized
-#' @param ... additional parameters passed to vizTheta
 #' @seealso mixedMemModel
 #' @export
 summary.mixedMemModel = function(object,...)
@@ -191,14 +217,30 @@ summary.mixedMemModel = function(object,...)
 #' 
 #' Visual representation of a mixedMemModel object 
 #' 
-#' Calls the vizTheta function to plot the values of \eqn{\theta} for each variable and sub-population. 
-#'  
 #' @param x the mixedMemModel object to be plotted
-#' @param ... additional parameters passed to vizTheta
-#' @seealso vizTheta, mixedMemModel
+#' @param type which estimated parameters to plot; either "theta" or "membership" 
+#' @param compare model to compare. For type = "theta", compare should be an array the same size as x$theta
+#' for type = "membership", compare should be a matrix the same size as x$phi
+#' @param main title for chart
+#' @param varNames variable names if plotting theta
+#' @param groupNames labels for sub-populations
+#' @param nrow number of rows for the grid of plots
+#' @param ncol number of columns for the grid of plots. if plotting theta, this
+#' must be K, if plotting membership, this can be specified
+#' @param indices when plotting memberships, which individuals to plot. When plotting theta, which variables to plot 
+#' @param ... additional parameters
+#' @seealso mixedMemModel, vizTheta, vizMem
 #' @export
-plot.mixedMemModel = function(x,...)
-{
-  vizTheta(x)
+plot.mixedMemModel = function(x, type = "theta" , compare = NULL,
+                              main = "Estimated Theta",
+                              varNames = NULL,
+                              groupNames = NULL,
+                              nrow = NULL, ncol = NULL, indices = NULL, fitNames = NULL,
+                              ...){
+  if(type =="theta") {
+    vizTheta(x, compare = compare, main = main, varNames = varNames,
+             groupNames = groupNames, nrow = nrow, fitNames = fitNames, ...)
+  } else if (type == "membership") {
+    vizMem(x,compare = compare, main = main, nrow = nrow, ncol = ncol, indices = indices, fitNames = fitNames,...)
+  }
 }
-

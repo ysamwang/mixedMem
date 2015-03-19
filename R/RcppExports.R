@@ -9,3 +9,7 @@ computeElboC <- function(model_r) {
     .Call('mixedMem_computeElboC', PACKAGE = 'mixedMem', model_r)
 }
 
+heldOutInputC <- function(model_r) {
+    .Call('mixedMem_heldOutInputC', PACKAGE = 'mixedMem', model_r)
+}
+

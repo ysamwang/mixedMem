@@ -3,26 +3,31 @@
 \alias{vizTheta}
 \title{Mixed Membership Visualization}
 \usage{
-vizTheta(model, truth = NULL, main = "Estimated Theta", highlight = NULL,
-  varNames = NULL, groupNames = NULL)
+vizTheta(model, compare = NULL, main = "Estimated Theta", varNames = NULL,
+  groupNames = NULL, nrow = NULL, fitNames = NULL, indices = NULL, ...)
 }
 \arguments{
 \item{model}{the \code{mixedMemModel} object that will be plotted}
 
-\item{truth}{optional argument if ground truth is available}
+\item{compare}{estimates to compare against. Should be an array with same dimensions as model$theta}
 
-\item{main}{optional title argument}
+\item{main}{title of plot}
 
-\item{highlight}{matrix with 2 columns specifying any specific variable/sub-population combinations
-to be highlighted in the plot}
+\item{varNames}{vector specifying labels for each variable}
 
-\item{varNames}{vector of length J specifying labels for each variable}
+\item{groupNames}{vector specifying labels for each sub-population}
 
-\item{groupNames}{vector of length K specifying labels for each sub-population}
+\item{nrow}{the number of rows in each plot}
+
+\item{fitNames}{the names of the models plotted}
+
+\item{indices}{the specific variables to plot}
 }
 \description{
 Plots \eqn{\theta}, the parameters which govern the distributions of variables in a mixed membership model. \eqn{\theta_{j,k}} governs the
-distribution of variable j for sub-population k. Estimated distributions are shown with black bars. The ground truth theta (if available)
-is shown in green dots.
+distribution of variable j for sub-population k. The model fit is shown in black, and the comparison (if available) is shown in red.
+}
+\details{
+This is the function called by the plot generic function for mixedMemModel objects
 }
 

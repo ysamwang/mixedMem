@@ -7,8 +7,6 @@
 }
 \arguments{
 \item{object}{the mixedMemModel object to be summarized}
-
-\item{...}{additional parameters passed to vizTheta}
 }
 \description{
 Summary of a mixedMemModel object

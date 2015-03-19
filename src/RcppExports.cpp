@@ -36,3 +36,18 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
+// heldOutInputC
+double heldOutInputC(Rcpp::List model_r);
+RcppExport SEXP mixedMem_heldOutInputC(SEXP model_rSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< Rcpp::List >::type model_r(model_rSEXP );
+        double __result = heldOutInputC(model_r);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}

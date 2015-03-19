@@ -151,10 +151,12 @@ permuteLabels = function(model, perm)
   out = model
   
   out$alpha = out$alpha[perm]
+  names(out$alpha) <- names(model$alpha)
   for(j in 1:out$J)
   {
     out$theta[j,,] = out$theta[j,perm,]
   }
+  dimnames(out$theta) <- dimnames(model$theta)
   
   out$phi = out$phi[,perm]
   for(i in 1:out$Total)
@@ -170,5 +172,9 @@ permuteLabels = function(model, perm)
     }
   }
   }
+  
+  dimnames(out$delta) <- dimnames(model$delta)
+  dimnames(out$phi) <- dimnames(model$phi)
+  
   return(out)
 }

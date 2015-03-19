@@ -92,6 +92,46 @@ mmVarFit = function(model)
 }
 
 
+
+
+
+#' Calculate ELBO from Held out Data
+#' 
+#' Theta and alpha are fixed while estimating the group memberships (phi) and context (delta)
+#' for a set of held out data. Used in cross validation
+#' 
+#'   
+#' @param model a \code{mixedMemModel} object created by the \code{mixedMemModel} constructor
+#' which has been fit using mmVarFit
+heldOut <- function(model)
+{
+  output = model
+  names(output) = c("Total", "J", "Rj", "Nijr", "K", "Vj", "alpha","theta", "phi", "delta", "dist" ,"obs")
+  output$alpha = (model$alpha+0)
+  output$theta = (model$theta+0)
+  for(i in 1:Total)
+  {
+    for(j in 1:J)
+    {
+      for(r in 1:Rj[j])
+      {
+        for(n in 1:Nijr[i,j,r])
+        {
+          output$delta[i,j,r,n,] = rep(1/K,K)
+        }
+      }
+    }
+  }
+  
+  output$phi = array(1/K, dim = c(Total,K))
+  
+  
+  checkModel(output) # R function which checks inputs
+  heldOutInputC(output) # R wrapper function
+  return(output)
+}
+
+
 #' Compute a lower bound on the log-likelihood (ELBO)
 #' 
 #' Computes the value of a lower bound on the log-likelihood, also called the ELBO, for a mixed membership model.

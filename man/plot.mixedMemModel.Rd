@@ -3,20 +3,36 @@
 \alias{plot.mixedMemModel}
 \title{Plot a Mixed Membership Model}
 \usage{
-\method{plot}{mixedMemModel}(x, ...)
+\method{plot}{mixedMemModel}(x, type = "theta", truth = NULL,
+  main = "Estimated Theta", varNames = NULL, groupNames = NULL,
+  nrow = NULL, ncol = NULL, indices = NULL, fitNames = NULL, ...)
 }
 \arguments{
 \item{x}{the mixedMemModel object to be plotted}
 
-\item{...}{additional parameters passed to vizTheta}
+\item{type}{which estimated parameters to plot; either "theta" or "membership"}
+
+\item{truth}{ground truth estimates}
+
+\item{main}{title for chart}
+
+\item{varNames}{variable names if plotting theta}
+
+\item{groupNames}{labels for sub-populations}
+
+\item{nrow}{number of rows for the grid of plots}
+
+\item{ncol}{number of columns for the grid of plots. if plotting theta, this
+must be K, if plotting membership, this can be specified}
+
+\item{indices}{when plotting memberships, which individuals to plot}
+
+\item{...}{additional parameters}
 }
 \description{
 Visual representation of a mixedMemModel object
 }
-\details{
-Calls the vizTheta function to plot the values of \eqn{\theta} for each variable and sub-population.
-}
 \seealso{
-vizTheta, mixedMemModel
+mixedMemModel, vizTheta, vizMem
 }
 

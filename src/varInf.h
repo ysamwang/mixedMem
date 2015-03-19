@@ -19,6 +19,7 @@ using namespace arma;
 double varInfC(mm_model model_old);
 double compute_logf(mm_model model);
 double compute_ELBO(mm_model model);
+double heldOutC(mm_model model);
 double alpha_Objective(mm_model model, vec alph);
 double alpha_Objective(mm_model model);
 

@@ -164,21 +164,23 @@ void updateTheta(mm_model model)
                         {
                             numer += model.getDelta(i,j,r,n,k);
                         }
-                        denom +=model.getDelta(i,j,r,n,k);
+                        denom += model.getDelta(i,j,r,n,k);
                     }
                 }
-                //Check for 0 or 1
-                if((numer/denom)>(1-BUMP))
+
+                //Check updates too close to numerical 1 or 0
+                //bump defined in settings.h
+                if((numer/denom)>(1.0 - BUMP))
                 {
-                    model.setTheta(j,k,v,1.0-BUMP);
+                    model.setTheta(j,k,v,1.0 - BUMP);
                 }
-                else if((numer/denom)<BUMP)
+                else if((numer / denom) < BUMP)
                 {
                     model.setTheta(j,k,v, BUMP);
                 }
                 else
                 {
-                    model.setTheta(j,k,v, numer/denom);
+                    model.setTheta(j,k,v, numer / denom);
                 }
             }
         }//end Bernoulli

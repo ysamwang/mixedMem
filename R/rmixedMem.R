@@ -25,10 +25,14 @@
 #'  distributions. theta[j,k,] is the parameter for how sub-population k responds
 #'  to the variable j. If the number of candidates differs across variables, any
 #'  unusued portions of theta should be 0.
-#' @return A list containing a random sample of lambda, Z and obs
-rmixedMem <- function(Total, J, Rj, Nijr, K, Vj, dist, theta, alpha)
+#'  @param lambda a matrix containing the group membership for each individual
+#' @return A list containing a random sample of lambda (group memberships),
+#'  Z (context) and obs
+rmixedMem <- function(Total, J, Rj, Nijr, K, Vj, dist, theta, alpha, lambda = NULL)
 {
-  lambda <- gtools::rdirichlet(Total, alpha)
+  if(is.null(lambda)){
+    lambda <- gtools::rdirichlet(Total, alpha)
+  }
   Z <-array(-1, dim = c(Total, J, max(Rj), max(Nijr)))
   obs <- array(-1, dim = c(Total, J, max(Rj), max(Nijr)))
   for(i in 1:Total)

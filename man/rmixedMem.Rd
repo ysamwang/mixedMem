@@ -3,7 +3,7 @@
 \alias{rmixedMem}
 \title{Simulate Mixed Membership Data}
 \usage{
-rmixedMem(Total, J, Rj, Nijr, K, Vj, dist, theta, alpha)
+rmixedMem(Total, J, Rj, Nijr, K, Vj, dist, theta, alpha, lambda = NULL)
 }
 \arguments{
 \item{Total}{the count of individuals in the sample}
@@ -34,9 +34,12 @@ unusued portions of theta should be 0.}
 
 \item{alpha}{vector of length K which is the hyperparameter for Dirichlet
 membership distribution}
+
+\item{lambda}{a matrix containing the group membership for each individual}
 }
 \value{
-A list containing a random sample of lambda, Z and obs
+A list containing a random sample of lambda (group memberships),
+ Z (context) and obs
 }
 \description{
 Simulate data from the mixed membership generative model
