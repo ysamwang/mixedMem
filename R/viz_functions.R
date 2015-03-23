@@ -46,8 +46,8 @@ vizTheta = function(model, compare = NULL, main = "Estimated Theta",
   }
   
   par(oma = c(3,5,3,1), mfrow = c(nrow, model$K), mar = rep(.1,4))
-  
-  for(j in 1:indices)
+  count = 1
+  for(j in indices)
   {
     if(model$dist[j]=="multinomial"|model$dist[j]=="rank")
     {
@@ -62,7 +62,7 @@ vizTheta = function(model, compare = NULL, main = "Estimated Theta",
           mtext(varNames[j], line = 3, side = 2, cex = .7)
           axis(side = 2, at = c(0,.5,1), labels = c(0,.5,1))
         }
-        if(j == model$J| (j %% nrow) == 0) {
+        if(count == indices[length(indices)]| (count %% nrow) == 0) {
           mtext(paste(groupNames[k], sep = " "), line = .2, side = 1, cex = 1-min(model$J,10)*.4)
         }
       }
@@ -77,12 +77,12 @@ vizTheta = function(model, compare = NULL, main = "Estimated Theta",
           mtext(varNames[j], line = 3, side = 2, cex = .7)
           axis(side = 2, at = c(0,.5,1), labels = c(0,.5,1))
         }
-        if(j ==model$J| (j %% nrow)==0) {
+        if(count == indices[length(indices)]| (count %% nrow) == 0) {
           mtext(paste(groupNames[k], sep = " "), line = .2, side = 1, cex = .8)
         }
       }
     } 
-    if((j %% nrow) == 0) {
+    if((count %% nrow) == 0) {
       title(main = main, outer = T, cex = 1.2)      
       par(fig = c(0, 1, 0, 1), oma = c(0,5,0,1), mar = rep(0, 4), new = T)
       
@@ -98,7 +98,7 @@ vizTheta = function(model, compare = NULL, main = "Estimated Theta",
       }
       par(oma = c(3,5,3,1), mfrow = c(nrow, model$K), mar = rep(.1,4))
     }
-    
+    count = count + 1
   }
   title(main = main, outer = T, cex = 1.2)      
   par(fig = c(0, 1, 0, 1), oma = c(0,5,0,1), mar = rep(0, 4), new = T)
@@ -157,7 +157,7 @@ vizMem <- function(model, compare = NULL, main = "Estimated Membership",
   }
   
   if (is.null(groupNames)) {
-    groupNames = paste("Group", c(1:K))
+    groupNames = paste("Group", c(1:model$K))
   }
   
   if(is.null(fitNames)) {
@@ -178,7 +178,7 @@ vizMem <- function(model, compare = NULL, main = "Estimated Membership",
     
     plot(mem.est[i,], type = "p", lwd = 2, col = "black", ylim = c(-v.space,1 + v.space), xlim = c(h.space, model$Vj[j] + h.space),
          yaxt = "n", xaxt = "n", pch = pch.list, ...)
-    text(0, 1, labels = i , cex = .9, adj = c(0, 1))
+    text(0, 1, labels = i , cex = .9, adj = c(0, 1), pos = 4)
     if((count %% ncol) == 1) {
       axis(2, at = c(0,.5,1), labels = c(0,.5,1), cex = 1)
     }
@@ -195,13 +195,12 @@ vizMem <- function(model, compare = NULL, main = "Estimated Membership",
       par(fig = c(0, 1, 0, 1), oma = c(0,5,0,1), mar = rep(0, 4), new = T)
       
       plot(0, 0, type = "n", bty = "n", xaxt ="n", yaxt = "n")
-      
       if(is.null(compare)){
-        legend("bottom", legend = paste("Estimated ", groupNames), pch = pch.list[1:model$K],
+        legend("bottom", legend = paste(fitNames[1], groupNames), pch = pch.list[1:model$K],
                col = rep("black", model$K), cex = .8, ncol = model$K)
         
       } else {
-        legend("bottom", legend = c(paste("Estimated ", groupNames),paste("Ground Truth", groupNames) ),
+        legend("bottom", legend = c(paste(fitNames[1], groupNames),paste(fitNames[2], groupNames) ),
                pch = pch.list[1:model$K], col = rep(c("black", "red"), each = model$K), ncol = model$K, cex = .8)
       }
       par(oma = c(3,5,3,1), mfrow = c(nrow, ncol), mar = rep(.1,4))
@@ -216,11 +215,11 @@ vizMem <- function(model, compare = NULL, main = "Estimated Membership",
   plot(0, 0, type = "n", bty = "n", xaxt ="n", yaxt = "n")
   
   if(is.null(compare)){
-    legend("bottom", legend = paste("Estimated ", groupNames), pch = pch.list[1:model$K],
+    legend("bottom", legend = paste(fitNames[1], groupNames), pch = pch.list[1:model$K],
            col = rep("black", model$K), cex = .8, ncol = model$K)
     
   } else {
-    legend("bottom", legend = c(paste("Estimated ", groupNames),paste("Ground Truth", groupNames) ),
+    legend("bottom", legend = c(paste(fitNames[1], groupNames),paste(fitNames[2], groupNames) ),
            pch = pch.list[1:model$K], col = rep(c("black", "red"), each = model$K), ncol = model$K, cex = .8)
   }
   par(oma = c(3,5,3,1), mfrow = c(nrow, ncol), mar = rep(.1,4))

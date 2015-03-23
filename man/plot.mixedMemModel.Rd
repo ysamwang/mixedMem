@@ -3,7 +3,7 @@
 \alias{plot.mixedMemModel}
 \title{Plot a Mixed Membership Model}
 \usage{
-\method{plot}{mixedMemModel}(x, type = "theta", truth = NULL,
+\method{plot}{mixedMemModel}(x, type = "theta", compare = NULL,
   main = "Estimated Theta", varNames = NULL, groupNames = NULL,
   nrow = NULL, ncol = NULL, indices = NULL, fitNames = NULL, ...)
 }
@@ -12,7 +12,8 @@
 
 \item{type}{which estimated parameters to plot; either "theta" or "membership"}
 
-\item{truth}{ground truth estimates}
+\item{compare}{model to compare. For type = "theta", compare should be an array the same size as x$theta
+for type = "membership", compare should be a matrix the same size as x$phi}
 
 \item{main}{title for chart}
 
@@ -25,7 +26,7 @@
 \item{ncol}{number of columns for the grid of plots. if plotting theta, this
 must be K, if plotting membership, this can be specified}
 
-\item{indices}{when plotting memberships, which individuals to plot}
+\item{indices}{when plotting memberships, which individuals to plot. When plotting theta, which variables to plot}
 
 \item{...}{additional parameters}
 }

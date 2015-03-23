@@ -239,8 +239,9 @@ plot.mixedMemModel = function(x, type = "theta" , compare = NULL,
                               ...){
   if(type =="theta") {
     vizTheta(x, compare = compare, main = main, varNames = varNames,
-             groupNames = groupNames, nrow = nrow, fitNames = fitNames, ...)
+             groupNames = groupNames, nrow = nrow, fitNames = fitNames, indices = indices, ...)
   } else if (type == "membership") {
-    vizMem(x,compare = compare, main = main, nrow = nrow, ncol = ncol, indices = indices, fitNames = fitNames,...)
+    vizMem(x,compare = compare, main = main, nrow = nrow, ncol = ncol,
+           indices = indices, fitNames = fitNames, groupNames = groupNames,...)
   }
 }
