@@ -3,8 +3,7 @@
 using namespace boost::math;
 
 // [[Rcpp::depends(BH)]]
-double eStep_C(mm_model model, int print, double elbo_E)
-{
+double eStep_C(mm_model model, double elbo_E, int maxEIter, double elboTol, NumericVector iterReached) {
     int nE = 0;
     double old_elbo_E;
     int T = model.getT();
@@ -18,7 +17,7 @@ double eStep_C(mm_model model, int print, double elbo_E)
     double converged_E=1.0; //flag for convergence
     double placeholder;
 
-    while ((converged_E > ELBO_TOL) && (nE < MAX_E_ITER))
+    while ((converged_E > elboTol) && (nE < maxEIter))
     {
         //UPDATE!
         //update elbo and increment E step count
@@ -36,11 +35,9 @@ double eStep_C(mm_model model, int print, double elbo_E)
             {
                 phi_sum += model.getPhi(i,k);
             }
-//            Rcout<<phi_sum<<endl;
 
             phi_sum_dg = digamma(phi_sum); //digamma of the sum of phi's
 
-//            Rcout<<"digamma:" << phi_sum_dg<<endl;
 
             for(j = 0; j < J; j++)
             {
@@ -54,7 +51,6 @@ double eStep_C(mm_model model, int print, double elbo_E)
                         for(k = 0; k <  K; k++)
                         {
                             placeholder = exp(digamma(model.getPhi(i,k)) - phi_sum_dg + dl_ddelta(model, i, j,r,n,k));
-//                            Rcout<<"Update: "<<placeholder<<" Pieces: "<<digamma(model.getPhi(i,k))<<" "<<phi_sum_dg <<" "<<dl_ddelta(model, i, j,r,n,k)<<endl;
                             model.setDelta(i,j,r,n,k, placeholder);
                             delta_sum += model.getDelta(i,j,r,n,k);
                         }
@@ -63,11 +59,6 @@ double eStep_C(mm_model model, int print, double elbo_E)
                 }
             }
         }//end update delta
-        if(SUB_PRINT)
-        {
-            Rcout << "Delta Update: " << compute_ELBO(model)<<endl;
-        }
-
 
         /*
         * Update phi's
@@ -97,16 +88,15 @@ double eStep_C(mm_model model, int print, double elbo_E)
                 }
             }
         }
-        if(SUB_PRINT)
-        {
-            Rcout << "Phi Update: " << compute_ELBO(model) << std::endl;
-        }
 
         //calculate convergence criteria
         elbo_E = compute_ELBO(model);
         converged_E = (old_elbo_E- elbo_E)/old_elbo_E;
     }
-//    Rcout<<"Number of E-step Iters: "<<nE<<endl;
+    if (nE == maxEIter) {
+        Rcout<< "Max E Steps Reached!" <<std::endl;
+        iterReached[0] = 1;
+    }
     return elbo_E;
 }
 

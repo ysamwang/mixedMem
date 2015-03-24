@@ -16,10 +16,13 @@
 using namespace Rcpp;
 using namespace arma;
 
-double varInfC(mm_model model_old);
+double varInfC(mm_model model_old, int print,
+                    int printMod, int stepType, int maxTotalIter,
+                    int maxEIter, int maxAlphaIter, int maxThetaIter, int maxLSIter,
+                    double elboTol, double alphaTol, double thetaTol, double aNaught,
+                    double tau, int bMax, double bNaught, double bMult, int vCutoff);
 double compute_logf(mm_model model);
 double compute_ELBO(mm_model model);
-double heldOutC(mm_model model);
 double alpha_Objective(mm_model model, vec alph);
 double alpha_Objective(mm_model model);
 

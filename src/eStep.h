@@ -15,7 +15,7 @@
 using namespace Rcpp ;
 using namespace arma;
 
-double eStep_C(mm_model model, int print, double elbo_E);
+double eStep_C(mm_model model, double elbo_E, int maxEIter, double elboTol, NumericVector iterReached);
 double dl_ddelta(mm_model model, int i, int j, int r, int n, int k);
 
 #endif

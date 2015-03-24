@@ -3,10 +3,53 @@
 \alias{mmVarFit}
 \title{Fit  Mixed Membership models using variational EM}
 \usage{
-mmVarFit(model)
+mmVarFit(model, printStatus = 1, printMod = 1, stepType = 3,
+  maxTotalIter = 500, maxEIter = 1000, maxAlphaIter = 200,
+  maxThetaIter = 1000, maxLSIter = 400, elboTol = 1e-06,
+  alphaTol = 1e-06, thetaTol = 1e-10, aNaught = 1, tau = 0.899,
+  bMax = 3, bNaught = 1000, bMult = 1000, vCutoff = 13)
 }
 \arguments{
 \item{model}{a \code{mixedMemModel} object created by the \code{mixedMemModel} constructor}
+
+\item{printStatus}{Options are 1 or 0. 1 will print status updates, 0 will not print status updates.}
+
+\item{printMod}{Positive integer which specifies how often to print status updates. The status will be printed at each step which is a multiple of printMod.}
+
+\item{stepType}{An integer in c(0:3) which specifies which what parameters to fit. 0 only performs an E-Step; this can be used
+to find the held out ELBO. 1 performs E-steps and fits theta but keeps alpha constant. 2 performs E-steps and fits alpha, but keeps theta constant. 3 completes full E and M steps.}
+
+\item{maxTotalIter}{The maximum steps before termination. A full E and M step together count as 1 step.}
+
+\item{maxEIter}{The maximum iterations on the E-Step}
+
+\item{maxAlphaIter}{The maximum iterations when fitting alpha}
+
+\item{maxThetaIter}{The maximum iterations when fitting theta}
+
+\item{maxLSIter}{The maximum backtracking iterations in the line search for updating alpha and theta for rank data}
+
+\item{elboTol}{The convergence criteria for the EM Algorithim. When the relative increase in the ELBO is less than the convergence critiera,
+the algorithim converges}
+
+\item{alphaTol}{The convergence criteria for updates to alpha. When the relative increase in the ELBO is less than the convergence critiera,
+the update to alpha converges}
+
+\item{thetaTol}{The convergence criteria for updates to theta. When the relative increase in the ELBO is less than the convergence critiera,
+the update to theta converges}
+
+\item{aNaught}{The first step size in the backtracking line search used to update alpha and theta for rank data}
+
+\item{tau}{The backtracking factor in the backtracking line search used to update alpha and theta for rank data}
+
+\item{bMax}{The number of iterations for the interior point method for fitting theta for rank data}
+
+\item{bNaught}{The initial scaling factor in the interior point method for fitting theta for rank data}
+
+\item{bMult}{The factor by which bNaught is multiplied by in each iteration of the interior point methodfor fitting theta for rank data}
+
+\item{vCutoff}{The cutoff for Vj at which a gradient ascent method is used instead of the newton raphson interior point method. This is used to avoid inverting
+a large matrix}
 }
 \value{
 a \code{mixedMemModel} containing updated variational parameters and hyperparameters
@@ -38,7 +81,8 @@ the log-likelihood of the observed data.
 The method uses an EM approach. The E step considers the hyperparameters fixed and picks appropriate variational
 parameters to minimize the KL divergence. On the M step
 the variational parameters are fixed and hyperparmaters are selected which maximize the lower bound
-on the log-likelihood.
+on the log-likelihood. Aside from printStatus, printMod, and stepType, the authors do not recommend changing the other
+parameters.
 }
 \examples{
 ## Generate Data

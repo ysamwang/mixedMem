@@ -26,12 +26,35 @@
 #' The method uses an EM approach. The E step considers the hyperparameters fixed and picks appropriate variational
 #' parameters to minimize the KL divergence. On the M step
 #' the variational parameters are fixed and hyperparmaters are selected which maximize the lower bound 
-#' on the log-likelihood.
+#' on the log-likelihood. Aside from printStatus, printMod, and stepType, the authors do not recommend changing the other
+#' parameters.
 #'   
 #' @references
 #' Beal, Matthew James. Variational algorithms for approximate Bayesian inference. Diss. University of London, 2003.
 #'
 #' @param model a \code{mixedMemModel} object created by the \code{mixedMemModel} constructor
+#' @param printStatus Options are 1 or 0. 1 will print status updates, 0 will not print status updates.
+#' @param printMod Positive integer which specifies how often to print status updates. The status will be printed at each step which is a multiple of printMod.
+#' @param stepType An integer in c(0:3) which specifies which what parameters to fit. 0 only performs an E-Step; this can be used
+#' to find the held out ELBO. 1 performs E-steps and fits theta but keeps alpha constant. 2 performs E-steps and fits alpha, but keeps theta constant. 3 completes full E and M steps.
+#' @param maxTotalIter The maximum steps before termination. A full E and M step together count as 1 step.
+#' @param maxEIter The maximum iterations on the E-Step
+#' @param maxAlphaIter The maximum iterations when fitting alpha
+#' @param maxThetaIter The maximum iterations when fitting theta
+#' @param maxLSIter The maximum backtracking iterations in the line search for updating alpha and theta for rank data 
+#' @param elboTol The convergence criteria for the EM Algorithim. When the relative increase in the ELBO is less than the convergence critiera,
+#' the algorithim converges 
+#' @param alphaTol The convergence criteria for updates to alpha. When the relative increase in the ELBO is less than the convergence critiera,
+#' the update to alpha converges
+#' @param thetaTol The convergence criteria for updates to theta. When the relative increase in the ELBO is less than the convergence critiera,
+#' the update to theta converges
+#' @param aNaught The first step size in the backtracking line search used to update alpha and theta for rank data
+#' @param tau The backtracking factor in the backtracking line search used to update alpha and theta for rank data
+#' @param bMax The number of iterations for the interior point method for fitting theta for rank data
+#' @param bNaught The initial scaling factor in the interior point method for fitting theta for rank data
+#' @param bMult The factor by which bNaught is multiplied by in each iteration of the interior point methodfor fitting theta for rank data
+#' @param vCutoff The cutoff for Vj at which a gradient ascent method is used instead of the newton raphson interior point method. This is used to avoid inverting
+#' a large matrix 
 #' @return a \code{mixedMemModel} containing updated variational parameters and hyperparameters
 #' @seealso mixedMemModel
 #' @examples
@@ -76,18 +99,26 @@
 #' out <-mmVarFit(test_model)
 #' @export
 
-mmVarFit = function(model)
-{
+mmVarFit = function(model, printStatus = 1,
+                    printMod = 1, stepType = 3,
+                    maxTotalIter = 500, maxEIter = 1000,
+                    maxAlphaIter = 200, maxThetaIter = 1000,
+                    maxLSIter = 400, elboTol = 1e-6, alphaTol = 1e-6,
+                    thetaTol = 1e-10, aNaught = 1.0, tau = .899,
+                    bMax = 3, bNaught = 1000.0, bMult = 1000.0, vCutoff = 13) {
   output = model
   names(output) = c("Total", "J", "Rj", "Nijr", "K", "Vj", "alpha","theta", "phi", "delta", "dist" ,"obs")
   output$alpha = (model$alpha+0)
   output$theta = (model$theta+0)
   output$phi = (model$phi+0)
   output$delta = (model$delta+0)
+  
   checkModel(output) # R function which checks inputs
   print("Model Check: Ok!")
-  print("<== Beginning Variational Inference ==>")
-  varInfInputC(output) # R wrapper function
+  print("<== Beginning Model Fit! ==>")
+
+  varInfInputC(output, printStatus, printMod, stepType, maxTotalIter, maxEIter, maxAlphaIter,
+               maxThetaIter, maxLSIter, elboTol, alphaTol, thetaTol, aNaught, tau, bMax, bNaught, bMult, vCutoff) # R wrapper function
   return(output)
 }
 

@@ -7,14 +7,31 @@
 using namespace Rcpp;
 
 // varInfInputC
-double varInfInputC(Rcpp::List model_r);
-RcppExport SEXP mixedMem_varInfInputC(SEXP model_rSEXP) {
+double varInfInputC(Rcpp::List model_r, int print, int printMod, int stepType, int maxTotalIter, int maxEIter, int maxAlphaIter, int maxThetaIter, int maxLSIter, double elboTol, double alphaTol, double thetaTol, double aNaught, double tau, int bMax, double bNaught, double bMult, int vCutoff);
+RcppExport SEXP mixedMem_varInfInputC(SEXP model_rSEXP, SEXP printSEXP, SEXP printModSEXP, SEXP stepTypeSEXP, SEXP maxTotalIterSEXP, SEXP maxEIterSEXP, SEXP maxAlphaIterSEXP, SEXP maxThetaIterSEXP, SEXP maxLSIterSEXP, SEXP elboTolSEXP, SEXP alphaTolSEXP, SEXP thetaTolSEXP, SEXP aNaughtSEXP, SEXP tauSEXP, SEXP bMaxSEXP, SEXP bNaughtSEXP, SEXP bMultSEXP, SEXP vCutoffSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
         Rcpp::traits::input_parameter< Rcpp::List >::type model_r(model_rSEXP );
-        double __result = varInfInputC(model_r);
+        Rcpp::traits::input_parameter< int >::type print(printSEXP );
+        Rcpp::traits::input_parameter< int >::type printMod(printModSEXP );
+        Rcpp::traits::input_parameter< int >::type stepType(stepTypeSEXP );
+        Rcpp::traits::input_parameter< int >::type maxTotalIter(maxTotalIterSEXP );
+        Rcpp::traits::input_parameter< int >::type maxEIter(maxEIterSEXP );
+        Rcpp::traits::input_parameter< int >::type maxAlphaIter(maxAlphaIterSEXP );
+        Rcpp::traits::input_parameter< int >::type maxThetaIter(maxThetaIterSEXP );
+        Rcpp::traits::input_parameter< int >::type maxLSIter(maxLSIterSEXP );
+        Rcpp::traits::input_parameter< double >::type elboTol(elboTolSEXP );
+        Rcpp::traits::input_parameter< double >::type alphaTol(alphaTolSEXP );
+        Rcpp::traits::input_parameter< double >::type thetaTol(thetaTolSEXP );
+        Rcpp::traits::input_parameter< double >::type aNaught(aNaughtSEXP );
+        Rcpp::traits::input_parameter< double >::type tau(tauSEXP );
+        Rcpp::traits::input_parameter< int >::type bMax(bMaxSEXP );
+        Rcpp::traits::input_parameter< double >::type bNaught(bNaughtSEXP );
+        Rcpp::traits::input_parameter< double >::type bMult(bMultSEXP );
+        Rcpp::traits::input_parameter< int >::type vCutoff(vCutoffSEXP );
+        double __result = varInfInputC(model_r, print, printMod, stepType, maxTotalIter, maxEIter, maxAlphaIter, maxThetaIter, maxLSIter, elboTol, alphaTol, thetaTol, aNaught, tau, bMax, bNaught, bMult, vCutoff);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);
@@ -30,21 +47,6 @@ BEGIN_RCPP
         Rcpp::RNGScope __rngScope;
         Rcpp::traits::input_parameter< Rcpp::List >::type model_r(model_rSEXP );
         double __result = computeElboC(model_r);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// heldOutInputC
-double heldOutInputC(Rcpp::List model_r);
-RcppExport SEXP mixedMem_heldOutInputC(SEXP model_rSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< Rcpp::List >::type model_r(model_rSEXP );
-        double __result = heldOutInputC(model_r);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);

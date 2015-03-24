@@ -48,7 +48,9 @@ mat getHess(mm_model model)
     return hess;
 }
 
-double mStep_C(mm_model model, int print, double elbo)
+double mStep_C(mm_model model, double elbo_T, int stepType, int maxAlphaIter, int maxThetaIter, int maxLSIter,
+               double alphaTol, double thetaTol, double aNaught, double tau,
+               int bMax, double bNaught, double bMult, int vCutoff, NumericVector iterReached)
 {
     int K = model.getK();
     vec grad = vec(K);
@@ -69,78 +71,88 @@ double mStep_C(mm_model model, int print, double elbo)
 
     int nA = 0;
     double a;
-    while((conv_crit_m > ELBO_TOL) & (nA <= MAX_A_ITER))
+
+    //Update Alpha
+    if (stepType == 2 || stepType == 3)
     {
-        old_obj = alpha_Objective(model);
-        nA++;
-
-
-        //create gradient
-        grad = getGrad(model);
-        //create hessian
-        hess = getHess(model);
-
-        update = solve(hess,-grad);
-
-        for(k = 0; k < K; k++)
+        while( (conv_crit_m > alphaTol) & (nA <= maxAlphaIter) )
         {
-            new_alpha(k) = model.getAlpha(k);
-        }
-        a = A_NAUGHT;
-        new_obj= alpha_Objective(model, (new_alpha+a*update));
+            old_obj = alpha_Objective(model);
+            nA++;
 
-        //if the steps is already too big such that a theta is negative (which leads the objective function to be NAN)
-        //then just set ob_old to the new objective +1
-        new_obj = (any((new_alpha+a*update)<0) ? old_obj - 1.0: new_obj);
 
-        nLS = 0;
-        while((old_obj - new_obj > 0) & (nLS < MAX_LS_ITER))
-        {
-            nLS++;
-            a *=TAU; //scale back a
+            //create gradient
+            grad = getGrad(model);
+            //create hessian
+            hess = getHess(model);
 
-            //if in a feasible space, then check objective function
-            if(all((new_alpha+a*update)>0))
-            {
-                new_obj = alpha_Objective(model, (new_alpha+a*update));
-            }
-        }
+            update = solve(hess,-grad);
 
-        //update alpha in model
-        if(nLS < MAX_LS_ITER)
-        {
             for(k = 0; k < K; k++)
             {
-                model.incAlpha(k, a*update(k));
+                new_alpha(k) = model.getAlpha(k);
             }
+            a = aNaught;
+            new_obj= alpha_Objective(model, (new_alpha + a * update) );
+
+            //if the steps is already too big such that a theta is negative (which leads the objective function to be NAN)
+            //then just set ob_old to the new objective +1
+            new_obj = (any( (new_alpha + a * update) < 0 ) ? old_obj - 1.0: new_obj);
+
+            nLS = 0;
+            while( (old_obj - new_obj > 0) & (nLS < maxLSIter))
+            {
+                nLS++;
+                a *= tau; //scale back a
+
+                //if in a feasible space, then check objective function
+                if(all((new_alpha + a * update)>0))
+                {
+                    new_obj = alpha_Objective(model, (new_alpha + a * update));
+                }
+            }
+
+            //update alpha in model
+            if(nLS < maxLSIter)
+            {
+                for(k = 0; k < K; k++)
+                {
+                    model.incAlpha(k, a*update(k));
+                }
+            }
+            else
+            {
+                new_obj = alpha_Objective(model);
+            }
+
+            //check for convergence
+            conv_crit_m = fabs((old_obj - new_obj)/old_obj);
         }
-        else
+
+        if( nA == maxAlphaIter )
         {
-            new_obj = alpha_Objective(model);
+            Rcout << "Max Alpha Steps Reached!!" << std::endl;
+            iterReached[1] = 1;
         }
+    } // End Alpha Update
 
-        //check for convergence
-        conv_crit_m = fabs((old_obj - new_obj)/old_obj);
+    if ( (stepType == 1) || (stepType == 3) ) {
+        updateTheta(model, maxThetaIter, maxLSIter, thetaTol, aNaught, tau,
+                    bMax, bNaught, bMult, vCutoff, iterReached);
     }
-    if(SUB_PRINT)
-    {
-        elbo = compute_ELBO(model);
-        Rcout<<"Alpha Update: "<<elbo<<endl;
-    }
-    updateTheta(model);
 
-    elbo = compute_ELBO(model);
-    if(SUB_PRINT)
-    {
-        Rcout<<"Theta Update: "<<elbo<<endl;
-    }
+    double elbo = compute_ELBO(model);
     return elbo;
 } //end m-step
 
 
 
-void updateTheta(mm_model model)
+void updateTheta(mm_model model, int maxThetaIter,
+                 int maxLSIter, double thetaTol, double aNaught,
+                 double tau, int bMax,
+                 double bNaught, double bMult, int vCutoff, NumericVector iterReached)
 {
+
     int i,j,r,n,k,v;
     int J = model.getJ();
     int K = model.getK();
@@ -209,13 +221,16 @@ void updateTheta(mm_model model)
         }
         else if(model.getDist(j) == RANK)
         {
-            update_PL_Theta(model, j);
+            update_PL_Theta(model, j, maxThetaIter, maxLSIter, thetaTol, aNaught,
+                            tau, bMax, bNaught, bMult, vCutoff, iterReached);
         }
     }
 }
 
 
-void update_PL_Theta(mm_model model, int j)
+void update_PL_Theta(mm_model model, int j, int maxThetaIter,
+                     int maxLSIter, double thetaTol, double aNaught,
+                     double tau, double bMax, double bNaught, double bMult, int vCutoff, NumericVector iterReached)
 {
     int V = model.getV(j);
     double b;
@@ -226,9 +241,6 @@ void update_PL_Theta(mm_model model, int j)
     mat hess = mat(V,V);
     mat m = mat(1,1);
     mat H_inv_g = mat(V,V);
-    mat cond_check = mat(V,V);
-    cond_check.ones();
-    cond_check = cond_check*10e-8;
     mat H_inv_ones = mat(V,V);
     vec A = vec(V);
     A.ones();
@@ -238,21 +250,21 @@ void update_PL_Theta(mm_model model, int j)
     for(k = 0; k < model.getK(); k++)
     {
         //set b for approximate penalty
-        b = B_NAUGHT;
+        b = bNaught;
 
         //iteratively step b higher and solve IPP
-        for(b_power = 0; b_power < B_MAX; b_power++)
+        for(b_power = 0; b_power < bMax; b_power++)
         {
-            b *= B_MULT; //increase b
+            b *= bMult; //increase b
             conv_crit = 1.0;
             nTheta = 0;
-            while(conv_crit > THETA_TOL && (nTheta <MAX_THETA_ITER))
+            while(conv_crit > thetaTol&& (nTheta < maxThetaIter))
             {
                 nTheta++;
                 grad = getGradPL(model, j,k, b);
 
                 //if Vj is too large, use gradient ascent instead of newton step
-                if(V > V_CUTOFF)
+                if(V > vCutoff)
                 {
                     //constrained gradient ascent
                     update = -grad + sum(grad)/V;
@@ -267,10 +279,11 @@ void update_PL_Theta(mm_model model, int j)
                         hess.eye();
                         update = -grad + sum(grad)/V;
                     }
-                    else {
-                    solve(H_inv_g,hess, grad);
-                    solve(H_inv_ones,hess, A);
-                    update = -H_inv_g + H_inv_ones*(sum(H_inv_g)/sum(H_inv_ones)); //search direction
+                    else
+                    {
+                        solve(H_inv_g,hess, grad);
+                        solve(H_inv_ones,hess, A);
+                        update = -H_inv_g + H_inv_ones*(sum(H_inv_g)/sum(H_inv_ones)); //search direction
                     }
                 }
 
@@ -284,7 +297,7 @@ void update_PL_Theta(mm_model model, int j)
                     theta(v) = model.getTheta(j,k,v);
                 }
 
-                a = A_NAUGHT;
+                a = aNaught;
                 obj_old = rank_Objective(model,theta,j,k,b);
                 obj_new = rank_Objective(model, (theta+a*update),j,k,b);
 
@@ -293,10 +306,10 @@ void update_PL_Theta(mm_model model, int j)
                 obj_new = (obj_new !=obj_new ? obj_old +1.0: obj_new);
 
                 nLS = 0;
-                while((obj_old - obj_new <0) && (nLS < MAX_LS_ITER))
+                while((obj_old - obj_new <0) && (nLS < maxLSIter))
                 {
                     nLS++;
-                    a *=TAU; //scale back a
+                    a *= tau; //scale back a
 
                     //if in a feasible space, then check objective function
                     if(all((theta+a*update)>0))
@@ -304,7 +317,7 @@ void update_PL_Theta(mm_model model, int j)
                         obj_new = rank_Objective(model, (theta+a*update),j,k,b);
                     }
                 }
-                if(nLS < MAX_LS_ITER)
+                if(nLS < maxLSIter)
                 {
                     for(v = 0; v < model.getV(j); v++)
                     {
@@ -313,9 +326,12 @@ void update_PL_Theta(mm_model model, int j)
 
                 }
                 conv_crit = fabs((obj_old - obj_new)/obj_old);
+            } //end update at specific level of b
+            if( nTheta == maxThetaIter) {
+                iterReached[2] = 1;
             }
-        }
-    }
+        } //end interior point for one j,k
+    } //end loop
 }
 
 
