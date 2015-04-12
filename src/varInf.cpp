@@ -6,7 +6,7 @@ double varInfC(mm_model model, int print,
                int printMod, int stepType, int maxTotalIter,
                int maxEIter, int maxAlphaIter, int maxThetaIter, int maxLSIter,
                double elboTol, double alphaTol, double thetaTol, double aNaught,
-               double tau, int bMax, double bNaught, double bMult, int vCutoff)
+               double tau, int bMax, double bNaught, double bMult, int vCutoff, NumericVector holdConst)
 {
 
     /*
@@ -49,7 +49,7 @@ double varInfC(mm_model model, int print,
 
             //M-step; choice of which parameters to update handled inside mStep_C function
             elbo_T = mStep_C(model, elbo_T, stepType, maxAlphaIter, maxThetaIter, maxLSIter,
-                             alphaTol, thetaTol, aNaught, tau, bMax, bNaught, bMult, vCutoff, iterReached); //defined in mStep.cpp
+                             alphaTol, thetaTol, aNaught, tau, bMax, bNaught, bMult, vCutoff, holdConst, iterReached); //defined in mStep.cpp
 
             //print if necessary
             if((nT % printMod == 0) && (print == 1)) {

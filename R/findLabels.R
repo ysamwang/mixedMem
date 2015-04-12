@@ -104,7 +104,12 @@ findLabels = function(model, training,  exhaustive = TRUE)
     
     for(i in 2:factorial(K))
       {
-        loss.i = sum(sweep((fitted.set[,perms[i,],]-training[,c(1:K),])^2, MARGIN = 2,weight, '*'))
+        if(dim(training)[1]==1) {
+          diff = (fitted.set[,perms[i,],]-training[,c(1:K),])^2
+        } else {
+          diff = aperm((fitted.set[,perms[i,],]-training)^2, c(2,1,3))
+        }
+        loss.i = sum(diff*weight)
         if(loss.i<loss)
         {
           loss = loss.i

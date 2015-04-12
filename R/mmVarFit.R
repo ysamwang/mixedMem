@@ -55,6 +55,8 @@
 #' @param bMult The factor by which bNaught is multiplied by in each iteration of the interior point methodfor fitting theta for rank data
 #' @param vCutoff The cutoff for Vj at which a gradient ascent method is used instead of the newton raphson interior point method. This is used to avoid inverting
 #' a large matrix 
+#' @param holdConst an integer which specifies a specific group. The estimation algorithim will hold the
+#'  parameters of that specific group constant
 #' @return a \code{mixedMemModel} containing updated variational parameters and hyperparameters
 #' @seealso mixedMemModel
 #' @examples
@@ -98,14 +100,13 @@
 #' ## Fit the mixed membership model
 #' out <-mmVarFit(test_model)
 #' @export
-
 mmVarFit = function(model, printStatus = 1,
                     printMod = 1, stepType = 3,
                     maxTotalIter = 500, maxEIter = 1000,
                     maxAlphaIter = 200, maxThetaIter = 1000,
                     maxLSIter = 400, elboTol = 1e-6, alphaTol = 1e-6,
                     thetaTol = 1e-10, aNaught = 1.0, tau = .899,
-                    bMax = 3, bNaught = 1000.0, bMult = 1000.0, vCutoff = 13) {
+                    bMax = 3, bNaught = 1000.0, bMult = 1000.0, vCutoff = 13, holdConst = c(-1)) {
   output = model
   names(output) = c("Total", "J", "Rj", "Nijr", "K", "Vj", "alpha","theta", "phi", "delta", "dist" ,"obs")
   output$alpha = (model$alpha+0)
@@ -118,49 +119,11 @@ mmVarFit = function(model, printStatus = 1,
   print("<== Beginning Model Fit! ==>")
 
   varInfInputC(output, printStatus, printMod, stepType, maxTotalIter, maxEIter, maxAlphaIter,
-               maxThetaIter, maxLSIter, elboTol, alphaTol, thetaTol, aNaught, tau, bMax, bNaught, bMult, vCutoff) # R wrapper function
+               maxThetaIter, maxLSIter, elboTol, alphaTol, thetaTol, aNaught, tau, bMax, bNaught, 
+               bMult, vCutoff, holdConst) # R wrapper function
   return(output)
 }
 
-
-
-
-
-#' Calculate ELBO from Held out Data
-#' 
-#' Theta and alpha are fixed while estimating the group memberships (phi) and context (delta)
-#' for a set of held out data. Used in cross validation
-#' 
-#'   
-#' @param model a \code{mixedMemModel} object created by the \code{mixedMemModel} constructor
-#' which has been fit using mmVarFit
-heldOut <- function(model)
-{
-  output = model
-  names(output) = c("Total", "J", "Rj", "Nijr", "K", "Vj", "alpha","theta", "phi", "delta", "dist" ,"obs")
-  output$alpha = (model$alpha+0)
-  output$theta = (model$theta+0)
-  for(i in 1:Total)
-  {
-    for(j in 1:J)
-    {
-      for(r in 1:Rj[j])
-      {
-        for(n in 1:Nijr[i,j,r])
-        {
-          output$delta[i,j,r,n,] = rep(1/K,K)
-        }
-      }
-    }
-  }
-  
-  output$phi = array(1/K, dim = c(Total,K))
-  
-  
-  checkModel(output) # R function which checks inputs
-  heldOutInputC(output) # R wrapper function
-  return(output)
-}
 
 
 #' Compute a lower bound on the log-likelihood (ELBO)

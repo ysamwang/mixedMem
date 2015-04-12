@@ -56,7 +56,7 @@ vizTheta = function(model, compare = NULL, main = "Estimated Theta",
         plot(model$theta[j,k,], type = "p", lwd = 2, col = "black", ylim = c(-v.space, 1+v.space), xlim = c(h.space, model$Vj[j] + h.space),
              yaxt = "n", xaxt = "n", pch = 16, ...)
         if(!is.null(compare)) {
-          points(c(1:model$Vj[j]), compare[j,k,], col = "red", pch = 4, lwd = 1.5)
+          points(c(1:model$Vj[j]), compare[j,k,c(1:model$Vj[j])], col = "red", pch = 4, lwd = 1.5)
         }
         if (k == 1) {
           mtext(varNames[j], line = 3, side = 2, cex = .7)
