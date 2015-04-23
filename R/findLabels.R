@@ -1,12 +1,12 @@
 #' Mixed Membership Post-Processing
 #'    
 #' Finds the permutation of labels that minimizes 
-#' the weighted squared error loss between the fitted theta and a ground truth theta. 
+#' the weighted squared error loss between the fitted theta and a comparison model. 
 #' 
 #' 
 #' Mixed Membership models are invariant to permutations of the sub-population labels and the ordering of the labels in a fitted model
 #' is dependent on the initialization points of the variational EM algorithim. The \code{findLabels} function selects an 
-#' optimal permutation of the labels to match a given ground truth.
+#' optimal permutation of the labels to match a given comparison model.
 #' The loss function is the weighted sum of squared differences where the weights are determined by the relative frequency of each group.  
 #' 
 #' \eqn{Loss = \sum_j \sum_k \alpha_k/\alpha_0 [\sum_v (\hat\theta_{k,v} - \theta_{k,v})^2]}
@@ -18,9 +18,9 @@
 #' relative frequency.
 #'  
 #' @param model the fitted \code{mixedMemModel} object
-#' @param training the ground truth theta
+#' @param training the comparison theta. This should be an array the same dimensions as model$theta
 #' @param exhaustive a boolean for whether an exhaustive search should be performed. If false, a greedy algorithim is used instead
-#' @return perm optimal permutation with respect to squared error loss
+#' @return perm optimal permutation of the labels with respect to squared error loss
 #' @return loss the sum of squared error loss of the optimal permutation weighted by relative frequency
 #' @seealso permuteLabels
 #' @examples
@@ -137,7 +137,7 @@ findLabels = function(model, training,  exhaustive = TRUE)
 
 #' Mixed Membership Post-Processing
 #' 
-#'Mixed Membership models are invariant to permutations of the sub-population labels and the ordering of the labels
+#' Mixed Membership models are invariant to permutations of the sub-population labels and the ordering of the labels
 #' is dependent on the initialization of the variational EM algorithim.
 #' Given a permutation, which can be found using \code{findLabels},
 #' the method returns a \code{mixedMemModel} object with permuted labels

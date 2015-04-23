@@ -9,8 +9,8 @@
 #' assumptions, see the included vignette.
 #' 
 #'    
-#' @param Total the count of individuals in the sample
-#' @param J the count of variables observed on each individual
+#' @param Total the number of individuals in the sample
+#' @param J the number of variables observed on each individual
 #' @param Rj vector of length J specifying the number of repeated measurements
 #'  on each variable
 #' @param Nijr an array of dimension (Total, J, max(Rj)) indicating the number
@@ -24,14 +24,14 @@
 #'  membership distribution
 #' @param theta array of dimension (J,K,max(Vj)) which governs the variable
 #'  distributions. theta[j,k,] is the parameter for how sub-population k responds
-#'  to the variable j. If the number of candidates differs across variables, any
-#'  unusued portions of theta should be 0.
+#'  to the variable j. Initially, any element of theta corresponding to a valid candidate/category must be positive (ie cannot be numerically 0).
+#'  However, if the number of candidates differs across variables, any unusued portions of theta should be 0.
 #' @param phi array of dimension (Total,K) which specifies the variational
-#'  parameters for the membership vectors, lambda. If left blank, it is initialized 
-#'  to a uniformly across all groups
+#'  parameters for the membership vectors, lambda. If left NULL, it is initialized 
+#'  to a uniformly across all groups. It is highly recommended to leave these NULL.
 #' @param delta array of dimension (Total,J,max(Rj), max(N), K) which specifies
 #'  the variational parameters for the context vectors Z. If left blank, it is
-#'   initialized to a uniformly across all sub-populations
+#'   initialized to a uniformly across all sub-populations. It is highly recommended to leave these NULL.
 #' @param dist vector of length J specifying variable types. Options are
 #'  "bernoulli", "multinomial" or "rank" corresponing to the distributions
 #'   of the observed variables
@@ -162,22 +162,22 @@ mixedMemModel = function(Total, J, Rj, Nijr, K, Vj, alpha, theta, phi = NULL, de
   
   dimnames(model_obj$theta) <- list(paste("Var", c(1:J)),
                                     paste("Group", c(1:K)),
-                                    paste("Cand", c(1:max(Vj))))
+                                    paste("Cand", c(0:(max(Vj)-1))))
   
-  names(model_obj$alpha) <- paste("Group", c(1:K))
+  names(model_obj$alpha) <- paste("Group", c(0:K-1))
   
   names(model_obj$Vj) <- paste("Var", c(1:J))
   names(model_obj$Rj) <- paste("Var", c(1:J))
   names(model_obj$dist) <- paste("Var", c(1:J))
   
   dimnames(model_obj$phi) <- list(paste("Ind", c(1:Total)),
-                                  paste("Group", c(1:K)))
+                                  paste("Group", c(0:(K-1))))
   
   dimnames(model_obj$delta) <- list(paste("Ind", c(1:Total)),
                                     paste("Var", c(1:J)),
                                     paste("Rep", c(1:max(Rj))),
                                     paste("Rank", c(1:max(Nijr))),
-                                    paste("Group", c(1:K)))
+                                    paste("Group", c(0:(K-1))))
   
   dimnames(model_obj$Nijr) <- list(paste("Ind", c(1:Total)),
                                    paste("Var", c(1:J)),
@@ -205,7 +205,7 @@ mixedMemModel = function(Total, J, Rj, Nijr, K, Vj, alpha, theta, phi = NULL, de
 #' @export
 summary.mixedMemModel = function(object,...)
 {
-  cat("==Summary for Mixed Membership Model==\n")
+  cat("== Summary for Mixed Membership Model ==\n")
   cat(paste("Total: ", object$Total, "\t\t K: ",object$K, "\t\t ELBO: ",round(computeELBO(object),2),"\n\n" ,sep = ""))
   df = data.frame(paste("  ",c(1:object$J),sep = ""), object$dist, object$Rj,
                   object$Vj)
@@ -222,8 +222,8 @@ summary.mixedMemModel = function(object,...)
 #' @param compare model to compare. For type = "theta", compare should be an array the same size as x$theta
 #' for type = "membership", compare should be a matrix the same size as x$phi
 #' @param main title for chart
-#' @param varNames variable names if plotting theta
-#' @param groupNames labels for sub-populations
+#' @param varNames vector of names for each variable if plotting theta
+#' @param groupNames vector of labels for each sub-population
 #' @param nrow number of rows for the grid of plots
 #' @param ncol number of columns for the grid of plots. if plotting theta, this
 #' must be K, if plotting membership, this can be specified
@@ -232,15 +232,21 @@ summary.mixedMemModel = function(object,...)
 #' @seealso mixedMemModel, vizTheta, vizMem
 #' @export
 plot.mixedMemModel = function(x, type = "theta" , compare = NULL,
-                              main = "Estimated Theta",
+                              main = NULL,
                               varNames = NULL,
                               groupNames = NULL,
                               nrow = NULL, ncol = NULL, indices = NULL, fitNames = NULL,
                               ...){
   if(type =="theta") {
+    if(is.null(main)){
+      main = "Estimated Theta"
+    }
     vizTheta(x, compare = compare, main = main, varNames = varNames,
              groupNames = groupNames, nrow = nrow, fitNames = fitNames, indices = indices, ...)
   } else if (type == "membership") {
+    if(is.null(main)){
+      main = "Estimated Memberships"
+    }
     vizMem(x,compare = compare, main = main, nrow = nrow, ncol = ncol,
            indices = indices, fitNames = fitNames, groupNames = groupNames,...)
   }

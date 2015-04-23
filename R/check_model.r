@@ -22,7 +22,7 @@ checkModel = function(model)
   # Check J
   if(J<1 || J != round(J))
   {stop("Input must be positive Integer: ", "J")}
-  if(length(Total)>1)
+  if(length(J)>1)
   {stop("Input of incorrect dimensions: ", "J", " must be of dimension ", "1")}
   
   

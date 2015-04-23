@@ -4,8 +4,8 @@
 \title{Plot a Mixed Membership Model}
 \usage{
 \method{plot}{mixedMemModel}(x, type = "theta", compare = NULL,
-  main = "Estimated Theta", varNames = NULL, groupNames = NULL,
-  nrow = NULL, ncol = NULL, indices = NULL, fitNames = NULL, ...)
+  main = NULL, varNames = NULL, groupNames = NULL, nrow = NULL,
+  ncol = NULL, indices = NULL, fitNames = NULL, ...)
 }
 \arguments{
 \item{x}{the mixedMemModel object to be plotted}
@@ -17,9 +17,9 @@ for type = "membership", compare should be a matrix the same size as x$phi}
 
 \item{main}{title for chart}
 
-\item{varNames}{variable names if plotting theta}
+\item{varNames}{vector of names for each variable if plotting theta}
 
-\item{groupNames}{labels for sub-populations}
+\item{groupNames}{vector of labels for each sub-population}
 
 \item{nrow}{number of rows for the grid of plots}
 

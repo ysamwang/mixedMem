@@ -7,9 +7,9 @@ mixedMemModel(Total, J, Rj, Nijr, K, Vj, alpha, theta, phi = NULL,
   delta = NULL, dist, obs)
 }
 \arguments{
-\item{Total}{the count of individuals in the sample}
+\item{Total}{the number of individuals in the sample}
 
-\item{J}{the count of variables observed on each individual}
+\item{J}{the number of variables observed on each individual}
 
 \item{Rj}{vector of length J specifying the number of repeated measurements
 on each variable}
@@ -29,16 +29,16 @@ membership distribution}
 
 \item{theta}{array of dimension (J,K,max(Vj)) which governs the variable
 distributions. theta[j,k,] is the parameter for how sub-population k responds
-to the variable j. If the number of candidates differs across variables, any
-unusued portions of theta should be 0.}
+to the variable j. Initially, any element of theta corresponding to a valid candidate/category must be positive (ie cannot be numerically 0).
+However, if the number of candidates differs across variables, any unusued portions of theta should be 0.}
 
 \item{phi}{array of dimension (Total,K) which specifies the variational
-parameters for the membership vectors, lambda. If left blank, it is initialized
-to a uniformly across all groups}
+parameters for the membership vectors, lambda. If left NULL, it is initialized
+to a uniformly across all groups. It is highly recommended to leave these NULL.}
 
 \item{delta}{array of dimension (Total,J,max(Rj), max(N), K) which specifies
 the variational parameters for the context vectors Z. If left blank, it is
- initialized to a uniformly across all sub-populations}
+ initialized to a uniformly across all sub-populations. It is highly recommended to leave these NULL.}
 
 \item{dist}{vector of length J specifying variable types. Options are
 "bernoulli", "multinomial" or "rank" corresponing to the distributions

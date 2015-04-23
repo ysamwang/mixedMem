@@ -34,5 +34,5 @@ computeBIC= function(model)
       num_param = num_param + model$K*(model$Vj[j]-1)
     }
   }
-  return(-2*elbo+num_param*log(model$T))
+  return(-2*elbo+num_param*log(model$Total))
 }

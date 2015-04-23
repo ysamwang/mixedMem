@@ -8,23 +8,23 @@ findLabels(model, training, exhaustive = TRUE)
 \arguments{
 \item{model}{the fitted \code{mixedMemModel} object}
 
-\item{training}{the ground truth theta}
+\item{training}{the comparison theta. This should be an array the same dimensions as model$theta}
 
 \item{exhaustive}{a boolean for whether an exhaustive search should be performed. If false, a greedy algorithim is used instead}
 }
 \value{
-perm optimal permutation with respect to squared error loss
+perm optimal permutation of the labels with respect to squared error loss
 
 loss the sum of squared error loss of the optimal permutation weighted by relative frequency
 }
 \description{
 Finds the permutation of labels that minimizes
-the weighted squared error loss between the fitted theta and a ground truth theta.
+the weighted squared error loss between the fitted theta and a comparison model.
 }
 \details{
 Mixed Membership models are invariant to permutations of the sub-population labels and the ordering of the labels in a fitted model
 is dependent on the initialization points of the variational EM algorithim. The \code{findLabels} function selects an
-optimal permutation of the labels to match a given ground truth.
+optimal permutation of the labels to match a given comparison model.
 The loss function is the weighted sum of squared differences where the weights are determined by the relative frequency of each group.
 
 \eqn{Loss = \sum_j \sum_k \alpha_k/\alpha_0 [\sum_v (\hat\theta_{k,v} - \theta_{k,v})^2]}

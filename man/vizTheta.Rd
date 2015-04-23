@@ -17,11 +17,11 @@ vizTheta(model, compare = NULL, main = "Estimated Theta", varNames = NULL,
 
 \item{groupNames}{vector specifying labels for each sub-population}
 
-\item{nrow}{the number of rows in each plot}
+\item{nrow}{the number of rows in each plot. If the argument is not specified, all variables will appear in one plot}
 
 \item{fitNames}{the names of the models plotted}
 
-\item{indices}{the specific variables to plot}
+\item{indices}{a vector which indicates specific variables to plot. If the argument is not specified, all variables will be plotted}
 }
 \description{
 Plots \eqn{\theta}, the parameters which govern the distributions of variables in a mixed membership model. \eqn{\theta_{j,k}} governs the

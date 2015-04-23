@@ -35,12 +35,13 @@
 #' @param model a \code{mixedMemModel} object created by the \code{mixedMemModel} constructor
 #' @param printStatus Options are 1 or 0. 1 will print status updates, 0 will not print status updates.
 #' @param printMod Positive integer which specifies how often to print status updates. The status will be printed at each step which is a multiple of printMod.
-#' @param stepType An integer in c(0:3) which specifies which what parameters to fit. 0 only performs an E-Step; this can be used
-#' to find the held out ELBO. 1 performs E-steps and fits theta but keeps alpha constant. 2 performs E-steps and fits alpha, but keeps theta constant. 3 completes full E and M steps.
-#' @param maxTotalIter The maximum steps before termination. A full E and M step together count as 1 step.
-#' @param maxEIter The maximum iterations on the E-Step
-#' @param maxAlphaIter The maximum iterations when fitting alpha
-#' @param maxThetaIter The maximum iterations when fitting theta
+#' @param stepType An integer (0,1,2,3)  specifying what steps to fit. 0 only performs an E-Step; this can be used
+#' to find the held out ELBO. 1 performs E-steps and fits theta but keeps alpha constant. 2 performs E-steps and fits alpha, but keeps theta constant. 3 completes full
+#' E and M steps.
+#' @param maxTotalIter The maximum total steps before termination. A full E and M step together count as 1 step. If this maximum is ever achieved, a warning message will be printed at convergence.
+#' @param maxEIter The maximum iterations for each the E-Step. If this maximum is ever achieved, a warning message will be printed at convergence.
+#' @param maxAlphaIter The maximum iterations when fitting alpha. If this maximum is ever achieved, a warning message will be printed at convergence.
+#' @param maxThetaIter The maximum iterations when fitting theta. If this maximum is ever achieved, a warning message will be printed at convergence.
 #' @param maxLSIter The maximum backtracking iterations in the line search for updating alpha and theta for rank data 
 #' @param elboTol The convergence criteria for the EM Algorithim. When the relative increase in the ELBO is less than the convergence critiera,
 #' the algorithim converges 
@@ -53,10 +54,10 @@
 #' @param bMax The number of iterations for the interior point method for fitting theta for rank data
 #' @param bNaught The initial scaling factor in the interior point method for fitting theta for rank data
 #' @param bMult The factor by which bNaught is multiplied by in each iteration of the interior point methodfor fitting theta for rank data
-#' @param vCutoff The cutoff for Vj at which a gradient ascent method is used instead of the newton raphson interior point method. This is used to avoid inverting
+#' @param vCutoff The cutoff for Vj at which a gradient ascent method is used instead of the Newton Raphson interior point method. This is used to avoid inverting
 #' a large matrix 
-#' @param holdConst an integer which specifies a specific group. The estimation algorithim will hold the
-#'  parameters of that specific group constant
+#' @param holdConst an vector of integers specifying groups to be held constant during the estimation procedure. The estimation algorithim will hold the
+#'  theta parameters of these specific groups constant, but update all other parameters. The group numbers range from 0 to K - 1.
 #' @return a \code{mixedMemModel} containing updated variational parameters and hyperparameters
 #' @seealso mixedMemModel
 #' @examples

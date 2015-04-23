@@ -7,7 +7,8 @@ mmVarFit(model, printStatus = 1, printMod = 1, stepType = 3,
   maxTotalIter = 500, maxEIter = 1000, maxAlphaIter = 200,
   maxThetaIter = 1000, maxLSIter = 400, elboTol = 1e-06,
   alphaTol = 1e-06, thetaTol = 1e-10, aNaught = 1, tau = 0.899,
-  bMax = 3, bNaught = 1000, bMult = 1000, vCutoff = 13)
+  bMax = 3, bNaught = 1000, bMult = 1000, vCutoff = 13,
+  holdConst = c(-1))
 }
 \arguments{
 \item{model}{a \code{mixedMemModel} object created by the \code{mixedMemModel} constructor}
@@ -16,16 +17,17 @@ mmVarFit(model, printStatus = 1, printMod = 1, stepType = 3,
 
 \item{printMod}{Positive integer which specifies how often to print status updates. The status will be printed at each step which is a multiple of printMod.}
 
-\item{stepType}{An integer in c(0:3) which specifies which what parameters to fit. 0 only performs an E-Step; this can be used
-to find the held out ELBO. 1 performs E-steps and fits theta but keeps alpha constant. 2 performs E-steps and fits alpha, but keeps theta constant. 3 completes full E and M steps.}
+\item{stepType}{An integer (0,1,2,3)  specifying what steps to fit. 0 only performs an E-Step; this can be used
+to find the held out ELBO. 1 performs E-steps and fits theta but keeps alpha constant. 2 performs E-steps and fits alpha, but keeps theta constant. 3 completes full
+E and M steps.}
 
-\item{maxTotalIter}{The maximum steps before termination. A full E and M step together count as 1 step.}
+\item{maxTotalIter}{The maximum total steps before termination. A full E and M step together count as 1 step. If this maximum is ever achieved, a warning message will be printed at convergence.}
 
-\item{maxEIter}{The maximum iterations on the E-Step}
+\item{maxEIter}{The maximum iterations for each the E-Step. If this maximum is ever achieved, a warning message will be printed at convergence.}
 
-\item{maxAlphaIter}{The maximum iterations when fitting alpha}
+\item{maxAlphaIter}{The maximum iterations when fitting alpha. If this maximum is ever achieved, a warning message will be printed at convergence.}
 
-\item{maxThetaIter}{The maximum iterations when fitting theta}
+\item{maxThetaIter}{The maximum iterations when fitting theta. If this maximum is ever achieved, a warning message will be printed at convergence.}
 
 \item{maxLSIter}{The maximum backtracking iterations in the line search for updating alpha and theta for rank data}
 
@@ -48,8 +50,11 @@ the update to theta converges}
 
 \item{bMult}{The factor by which bNaught is multiplied by in each iteration of the interior point methodfor fitting theta for rank data}
 
-\item{vCutoff}{The cutoff for Vj at which a gradient ascent method is used instead of the newton raphson interior point method. This is used to avoid inverting
+\item{vCutoff}{The cutoff for Vj at which a gradient ascent method is used instead of the Newton Raphson interior point method. This is used to avoid inverting
 a large matrix}
+
+\item{holdConst}{an vector of integers specifying groups to be held constant during the estimation procedure. The estimation algorithim will hold the
+theta parameters of these specific groups constant, but update all other parameters. The group numbers range from 0 to K - 1.}
 }
 \value{
 a \code{mixedMemModel} containing updated variational parameters and hyperparameters

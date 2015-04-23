@@ -2,20 +2,21 @@
 #' 
 #' Simulate data from the mixed membership generative model
 #' 
-#' Given a the parameters and dimensions of a mixed membership model, the function
-#' returns a random sample of observed values, context indicators and group memberships.
+#' Given the parameters and dimensions of a mixed membership model, the function
+#' returns a random sample of observed values (X), context indicators (Z) and group memberships (lambda).
 #'    
-#' @param Total the count of individuals in the sample
-#' @param J the count of variables observed on each individual
+#' @param Total the number of individuals in the sample
+#' @param J the number of variables observed on each individual
 #' @param Rj vector of length J specifying the number of repeated measurements
-#'  on each variable
+#'  for each variable
 #' @param Nijr an array of dimension (Total, J, max(Rj)) indicating the number
 #'  of ranking levels for each replication. For multinomial and bernoulli
 #'  variables, Nijr[i,j,r] = 1. For rank variables, Nijr[i,j,r] indicates the
 #'  number of candidates ranked.
-#' @param K the number of sub-populations
+#' @param K the number of latent sub-populations
 #' @param Vj vector of length J specifying the number of possible candidates
-#'  for each variable. For a bernoulli variable Vj[j] = 1.
+#'  for each variable. For a bernoulli variable Vj[j] = 1. For a multinomial
+#'   or rank variable, Vj[j] is the number of possible categories/candidates
 #' @param dist vector of length J specifying variable types. Options are
 #'  "bernoulli", "multinomial" or "rank" corresponing to the distributions
 #'   of the observed variables
@@ -23,11 +24,12 @@
 #'  membership distribution
 #' @param theta array of dimension (J,K,max(Vj)) which governs the variable
 #'  distributions. theta[j,k,] is the parameter for how sub-population k responds
-#'  to the variable j. If the number of candidates differs across variables, any
+#'  to variable j. If the number of candidates differs across variables, any
 #'  unusued portions of theta should be 0.
-#'  @param lambda a matrix containing the group membership for each individual
+#'  @param lambda a matrix containing the group membership for each individual. If the lambda
+#'  argument is not specified, the lambda's will be automatically sampled from a Dirichlet(alpha)
 #' @return A list containing a random sample of lambda (group memberships),
-#'  Z (context) and obs
+#'  Z (context) and obs (X)
 rmixedMem <- function(Total, J, Rj, Nijr, K, Vj, dist, theta, alpha, lambda = NULL)
 {
   if(is.null(lambda)){

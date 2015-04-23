@@ -11,8 +11,8 @@
 #' @param main title of plot
 #' @param varNames vector specifying labels for each variable
 #' @param groupNames vector specifying labels for each sub-population
-#' @param nrow the number of rows in each plot
-#' @param indices the specific variables to plot
+#' @param nrow the number of rows in each plot. If the argument is not specified, all variables will appear in one plot
+#' @param indices a vector which indicates specific variables to plot. If the argument is not specified, all variables will be plotted
 #' @param fitNames the names of the models plotted
 vizTheta = function(model, compare = NULL, main = "Estimated Theta",
                     varNames = NULL, groupNames = NULL,nrow = NULL, fitNames = NULL, indices = NULL, ...) {
@@ -127,13 +127,13 @@ vizTheta = function(model, compare = NULL, main = "Estimated Theta",
 #' This is the function called by the plot generic function for mixedMemModel objects
 #' 
 #' @param model the \code{mixedMemModel} object that will be plotted
-#' @param compare estimates to compare against. should be array with same dimensions as model$phi
+#' @param compare estimates to compare against. This should be a matrix with same dimensions as model$phi
 #' @param main title of plot
 #' @param varNames vector specifying labels for each variable
 #' @param groupNames vector specifying labels for each sub-population
 #' @param nrow the number of rows in each plot
 #' @param ncol the number of columns in each plot
-#' @param indices the specific variables to plot
+#' @param indices the specific individuals to plot. If the argument is left blank, all individuals will be plotted
 #' @param fitNames the names of the models plotted
 
 vizMem <- function(model, compare = NULL, main = "Estimated Membership",

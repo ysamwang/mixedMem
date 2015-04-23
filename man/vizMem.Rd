@@ -9,7 +9,7 @@ vizMem(model, compare = NULL, main = "Estimated Membership", nrow = NULL,
 \arguments{
 \item{model}{the \code{mixedMemModel} object that will be plotted}
 
-\item{compare}{estimates to compare against. should be array with same dimensions as model$phi}
+\item{compare}{estimates to compare against. This should be a matrix with same dimensions as model$phi}
 
 \item{main}{title of plot}
 
@@ -17,7 +17,7 @@ vizMem(model, compare = NULL, main = "Estimated Membership", nrow = NULL,
 
 \item{ncol}{the number of columns in each plot}
 
-\item{indices}{the specific variables to plot}
+\item{indices}{the specific individuals to plot. If the argument is left blank, all individuals will be plotted}
 
 \item{groupNames}{vector specifying labels for each sub-population}
 
