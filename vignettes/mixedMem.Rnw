@@ -12,7 +12,7 @@
 
 
 \begin{document}
-\title{Fitting Mixed Membership Models using \texttt{mixedMem}\footnotetext{Special thanks to McKay Curtis and Kevin Lin for providing feedback on package features and usability}}
+\title{Fitting Mixed Membership Models using \texttt{mixedMem}\footnotetext{Special thanks to McKay Curtis, Maryclare Griffin and Kevin Lin for providing feedback on package features and usability}}
 \author{Y. Samuel Wang and Elena A. Erosheva}
 \maketitle
 
