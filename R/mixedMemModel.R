@@ -164,7 +164,7 @@ mixedMemModel = function(Total, J, Rj, Nijr, K, Vj, alpha, theta, phi = NULL, de
                                     paste("Group", c(1:K)),
                                     paste("Cand", c(0:(max(Vj)-1))))
   
-  names(model_obj$alpha) <- paste("Group", c(0:K-1))
+  names(model_obj$alpha) <- paste("Group", c(0:(K-1)))
   
   names(model_obj$Vj) <- paste("Var", c(1:J))
   names(model_obj$Rj) <- paste("Var", c(1:J))
@@ -201,6 +201,7 @@ mixedMemModel = function(Total, J, Rj, Nijr, K, Vj, alpha, theta, phi = NULL, de
 #' ELBO, the dimensions of the model and details about each variable.
 #'  
 #' @param object the mixedMemModel object to be summarized
+#' @param ... additional parameters
 #' @seealso mixedMemModel
 #' @export
 summary.mixedMemModel = function(object,...)
@@ -228,6 +229,7 @@ summary.mixedMemModel = function(object,...)
 #' @param ncol number of columns for the grid of plots. if plotting theta, this
 #' must be K, if plotting membership, this can be specified
 #' @param indices when plotting memberships, which individuals to plot. When plotting theta, which variables to plot 
+#' @param fitNames vector of labels for each fit
 #' @param ... additional parameters
 #' @seealso mixedMemModel, vizTheta, vizMem
 #' @export
@@ -235,19 +237,18 @@ plot.mixedMemModel = function(x, type = "theta" , compare = NULL,
                               main = NULL,
                               varNames = NULL,
                               groupNames = NULL,
-                              nrow = NULL, ncol = NULL, indices = NULL, fitNames = NULL,
-                              ...){
+                              nrow = NULL, ncol = NULL, indices = NULL, fitNames = NULL,...){
   if(type =="theta") {
     if(is.null(main)){
       main = "Estimated Theta"
     }
     vizTheta(x, compare = compare, main = main, varNames = varNames,
-             groupNames = groupNames, nrow = nrow, fitNames = fitNames, indices = indices, ...)
+             groupNames = groupNames, nrow = nrow, fitNames = fitNames, indices = indices)
   } else if (type == "membership") {
     if(is.null(main)){
       main = "Estimated Memberships"
     }
     vizMem(x,compare = compare, main = main, nrow = nrow, ncol = ncol,
-           indices = indices, fitNames = fitNames, groupNames = groupNames,...)
+           indices = indices, fitNames = fitNames, groupNames = groupNames)
   }
 }

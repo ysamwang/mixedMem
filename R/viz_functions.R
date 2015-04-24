@@ -15,7 +15,7 @@
 #' @param indices a vector which indicates specific variables to plot. If the argument is not specified, all variables will be plotted
 #' @param fitNames the names of the models plotted
 vizTheta = function(model, compare = NULL, main = "Estimated Theta",
-                    varNames = NULL, groupNames = NULL,nrow = NULL, fitNames = NULL, indices = NULL, ...) {
+                    varNames = NULL, groupNames = NULL,nrow = NULL, fitNames = NULL, indices = NULL) {
   
   # Internal Variables to set
   h.space <- .25
@@ -54,7 +54,7 @@ vizTheta = function(model, compare = NULL, main = "Estimated Theta",
       for(k in 1:model$K)
       {
         plot(model$theta[j,k,], type = "p", lwd = 2, col = "black", ylim = c(-v.space, 1+v.space), xlim = c(h.space, model$Vj[j] + h.space),
-             yaxt = "n", xaxt = "n", pch = 16, ...)
+             yaxt = "n", xaxt = "n", pch = 16)
         if(!is.null(compare)) {
           points(c(1:model$Vj[j]), compare[j,k,c(1:model$Vj[j])], col = "red", pch = 4, lwd = 1.5)
         }
@@ -69,7 +69,7 @@ vizTheta = function(model, compare = NULL, main = "Estimated Theta",
     } else if (model$dist[j] == "bernoulli") {
       for(k in 1:model$K) {
         plot(model$theta[j,k,], type = "p", lwd = 2, col = "black", ylim = c(-v.space,1+ v.space), xlim = c(h.space, 1 + h.space),
-             yaxt = "n", xaxt = "n", pch = 16, ...)
+             yaxt = "n", xaxt = "n", pch = 16)
         if(!is.null(compare)) {
           points(c(1:model$Vj[j]), compare[j,k,], col = "red", pch = 4, lwd = 1.5)
         }
@@ -129,16 +129,15 @@ vizTheta = function(model, compare = NULL, main = "Estimated Theta",
 #' @param model the \code{mixedMemModel} object that will be plotted
 #' @param compare estimates to compare against. This should be a matrix with same dimensions as model$phi
 #' @param main title of plot
-#' @param varNames vector specifying labels for each variable
 #' @param groupNames vector specifying labels for each sub-population
 #' @param nrow the number of rows in each plot
 #' @param ncol the number of columns in each plot
 #' @param indices the specific individuals to plot. If the argument is left blank, all individuals will be plotted
 #' @param fitNames the names of the models plotted
-
+#' @export
 vizMem <- function(model, compare = NULL, main = "Estimated Membership",
                    nrow = NULL, ncol = NULL,
-                   indices = NULL, groupNames = NULL, fitNames = NULL, ...) {
+                   indices = NULL, groupNames = NULL, fitNames = NULL) {
   # Internal Variables
   pch.list = c(0:14)
   h.space = .25
@@ -176,15 +175,15 @@ vizMem <- function(model, compare = NULL, main = "Estimated Membership",
   {
     count <- count + 1
     
-    plot(mem.est[i,], type = "p", lwd = 2, col = "black", ylim = c(-v.space,1 + v.space), xlim = c(h.space, model$Vj[j] + h.space),
-         yaxt = "n", xaxt = "n", pch = pch.list, ...)
+    plot(mem.est[i,], type = "p", lwd = 2, col = "black", ylim = c(-v.space,1 + v.space), xlim = c(h.space, model$K + h.space),
+         yaxt = "n", xaxt = "n", pch = pch.list)
     text(0, 1, labels = i , cex = .9, adj = c(0, 1), pos = 4)
     if((count %% ncol) == 1) {
       axis(2, at = c(0,.5,1), labels = c(0,.5,1), cex = 1)
     }
     
     if(!is.null(compare)){
-      points(c(1:K), compare[i,], col = "red", pch = pch.list)
+      points(c(1:model$K), compare[i,], col = "red", pch = pch.list)
     }
     if((count %%(nrow*ncol)) == 0)
     {

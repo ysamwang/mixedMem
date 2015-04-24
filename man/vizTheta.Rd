@@ -4,7 +4,7 @@
 \title{Mixed Membership Visualization}
 \usage{
 vizTheta(model, compare = NULL, main = "Estimated Theta", varNames = NULL,
-  groupNames = NULL, nrow = NULL, fitNames = NULL, indices = NULL, ...)
+  groupNames = NULL, nrow = NULL, fitNames = NULL, indices = NULL)
 }
 \arguments{
 \item{model}{the \code{mixedMemModel} object that will be plotted}

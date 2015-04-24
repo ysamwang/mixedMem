@@ -40,8 +40,8 @@ membership distribution}
 argument is not specified, the lambda's will be automatically sampled from a Dirichlet(alpha)}
 }
 \value{
-A list containing a random sample of lambda (group memberships),
- Z (context) and obs (X)
+A list containing a three items. A matrix of group memberships (lambda),
+an array of context indicators (Z) and an array of observations (obs)
 }
 \description{
 Simulate data from the mixed membership generative model

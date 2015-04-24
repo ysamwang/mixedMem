@@ -12,7 +12,7 @@
 
 
 \begin{document}
-\title{Fitting Mixed Membership Models using \texttt{mixedMem}}
+\title{Fitting Mixed Membership Models using \texttt{mixedMem}\footnotetext{Special thanks to McKay Curtis and Kevin Lin for providing feedback on package features and usability}}
 \author{Y. Samuel Wang and Elena A. Erosheva}
 \maketitle
 
@@ -31,19 +31,21 @@ Mixed membership models have been used to analyze to a wide variety of data type
 The remainder of section \ref{MMM} introduces notation and formally defines the generative hierarchy assumed for discrete mixed membership models. Section \ref{variational} outlines the variational EM  method used by the \texttt{mixedMem} package and discusses some of the benefits and drawbacks of the variational approach. Section \ref{politicalSurvey} provides a step-by-step guide for fitting mixed membership models using \texttt{mixedMem}. For illustration, we analyze the results of the 1983 American National Election Studies Pilot Study. Finally, section \ref{conclusion} provides a brief conclusion.
 
 \subsection{Illustration and Notation}
-For a hypothetical example, consider a survey of T =  100 (the number of individuals) high school J = 3 (the number of variables) questions. Each individuals is asked to (1) rank their favorite classes (rank data), (2) select their favorite TV channel (multinomial data) and (3) indicate whether or not they are on the honor roll (Bernoulli data). Students within the same extracurricular activities/clubs might give similar responses, so in a mixed membership analysis, the latent sub-populations map to the extracurricular groupings. For concreteness, assume the following K = 4 sub-populations fully describe the students' extracurricular activities: athletics, math/science, fine arts and student government. Athletes might be more likely to rank ``Anatomy" and ``Health" among their favorite classes, while students involved in student government might be more likely to rank ``Civics" or ``History" highly.  As is often the case, students may be involved with multiple clubs/activities to varying degrees. If a student is involved in student government and athletics, they might rank their favorite classes as (1. ``Anatomy", 2. ``History" and 3. ``Health"). Thus, using a mixture model framework to classify the student solely as an athlete would fail to represent her full profile. We use $\lambda_i$ to denote the distribution of membership for individual i. $\lambda_i$ is a vector of K non-negative elements which sum to 1. The membership vector $\lambda$ for the student above might be $\left(\text{athletics} = 0.7, \text{math/science} = 0.0, \text{fine arts} = 0.0, \text{student government} = 0.3\right)$.
+For a hypothetical example, consider a survey of Total =  100 (the number of individuals) high school students with J = 3 (the number of variables) questions. Each individual is asked to (1) rank their favorite classes (rank data), (2) select their favorite TV channel (multinomial data) and (3) indicate whether or not they are on the honor roll (Bernoulli data). Students within the same extracurricular activities/clubs might give similar responses, so in a mixed membership analysis, the latent sub-populations might map to extracurricular groupings. For concreteness, assume the following K = 4 sub-populations fully describe the students' extracurricular activities: athletics, math/science, fine arts and student government. Athletes might be more likely to rank ``Anatomy" and ``Health" among their favorite classes, while students involved in student government might be more likely to rank ``Civics" or ``History" highly.  As is often the case, students may be involved with multiple clubs/activities to varying degrees. If a student is involved in student government and athletics, they might rank their favorite classes as (1. ``Anatomy", 2. ``History" and 3. ``Health"). Thus, using a mixture model framework to classify the student solely as an athlete would fail to represent her full profile. We use $\lambda_i$ to denote the distribution of membership for individual i. $\lambda_i$ is a vector of K non-negative elements which sum to 1. The membership vector $\lambda$ for the student above might be $\left(\text{athletics} = 0.7, \text{math/science} = 0.0, \text{fine arts} = 0.0, \text{student government} = 0.3\right)$. In this package, we assume that memberships are drawn from a Dirichlet distribution; however, some other mixed membership models assume more general distributions for the membership vectors \citep{blei2006correlated}.
 
-We index each of the T students by $i = 1,2, \ldots$ T; in this case T = 100. Each of the J variables are indexed by $j = 1,2,\ldots J$ and for each variable we index the $R_j$ number of replicates by $r = 1,2,\ldots R_j$. For rank data, we index the $N_{i,j,r}$ ranking levels by $n = 1,2\ldots N_{i,j,r}$; for multinomial and binary data $N_{i,j,r} = 1$. For each individual i, variable j, replicate r, and ranking level n we denote the observed response by $X_{i,j,r,n}$. For example, if student 10's favorite classes (variable 1)  are $ \left(\text{``Anatomy", ``History", ``Health"}\right)$ and she is on the honor roll (variable 3), then $X_{i = 10,j = 1,r = 1,n = 3} =$ ``Health" and  $X_{i = 10,j = 3,r = 1,n = 1} = 1$.    
+We index each of the Total students by $i = 1,2, \ldots Total$; in this case Total = 100. Each of the J variables are indexed by $j = 1,2,\ldots J$ and for each variable we index the $R_j$ number of replicates by $r = 1,2,\ldots R_j$. Note that each of the variables can have a different number of replications. For rank data, we index the $N_{i,j,r}$ ranking levels (ie the first preference, the second preference, ...) by $n = 1,2\ldots N_{i,j,r}$; for multinomial and binary data $N_{i,j,r} = 1$. For each individual i, variable j, replicate r, and ranking level n we denote the observed response by $X_{i,j,r,n}$. For example, if student 10's favorite classes (variable 1)  are $ \left(\text{``Anatomy", ``History", ``Health"}\right)$ and she is on the honor roll (variable 3), then $X_{i = 10,j = 1,r = 1,n = 2} =$ ``History" and  $X_{i = 10,j = 3,r = 1,n = 1} = 1$.    
 
 \subsection{Generative Process}\label{generative}
 More formally, for K sub-populations, we assume a mixed membership generative process as follows:
 
 \noindent
-For each individual $i = 1,\ldots T$: Draw $\lambda_i$ from a Dirichlet($\alpha$). $\lambda_i$ is a vector of length K which indicates the degree of membership for individual i.
+For each individual $i = 1,\ldots Total$: Draw $\lambda_i$ from a Dirichlet($\alpha$). $\lambda_i$ is a vector of length K which indicates the degree of membership for individual i.
   \begin{itemize}
-  \item For each variable $j = 1, \ldots, J$, each replicate $r = 1, \dots, R_j$ and each ranking level $n = 1\ldots, N_{i,j,r}$: Draw $Z_{i,j,r,n}$ from a multinomial(1, $\lambda_i$). $Z_{i,j,r,n}$ determines the sub-population which governs the response for observation $X_{i,j,r,n}$. This is sometimes referred to as the context vector because it determines the context from which the individual responds.
+  \item For each variable $j = 1, \ldots, J$, each replicate $r = 1, \dots, R_j$ and each ranking level $n = 1\ldots, N_{i,j,r}$: Draw $Z_{i,j,r,n}$ from a multinomial(1, $\lambda_i$). $Z_{i,j,r,n}$ determines the sub-population which governs the response for observation $X_{i,j,r,n}$. This is sometimes referred to as a context vector because it determines the context from which the individual responds.
   \item For each variable $j = 1, \ldots, J$, each replicate $r = 1, \dots, R_j$ and each ranking level $n = 1\ldots, N_{i,j,r}$: Draw $X_{i,j,r,n}$ from the distribution parameterized by $\theta_{j,Z_{i,j,r,n}}$. Here, $\theta$ is the set of parameters which govern the observations for each sub-population. If variable j is a multinomial or rank distribution with $V_j$ categories/candidates, $\theta_{j,k}$ is a vector of length $V_j$ which parameterizes the responses to variable j for sub-population k. If variable j is a Bernoulli random variable, then $\theta_{j,k}$ is a value which determines the probability of success. 
   \end{itemize}
+  
+In topic models, \cite{LDA, erosheva2004mixed} analyze individual articles; the latent sub-populations are topics for each of the articles; the the observed words are draws from a multinomial distribution determined by the topic; and we observe many replicates (words) for each article . In the analysis of genotype sequences, \cite{pritchard2000inference} analyze individuals; the latent sub-populations map to genetically similar groups; each observed genetic loci is a different variable; and there are two replicates (assuming diploid individuals) for each variable. In the analysis of ranked votes, \cite{gormley2009grade} analyze individual voters; the latent sub-populations map to voting blocs; the observed data the a list of candidates by preference for each individual; and the ranking levels ($N_{ijr}$) for each individual is the number of candidates they list.     
 
 \section{Variational EM and the \texttt{mixedMem} Package}\label{variational}
 
@@ -64,7 +66,7 @@ The parameters $\phi$ and $\delta$ can be selected to minimize the Kullback-Leib
 This variational distribution can also be used in an alternative pseudo-likelihood framework, to select the global parameters $\theta$ and $\alpha$. Using Jensen's inequality, the variational distribution can be used to derive a function of $\phi$, $\delta$, $\alpha$ and $\theta$ which is a lower bound on the log-likelihood of our observations:
 
 \begin{equation}\label{eq:Jensen}
-p(X|\alpha, \theta) \geq \E_Q\left\{\log\left[p(X,Z, \Lambda)\right]\right\} - \E_Q\left[\log\left[Q(Z, \Lambda|\phi, \delta)\right]\right\}.
+\log\left[p(X|\alpha, \theta)\right] \geq \E_Q\left\{\log\left[p(X,Z, \Lambda)\right]\right\} - \E_Q\left[\log\left[Q(Z, \Lambda|\phi, \delta)\right]\right\}.
 \end{equation}
 
 The lower bound on the RHS of equation (\ref{eq:Jensen}) is often called the ELBO for \textbf{E}vidence \textbf{L}ower \textbf{Bo}und. Calculating the LHS of equation (\ref{eq:Jensen}) is intractable, but for a fixed $\phi$ and $\delta$, selecting $\alpha$ and $\theta$ to maximize the lower bound on the RHS is a tractable alternative to maximum likelihood estimation. 
@@ -72,15 +74,15 @@ The lower bound on the RHS of equation (\ref{eq:Jensen}) is often called the ELB
 It can be shown that minimizing the KL Divergence between Q and the true posterior is actually equivalent to maximizing the lower bound in equation (\ref{eq:Jensen}) with respect to $\phi$ and $\delta$ \citep{beal2003variational}. Thus, the tasks of finding an approximate posterior distribution with respect to $\phi$ and $\delta$ and picking pseudo-MLE's $\theta$ and $\alpha$ are both achieved by maximizing the lower bound in equation (\ref{eq:Jensen}). In practice, we maximize this lower bound through a variational EM procedure. In the E-step (variational inference), we fix $\theta$ and $\alpha$ and minimize the KL divergence between Q and the true posterior   (this is also equivalent to maximizing the lower bound in equation (\ref{eq:Jensen}) through iterative closed form updates to $\phi$ and $\delta$. In the M-step (pseudo-MLE), we fix $\phi$ and $\delta$ and select the $\theta$ and $\alpha$ which maximize the lower bound through gradient based methods. The entire procedure iterates between the E-step and the M-step until reaching a local mode. A detailed exposition of variational inference is provided by \cite{jaakkola200110}.
 
 \subsubsection{Label Switching in Mixed Membership Models}
-Mixed membership models are only identifiable up to permutations of the sub-population labels (ie simultaneously permuting the labels for all group memberships and distribution parameters). In an MCMC analysis of mixed membership models, this can require special attention if label switching is present within a sampler \citep{stephens2000dealing}. Because variational EM is a deterministic approach, the final permutation of the labels is only dependent on the initialization points and does not require special attention during the fitting procedure. However matching group labels can still a concern for assessing model fit when comparing to some ground truth or another fitted model. \texttt{mixedMem} provides functions discussed in subsection \ref{postProcess}  for dealing with the label permutations to facilitate post-processing.   
+Mixed membership models are only identifiable up to permutations of the sub-population labels (ie simultaneously permuting the labels for all group memberships and distribution parameters). In an MCMC analysis of mixed membership models, this can require special attention if label switching is present within a sampler \citep{stephens2000dealing}. Because variational EM is a deterministic approach, the final permutation of the labels is only dependent on the initialization points and does not require special attention during the fitting procedure. However matching group labels can still a concern for assessing model fit when comparing to some other fitted model. \texttt{mixedMem} provides functions discussed in subsection \ref{postProcess}  for dealing with the label permutations to facilitate post-processing.   
 
 \subsubsection{Variational EM Caveats}
 The computational benefits of variational EM, however, do not come for free. The lower bound in equation (\ref{eq:Jensen}), is generally not a strictly convex function, so only convergence to a local mode, not the global mode, is guaranteed \citep{wainwright2008graphical}. If prior knowledge exists about a specific problem, initializing $\theta$ and $\alpha$ near plausible values is helpful in ensuring that the EM algorithm reaches a reasonable mode. In general though, starting from multiple initialization points and selecting the mode with the largest ELBO is highly recommended. This is also an area where the post-processing tools discussed in subsection \ref{postProcess} can be useful for determining if candidate modes found from different initialization points are conceptually different.
 
-Variational inference also lacks any guarantees on the quality of our approximation. \cite{erosheva2007describing} show that a mixed membership analysis of survey data using a MCMC and variational approach agree well, and, in practice, we see that variational inference provides reasonable and interpretable results in mixed membership models \citep{LDA, erosheva2004mixed, airoldi2009mixed}. However, there are no theoretical guarantees on how good or bad our approximation ultimately is.
+Variational inference also lacks any guarantees on the quality of our approximation. In some cases, we anecdotally find that the estimates of $\alpha$ provide good estimates of relative frequency, but can inaccurately estimate the rate of intra-individual dispersion (which is regulated by $\sum \alpha_i$). However, \cite{erosheva2007describing} show that a mixed membership analysis of survey data using a MCMC and variational approach agree well, and, in practice, we see that variational inference provides reasonable and interpretable results in mixed membership models \citep{LDA, erosheva2004mixed, airoldi2009mixed}. However, there are no theoretical guarantees on how good or bad our approximation ultimately is.
 
 \section{Example: Fitting Political Survey Data with \texttt{mixedMem}} \label{politicalSurvey}
-For demonstration, we present a \texttt{mixedMem} analysis of political opinion survey data previously analyzed by  \cite{grossManriqueVallier} as well as \cite{feldman1988structure}. Within this context, identified latent sub-populations might map to ideological blocs. Since individuals often hold to political ideologies to varying degrees, a mixed membership model is particularly appropriate. We utilize the mixed membership model as specified by Gross and Manrique-Vallier and discussed more generally in section \ref{generative}. The model assumes 3 latent sub-populations (K = 3) with 19 observed multinomial variables with 1 replicate each. Gross and Manrique-Vallier specify a fully Bayesian approach, placing prior distributions on both $\theta$ and $\alpha$ and utilize MCMC to estimate the model. This allows for posterior inference on both the latent memberships as well as on $\theta$ and $\alpha$. Our analysis using \texttt{mixedMem} will fit the model using the variational EM algorithm  which allows for posterior inference on $\lambda$ and Z, but only yields point estimates for $\alpha$ and $\theta$. Nonetheless, we will show that the two methods yield comparable results and very similar interpretations.
+For demonstration, we present a \texttt{mixedMem} analysis of political opinion survey data previously analyzed by  \cite{grossManriqueVallier} as well as \cite{feldman1988structure}. Within this context, identified latent sub-populations might map to ideological blocs. Since individuals often hold to political ideologies to varying degrees, a mixed membership model is particularly appropriate. We utilize the mixed membership model as specified by Gross and Manrique-Vallier and discussed more generally in section \ref{generative}. The model assumes 3 latent sub-populations (K = 3) with 19 observed multinomial variables with 1 replicate each. Gross and Manrique-Vallier specify a fully Bayesian approach, placing prior distributions on both $\theta$ and $\alpha$ and utilize MCMC to estimate the model. This allows for posterior inference on both the latent memberships as well as on $\theta$ and $\alpha$. Our analysis using \texttt{mixedMem} will fit the model using the variational EM algorithm  which allows for posterior inference on $\lambda$ and Z, but only yields point estimates for $\alpha$ and $\theta$. Nonetheless, we will show that the two methods yield comparable results with very similar interpretations.
 
 In the 1983 American National Election Survey Pilot \citep{ANES}, each individual was prompted with various opinion-based statements and was asked to report their agreement with the statement using the categories: ``strongly agree", ``agree but not strongly", ``can't decide", ``disagree but not strongly", and ``strongly disagree". For example, one statement was ``Any person who is willing to work hard has a good chance of succeeding". We specifically study 19 of the statements which were selected by \cite{feldman1988structure} and reanalyzed by \citep{grossManriqueVallier}.  The 19 statements can be grouped into 3 overarching themes: Equality (abbreviated ``EQ" in the data set variable names), Economic Individualism (abbreviated ``IND") and Free Enterprise (abbreviated ``ENT") \citep{feldman1988structure}.  Following the original analysis of \cite{grossManriqueVallier}, we include the 279 complete responses and combine categories ``agree" with ``strongly agree" and ``disagree"  with ``strongly disagree", leaving the 3 possible responses ``agree" = 0, ``can't decide" = 1, and ``disagree" = 2 to avoid overparameterization. The data is included in \texttt{mixedMem} as \texttt{ANES}; the full text statement for each variable can be accessed through \texttt{help(ANES)}. 
 
@@ -149,18 +151,21 @@ initial <- mixedMemModel(Total = Total, J = J, Rj = Rj,
 @
 
 \subsection{Step 2: Fitting the Model}
-Now we can fit the model using the \texttt{mmVarFit} function. When we call \texttt{mmVarFit}, the function first checks for internal consistency in the input model, \texttt{initial} (i.e., it checks whether the dimensions of the observation match the specified number of variables, etc). If the model check passes, the function begins to iterate through the E-step and M-step described in subsection \ref{VI}. When the algorithm converges\footnote{The maximum iterations before the algorithim terminates is 500}, \texttt{mmVarFit} prints the value of the lower bound at convergence as well as the number of EM iterations needed for convergence.
+Now we can fit the model using the \texttt{mmVarFit} function. When we call \texttt{mmVarFit}, the function first checks for internal consistency in the input model, \texttt{initial} (i.e., it checks whether the dimensions of the observation match the specified number of variables, etc). If the model check passes, the function begins to iterate through the E-step and M-step described in subsection \ref{VI}. When the algorithm converges, \texttt{mmVarFit} prints the value of the lower bound at convergence as well as the number of EM iterations needed for convergence.
 
 <<>>=
 computeELBO(initial)
 st = proc.time()
-out <- mmVarFit(initial)
+#printStatus 1 indicates that status updates will be printed
+# printMod 25 indicates that status updates will only be printed ever 25th step
+out <- mmVarFit(initial, printStatus = 1, printMod = 25)
 end <- proc.time()
 computeELBO(out)
 time <- end - st
 @
 
-Notice that the lower bound (our objective function) is \Sexpr{round(computeELBO(initial),2)} at the initialized points and is \Sexpr{round(computeELBO(out),2)} at convergence. On a laptop (quad-core 2.4 GHZ with 12 GB of RAM), fitting the entire model took only \Sexpr{time[3]} seconds, significantly faster than a full MCMC analysis.  
+Notice that the lower bound (our objective function) is \Sexpr{round(computeELBO(initial),2)} at the initialized points and is \Sexpr{round(computeELBO(out),2)} at convergence. On a laptop (quad-core 2.4 GHZ with 12 GB of RAM), fitting the entire model took only \Sexpr{time[3]} seconds, significantly faster than a full MCMC analysis. 
+
 We can also view a quick summary of the fit model using the \texttt{summary} function.
 
 <<>>=
@@ -178,6 +183,7 @@ Where $\hat \alpha_0 = \sum_k \alpha_k$.
 
 <<>>=
 #read in GM estimates
+# Note that Gross and Manrique-Vallier do not report estimates for the third group, so they have been set to 0 in the data
 data(gmv_theta)
 #
 optimal.perm <- findLabels(out, gmv_theta)
@@ -204,9 +210,13 @@ chi.squared <- sum( (obs.counts - model.exp)^2 / model.exp)
 @
 
 <<results = 'asis', echo = FALSE>>=
-rownames(model.exp) <- colnames(ANES)
-colnames(model.exp) <- c("Agree", "Can't Decide", "Disagree")
-xtable(model.exp, digits = 1, caption = "Expected responses based on fitted parameters")
+tab <- cbind(model.exp[, 1], obs.counts[, 1],
+             model.exp[, 2], obs.counts[, 2],
+             model.exp[, 3], obs.counts[, 3])
+rownames(tab) <- colnames(ANES)
+colnames(tab) <- c("Exp Agree", "Obs Agree",  "Exp Can't Decide", "Obs Can't Decide", "Exp Disagree", "Obs Disagree")
+xtable(tab, digits = 1, caption = "Expected responses based on fitted parameters and Observed responses")
+
 @
 
 Using this $\chi^2$ statistic, we calculate a p-value of \Sexpr{round(pchisq(chi.squared, df = (J-1)*max(Vj)),3)}, which would lead us to fail to reject the null hypothesis that the observed data was generated by the fitted model.  
@@ -219,19 +229,20 @@ pchisq(chi.squared, df = (J-1) * max(Vj))
 
 
 \subsection{Step 4: Interpretation}
-Visualizations of the fitted model can be highly context-specific and each of the estimated quantities can be extracted from the output model for further analysis tailored to the scientific question of interest.
+Visualizations of the fitted model can be highly context-specific and each of the estimated quantities can be extracted from the output model for further analysis tailored to the scientific question of interest. In the following subsections, we show a few visualizations and tools which may be of general interest.
+
 <<>>=
 # The estimated quantities can be exctracted from the output model
 names(out)
 out$alpha
 @
-In the following subsections, we show a few visualizations and tools which may be of general interest.
+
 \subsubsection{Visual Representation of $\hat \theta$}
 
 We can now plot our estimated $\hat \theta$ values and compare them to the values found in the original analysis. In figures \ref{fig:theta}, each row of plots represents an individual question, the columns represent each of the identified sub-populations and the plots show the sub-population's response probability for each variable. The black dots indicate the values estimated using \texttt{mixedMem} and the red X's indicate the values reported by \citep{grossManriqueVallier}. Note that Gross and Manrique-Vallier do not report values for group 3 for reasons discussed in subsection \ref{alphaHat}. Recall that 0 indicates ``agree" and 2 indicates ``disagree".
 
-<<theta, fig.height = 7, fig.width = 7, fig.align = 'center', fig.cap = "Individuals were asked to indicate their level of agreement with 19 opinion based statements. The fitted multinomial response probabilities for each ideology bloc to each of the 19 statements are displayed. On the horizontal axis, 0 indicates agree, 1 indicates can't decide, and 2 indicates disagree. The estimates from our variational analysis are denoted by the dots, the Gross and Manrique-Vallier results using MCMC are shown by the red X's">>=
-plot(out.permute, type = "theta", truth = gmv_theta, varNames = colnames(ANES),
+<<theta, fig.height = 7, fig.width = 7, fig.align = 'center', fig.cap = "Individuals were asked to indicate their level of agreement with 19 opinion based statements. The fitted multinomial response probabilities for each ideology bloc to each of the first 10 statements are displayed. On the horizontal axis, 0 indicates agree, 1 indicates can't decide, and 2 indicates disagree. The estimates from our variational analysis are denoted by the dots, the Gross and Manrique-Vallier results using MCMC are shown by the red X's. Since they do not report estimates for Group 3, the Can't Decide group, those estimates are shown as 0's.">>=
+plot(out.permute, type = "theta", compare = gmv_theta, varNames = colnames(ANES),
          groupNames = c("Conservative", "Liberal", "Undecided"), nrow = 10)
 @
 
@@ -261,7 +272,7 @@ barplot(height = pop2VarAgree,
         col = ifelse(pop2VarAgree > .5, "forestgreen", "darkred"))
 @
 
-We also observe, that sub-population 3 has a much higher propensity to respond ``can't decide" then sub-populations 1 or 2. The 5 individuals with particularly large membership in group 3 responded ``can't decide" 42 times. This is particularly salient since there are only 99 ``can't decide" responses in the entire sample. Thus, sub-population 3 could be identified as the undecided bloc. 
+We also observe, that sub-population 3 has a much higher propensity to respond ``can't decide" then sub-populations 1 or 2. The 5 individuals with particularly large membership in group 3 responded ``can't decide" 42 times. This is particularly salient since there are only 99 ``can't decide" responses in the entire sample. Thus, sub-population 3 could be identified as the ``Can't Decide" bloc. 
 
 <<>>=
 # Point estimates for lambda
@@ -296,7 +307,7 @@ H(P,Q) = \frac{1}{\sqrt{2}}\sqrt{\sum_i \left(\sqrt{p_i} - \sqrt{q_i}\right)^2}.
 
 A Hellinger distance close to 1 indicates that two probability distributions are dissimilar, while a Hellinger distance close to 0 indicates that the two probaility distirbutions are similar. We can see in figure \ref{fig:polarizing} that the three most polarizing questions, as measured by the Hellinger distance, are statements \texttt{IND5} (``If people work hard, they almost always get what they want"), \texttt{IND3} (``Most people who don't get ahead should not blame the system; they really have only themselves to blame") and \texttt{EQ7} (``One of the big problems in this country is that we don't give everyone an equal chance"). Thus, it would seem that the most polarizing issues in 1983 revolved around access and opportunity for advancement.
 
-<<polarizing, fig.width = 4, fig.height = 4, fig.align = 'center', fig.cap = "Using Hellinger distance indicates that the most polarizing issues involved opportunity for advancement">>=
+<<polarizing, fig.width = 4, fig.height = 4, fig.align = 'center', fig.cap = "Using Hellinger distance indicates that the most polarizing statements are IND 5, IND 3, and EQ 7. These were all issues involving opportunity for advancement">>=
 hellingerDist <- (1/sqrt(2)) * sqrt(rowSums( (sqrt(out.permute$theta[, 1, ]) 
                                           - sqrt(out.permute$theta[, 2, ]))^2))
 barplot(sort(hellingerDist, decreasing = T),
@@ -318,10 +329,10 @@ sum( (lambda.point[, 1] > .4) & (lambda.point[, 2] > .4))
 @
 
 <<mems, fig.width = 4, fig.height = 4, fig.align = 'center', fig.cap = "Estimated memberships for first 42 individuals">>=
-class(out.permute)
-plot(out.permute, type = "membership", indices = c(1:20), nrow = 5, ncol = 4, main = "Estimated Memberships")
+plot(out.permute, type = "membership", indices = c(1:20), nrow = 5, ncol = 4, main = "Estimated Memberships",
+     groupNames = c("Cons", "Lib", "Cant Decide"), fitNames = c("mixedMem"))
 @
-We can also plot the ``empirical CDF" of estimated membership in conservative bloc as shown in figure \ref{fig:posteriorMem}. Since the marginal distribution of a Dirichlet distribution is a beta, we can also plot the 95\% credible intervals for the posterior membership in the conservative bloc. We observe that there is still a relatively large amount of uncertainty in the estimated membership of each individual.
+We can also plot the ``empirical CDF" of estimated membership in conservative bloc as shown in figure \ref{fig:posteriorMem}. Since the marginal distribution of a Dirichlet distribution is a Beta distribution, we can also plot the 95\% credible intervals for the posterior membership in the conservative bloc. We observe that there is still a relatively large amount of uncertainty in the estimated membership of each individual.
 
 
 <<posteriorMem, fig.cap = "We observe a relatively high rate of intra-individual mixing", fig.width = 5, fig.align = 'center', fig.height = 5>>=

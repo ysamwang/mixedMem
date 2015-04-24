@@ -28,6 +28,8 @@ must be K, if plotting membership, this can be specified}
 
 \item{indices}{when plotting memberships, which individuals to plot. When plotting theta, which variables to plot}
 
+\item{fitNames}{vector of labels for each fit}
+
 \item{...}{additional parameters}
 }
 \description{

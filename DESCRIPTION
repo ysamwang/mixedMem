@@ -5,9 +5,9 @@ Version: 1.0.0
 Date: 2015-01-05
 Authors@R: c( person("Y. Samuel", "Wang", email = "ysamwang@uw.edu", role =
     c("aut","cre")), person("Elena A.", "Erosheva", email =
-    "Elena.A.Erosheva@uw.edu", role = "aut"))
+    "erosheva@uw.edu", role = "aut"))
 Description: mixedMem fits mixed membership models with discrete multivariate
-    data (with or withour replacements) following the general framework of
+    data (with or without repeated measures) following the general framework of
     Erosheva 2004. mixedMem uses a Variational EM approach by approximating the
     posterior distribution of latent memberships and selecting hyperparameters
     through a pseudo-MLE procedure. Currently supported data types are

@@ -4,7 +4,7 @@
 \title{Mixed Membership Visualization}
 \usage{
 vizMem(model, compare = NULL, main = "Estimated Membership", nrow = NULL,
-  ncol = NULL, indices = NULL, groupNames = NULL, fitNames = NULL, ...)
+  ncol = NULL, indices = NULL, groupNames = NULL, fitNames = NULL)
 }
 \arguments{
 \item{model}{the \code{mixedMemModel} object that will be plotted}
@@ -22,8 +22,6 @@ vizMem(model, compare = NULL, main = "Estimated Membership", nrow = NULL,
 \item{groupNames}{vector specifying labels for each sub-population}
 
 \item{fitNames}{the names of the models plotted}
-
-\item{varNames}{vector specifying labels for each variable}
 }
 \description{
 Plots estimates for individual group membership. The estimates used are the

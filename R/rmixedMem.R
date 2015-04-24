@@ -28,8 +28,8 @@
 #'  unusued portions of theta should be 0.
 #'  @param lambda a matrix containing the group membership for each individual. If the lambda
 #'  argument is not specified, the lambda's will be automatically sampled from a Dirichlet(alpha)
-#' @return A list containing a random sample of lambda (group memberships),
-#'  Z (context) and obs (X)
+#' @return A list containing a three items. A matrix of group memberships (lambda), 
+#' an array of context indicators (Z) and an array of observations (obs)
 rmixedMem <- function(Total, J, Rj, Nijr, K, Vj, dist, theta, alpha, lambda = NULL)
 {
   if(is.null(lambda)){

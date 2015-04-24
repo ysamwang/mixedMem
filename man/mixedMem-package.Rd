@@ -88,7 +88,7 @@ For each individual i = 1,\ldots Total: Draw \eqn{\lambda_i} from a Dirichlet(\e
 }
 }
 \author{
-Sam Wang <ysamwang@uw.edu>, Elena Erosheva <Elena.A.Erosheva@uw.edu>
+Sam Wang <ysamwang@uw.edu>, Elena Erosheva <erosheva@uw.edu>
 }
 
 \references{
