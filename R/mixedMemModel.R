@@ -64,9 +64,6 @@
 #' theta[3,,] <- cbind(gtools::rdirichlet(K, rep(.3, Vj[3])),
 #'  matrix(0, nrow = K, ncol = Vj[1]-Vj[3]))
 #' 
-#' # generate group memberships
-#' lambda <- gtools::rdirichlet(Total, rep(.2,K))
-#' 
 #' # Candidates selected for each observation. For Multinomial and Bernoulli, this is always 1
 #' # For rank data, this will be the number of candidates ranked
 #' Nijr = array(0, dim = c(Total, J, max(Rj)))
@@ -74,35 +71,13 @@
 #' Nijr[,2,c(1:Rj[2])] = 1 # N_ijr is 1 for Bernoulli variables
 #' Nijr[,3,c(1:Rj[3])] = sample.int(Vj[3], size = Total, replace = TRUE)
 #' 
-#' ## Generate Observations
-#' obs = array(0, dim = c(Total, J, max(Rj), max(Nijr)))
-#' for(i in 1:Total)
-#' {
-#'   for(j in 1:J)
-#'   {
-#'     for(r in 1:Rj[j])
-#'     {
-#'     # sub-population which governs the observed response
-#'       sub.pop <- sample.int(K, size = 1, prob = lambda[i,]) 
-#'       if(dist[j] =="multinomial") {
-#'        # must be in 0:(Vj[j]-1) so we subtract 1
-#'         obs[i,j,r,1] <- sample.int(Vj[j], size = 1, prob = theta[j,sub.pop,c(1:Vj[j])])-1
-#'       }
-#'       if(dist[j] == "rank") {
-#'         # must be in 0:(Vj[j]-1) so we subtract 1
-#'         obs[i,j,r,c(1:Nijr[i,j,r])] <- sample.int(Vj[j], size = Nijr[i,j,r],
-#'          replace = FALSE, prob = theta[j,sub.pop,c(1:Vj[j])])-1
-#'       }
-#'       if(dist[j] == "bernoulli"){
-#'         obs[i,j,r,1] <- rbinom(n = 1, size = 1, prob = theta[j,sub.pop,1])
-#'       }
-#'     }
-#'   }
-#' } 
+#' # generate random sample of observations
+#' sampleMixedMem <- rmixedMem(Total, J, Rj, Nijr, K, Vj,
+#' dist, theta, alpha)
 #' 
 #' ## Initialize a mixedMemModel object
 #' test_model <- mixedMemModel(Total = Total, J = J,Rj = Rj,
-#'  Nijr= Nijr, K = K, Vj = Vj,dist = dist, obs = obs,
+#'  Nijr= Nijr, K = K, Vj = Vj,dist = dist, obs = sampleMixedMem$obs,
 #'   alpha = alpha, theta = theta)
 #' # Look at Summary of the initialized model
 #' summary(test_model)

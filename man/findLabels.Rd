@@ -36,56 +36,7 @@ algorithim selects the best match for each fitted sub-population starting with t
 relative frequency.
 }
 \examples{
-\dontshow{
-set.seed(123)
-Total <- 50 # 50 Individuals
-J <- 3 # 2 different variables
-dist <- c("multinomial", "bernoulli", "rank") # distributions of each variable
-Rj <- c(100, 5, 1) # 100 repeated measures of the multinomial, 5 repeated measures of the bernoulli, 1 repeated measure of the rank
-Nijr <- array(1, dim = c(Total, J, max(Rj))) #Nijr will always be 1 for multinomials and bernoulli's
-K <- 4 # 4 sub-populations
-alpha <- rep(.5, K) #hyperparameter for dirichlet distribution
-Vj <- c(10, 1, 4) # Number of choices for each variable. Note the Bernoulli must have 1 choice
-
-theta <- array(0, dim = c(J, K, max(Vj)))
-# Parameters governing multinomial
-theta[1,,] <- gtools::rdirichlet(K, rep(.3, Vj[1]))
-#parameters governing bernoulli
-theta[2,,] <- cbind(rbeta(K, 1,1), matrix(0, nrow = K, ncol = Vj[1]-1))
-theta[3,,] <- cbind(gtools::rdirichlet(K, rep(.3, Vj[3])), matrix(0, nrow = K, ncol = Vj[1]-Vj[3]))
-
-# generate group memberships
-lambda <- gtools::rdirichlet(Total, rep(.2,K))
-
-# Candidates selected for each observation. For Multinomial and Bernoulli, this is always 1
-Nijr = array(0, dim = c(Total, J, max(Rj)))
-Nijr[,1,c(1:Rj[1])] = 1
-Nijr[,2,c(1:Rj[2])] = 1
-Nijr[,3,c(1:Rj[3])] = sample.int(Vj[3], size = Total, replace = TRUE)
-
-## Generate Observations
-obs = array(0, dim = c(Total, J, max(Rj), max(Nijr)))
-for(i in 1:Total)
-{
-  for(j in 1:J)
-  {
-    for(r in 1:Rj[j])
-    {
-      sub.pop <- sample.int(K, size = 1, prob = lambda[i,]) # sub-population which governs the multinomial
-      if(dist[j] =="multinomial") {
-        obs[i,j,r,1] <- sample.int(Vj[j], size = 1, prob = theta[j,sub.pop,c(1:Vj[j])])-1 # must be in 0:(Vj[j]-1)
-      }
-      if(dist[j] == "rank") {
-        obs[i,j,r,c(1:Nijr[i,j,r])] <- sample.int(Vj[j], size = Nijr[i,j,r], replace = FALSE, prob = theta[j,sub.pop,c(1:Vj[j])])-1  # must be in 0:(Vj[j]-1)
-      }
-      if(dist[j] == "bernoulli"){
-        obs[i,j,r,1] <- rbinom(n = 1, size = 1, prob = theta[j,sub.pop,1])
-      }
-    }
-  }
-}
-}
-
+\dontrun{
 # See mixedMemModel documentation for how to generate data and instantiate a mixedMemModel object
 # After the data as been generated, we initialize theta to a permutation of the true labeling
 set.seed(123)
@@ -99,6 +50,7 @@ opt.perm
 
 # produce mixedMemModel object with labels permuted to match ground truth
 out = permuteLabels(out, opt.perm$perm)
+}
 }
 \seealso{
 permuteLabels

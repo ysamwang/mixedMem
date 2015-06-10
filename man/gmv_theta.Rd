@@ -11,7 +11,8 @@ The point estimates for theta from the original Gross and
 Manrique-Vallier 2014 analysis. It is a 3 by 19 by 3 dimensional array with
 the first dimension corresponding to group, the second dimension corresponding to
 variable, and the 3rd dimension corresponding to candidate choices (Agree, Can't Decide,
-Disagree).
+Disagree). Note that Gross and Manrique-Vallier do not report results for group 3, so those are
+left as 0's in the data.
 }
 \references{
 Gross, J.H. and Manrique-Vallier, D. "A Mixed-Membership Approach to the Assessment of Political Ideology from Survey Responses."

@@ -53,7 +53,7 @@ set.seed(123)
 theta <- array(0, dim = c(J,K,max(Vj)))
 for(j in 1:J)
 {
-    theta[j, , ] <- rdirichlet(K, rep(.8, Vj[j]))
+    theta[j, , ] <- gtools::rdirichlet(K, rep(.8, Vj[j]))
 }
 
 # Create the mixedMemModel
@@ -62,10 +62,11 @@ for(j in 1:J)
 initial <- mixedMemModel(Total = Total, J = J, Rj = Rj,
                          Nijr = Nijr, K = K, Vj = Vj, alpha = alpha,
                          theta = theta, dist = dist, obs = obs)
-
+\dontrun{
 # Fit the model
 out <- mmVarFit(initial)
 summary(out)
+}
 }
 
 \details{
