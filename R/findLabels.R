@@ -1,47 +1,50 @@
 #' Mixed Membership Post-Processing
 #'    
-#' Finds the permutation of labels that minimizes 
-#' the weighted squared error loss between the fitted theta and a comparison model. 
+#' \code{findLabels} finds the optimal permutation of labels that minimizes 
+#' the weighted squared difference between the arrays of subpopulation parameters from a fitted mixed membership
+#' model theta and a given comparison model. 
 #' 
 #' 
-#' Mixed Membership models are invariant to permutations of the sub-population labels and the ordering of the labels in a fitted model
-#' is dependent on the initialization points of the variational EM algorithim. The \code{findLabels} function selects an 
-#' optimal permutation of the labels to match a given comparison model.
-#' The loss function is the weighted sum of squared differences where the weights are determined by the relative frequency of each group.  
+#' Mixed Membership models are invariant to permutations of the sub-population labels; swapping the names of each sub-population yields an equivalent model. 
+#' The ordering of the labels in a fitted model is dependent on the initialization points of the variational EM algorithim. The function \code{findLabels} selects a
+#' permutation of the sub-population labels that best matches a given comparison model by minimizing the weighted squared difference between the $\theta$ arrays.
+#' The weights are determined by the relative frequencies of each group.  
 #' 
 #' \eqn{Loss = \sum_j \sum_k \alpha_k/\alpha_0 [\sum_v (\hat\theta_{k,v} - \theta_{k,v})^2]}
 #' where \eqn{\alpha_0 = \sum_k \alpha_k}
 #' 
-#' If K, number of sub-populations, is small, the method can search through all K! permutations and 
-#' select the permutation which minimizes the loss. If K is large, a greedy algorithim can be used instead. This
+#' If K, number of sub-populations, is small, the method searches through all K! permutations of the sub-population labels and 
+#' selects the permutation which minimizes the loss. If K is large, a greedy algorithim can be used instead. This
 #' algorithim selects the best match for each fitted sub-population starting with the group with the largest fitted 
 #' relative frequency.
 #'  
-#' @param model the fitted \code{mixedMemModel} object
-#' @param training the comparison theta. This should be an array the same dimensions as model$theta
-#' @param exhaustive a boolean for whether an exhaustive search should be performed. If false, a greedy algorithim is used instead
-#' @return perm optimal permutation of the labels with respect to squared error loss
-#' @return loss the sum of squared error loss of the optimal permutation weighted by relative frequency
+#' @param model the fitted \code{mixedMemModel} object.
+#' @param comparison an array of the same dimensions as model$theta which contains the subpopulation parameters from another model.
+#'  \code{findLabels} will return a permutation of the labels of \code{model} which match to \code{comparison} most closely.
+#' @param exhaustive a boolean for whether an exhaustive search should be performed. If false, a greedy algorithim is used instead.
+#' @return \code{findLabels} returns a list with two objects: perm and loss. \code{perm} is the optimal permutation of the labels with respect to the squared error loss.
+#' \code{loss} is the calculated value of the weighted squared error loss (shown above) for the optimal permutation.
 #' @seealso permuteLabels
 #' @examples
 #' 
 #' \dontrun{
 #' # See mixedMemModel documentation for how to generate data and instantiate a mixedMemModel object
-#' # After the data as been generated, we initialize theta to a permutation of the true labeling
+#' # After the data as been generated, we initialize the array of sub-population parameters (theta) 
+#' # according to a permutation of the true labeling
 #' set.seed(123)
 #' perm = sample.int(K, size = K, replace = FALSE)
-#' theta1 = theta[,perm,]
+#' theta1 = theta_truth[,perm,]
 #' test_model <- mixedMemModel(Total = Total, J = J,Rj = Rj, Nijr= Nijr, K = K, Vj = Vj,dist = dist,
 #'  obs = obs, alpha = alpha, theta = theta1)
 #' out <- mmVarFit(test_model)
-#' opt.perm <- findLabels(out, theta)
+#' opt.perm <- findLabels(out, theta_truth)
 #' opt.perm
 #' 
-#' # produce mixedMemModel object with labels permuted to match ground truth
+#' # produce mixedMemModel object with sub-population labels permuted to best match the comparison model
 #' out = permuteLabels(out, opt.perm$perm)
 #' }
 #' @export
-findLabels = function(model, training,  exhaustive = TRUE)
+findLabels = function(model, comparison,  exhaustive = TRUE)
 {
     fitted.set = model$theta
     K = model$K
@@ -52,14 +55,14 @@ findLabels = function(model, training,  exhaustive = TRUE)
     if(exhaustive)
     {
     perms = gtools::permutations(K,K)
-    loss = sum((fitted.set[,perms[1,],]-training[,c(1:K),])^2)
+    loss = sum((fitted.set[,perms[1,],]-comparison[,c(1:K),])^2)
     
     for(i in 2:factorial(K))
       {
-        if(dim(training)[1]==1) {
-          diff = (fitted.set[,perms[i,],]-training[,c(1:K),])^2
+        if(dim(comparison)[1]==1) {
+          diff = (fitted.set[,perms[i,],]-comparison[,c(1:K),])^2
         } else {
-          diff = aperm((fitted.set[,perms[i,],]-training)^2, c(2,1,3))
+          diff = aperm((fitted.set[,perms[i,],]-comparison)^2, c(2,1,3))
         }
         loss.i = sum(diff*weight)
         if(loss.i<loss)
@@ -76,7 +79,7 @@ findLabels = function(model, training,  exhaustive = TRUE)
       {
         for(j in 1:K)
         {
-          loss.j[j] = sum((fitted.set[,priority[i],] - training[,j,])^2)*weight[i] 
+          loss.j[j] = sum((fitted.set[,priority[i],] - comparison[,j,])^2)*weight[i] 
         }
         loss.j[selected] = max(loss.j)+1
         selected = c(selected, which.min(loss.j))
@@ -89,13 +92,16 @@ findLabels = function(model, training,  exhaustive = TRUE)
 
 #' Mixed Membership Post-Processing
 #' 
-#' Mixed Membership models are invariant to permutations of the sub-population labels and the ordering of the labels
-#' is dependent on the initialization of the variational EM algorithim.
-#' Given a permutation, which can be found using \code{findLabels},
-#' the method returns a \code{mixedMemModel} object with permuted labels
+#' Mixed Membership models are invariant to permutations of the sub-population labels (ie swapping the names of each sub-population yields an equivalent model) 
+#' and the ordering of the labels in a fitted model
+#' is dependent on the initialization points of the variational EM algorithim.
+#' The \code{permuteLabels} method returns a \code{mixedMemModel} object where the labels have been permuted
+#' according a permutation of the integers 1- K. When permuting the labels of a fitted model to 
+#' match a comparison model, the optimal permutation  can be found using \code{findLabels}.
 #' 
-#' @param model the fitted \code{mixedMemModel} object
-#' @param perm the permutation by which to relabel the \code{mixedMemModel} object. Must be a vector of length model$K.
+#' @param model a fitted \code{mixedMemModel} object
+#' @param perm a vector of length K with integers 1:K. This is the permutation by which to relabel the \code{mixedMemModel} object such that
+#' group i in the returned mixedMemModel object corresponds to group perm[i] from the input mixedMemModel object
 #' @return a permuted \code{mixedMemModel} object
 #' @seealso findLabels
 #' @export

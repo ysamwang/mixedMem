@@ -1,6 +1,6 @@
 #' Responses from 1983 American National Election Survey Pilot
 #'
-#' Survey data from the 1983 American National Election Survey Pilot. Respondents were read a value statement and asked 
+#' \code{ANES} contains political Ideology Survey data from the 1983 American National Election Survey Pilot. Respondents were read a value statement and asked 
 #' to report their level of agreement: `strongly agree', `agree', `can't decide', `disagree', and strongly disagree'.
 #' The 279 complete responses to the 19 statements selected by Feldman (1988)
 #' and reanalyzed by Gross and Manrique-Vallier (2014) are included. `Strongly disagree' and `disagree' as well 
@@ -63,19 +63,19 @@ NULL
 
 #' Point estimates from Gross and Manrique-Vallier 2014 
 #'
-#' The point estimates for theta from the original Gross and
+#' \code{gmv_theta} contains the point estimates for the sub-populaton response probabilities, \eqn{\theta} from the original Gross and
 #' Manrique-Vallier 2014 analysis. It is a 3 by 19 by 3 dimensional array with
-#' the first dimension corresponding to group, the second dimension corresponding to
-#' variable, and the 3rd dimension corresponding to candidate choices (Agree, Can't Decide,
-#' Disagree). Note that Gross and Manrique-Vallier do not report results for group 3, so those are
-#' left as 0's in the data.
+#' the first dimension corresponding to each latent sub-population, the second dimension corresponding to
+#' each variable, and the 3rd dimension corresponding to response choices (Agree, Can't Decide,
+#' Disagree). Gross and Manrique-Vallier do not report results for group 3 for reasons discussed in the vignette
+#' so all values reported for group 3 in theta[1, , ] are 0.
 #'   
 #' @name gmv_theta
 #' @docType data
 #' @usage data(gmv_theta)
 #' 
 #' @references
-#' Gross, J.H. and Manrique-Vallier, D. "A Mixed-Membership Approach to the Assessment of Political Ideology from Survey Responses." 
+#' Gross, J.H.; Manrique-Vallier, D. "A Mixed-Membership Approach to the Assessment of Political Ideology from Survey Responses." 
 #' in Airoldi, E. M., Blei, D. M., Erosheva, E. A., and Fienberg, S. E.
 #' Handbook of Mixed Membership Models and Its Applications. Chapman & Hall/CRC, 2014
 NULL

@@ -1,6 +1,6 @@
 #' Simulate Mixed Membership Data
 #' 
-#' Simulate data from the mixed membership generative model
+#' Simulate data from a mixed membership model.
 #' 
 #' Given the parameters and dimensions of a mixed membership model, the function
 #' returns a random sample of observed values (X), context indicators (Z) and group memberships (lambda).

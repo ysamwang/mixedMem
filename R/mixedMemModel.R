@@ -1,22 +1,22 @@
-#' Constructor for a Mixed Membership Model
+#' Constructor for a Mixed Membership Model Object
 #' 
 #' Constructor for a \code{mixedMemModel} object which can be used for analysis 
 #' in the mixedMem package.
 #' 
-#' The function returns an object of \code{mixedMemModel} class. This object holds dimensions of the model,
+#' The function returns an object of \code{mixedMemModel} class. This object contains dimensions of the model,
 #' the observed data, and the estimates of the model parameters. Once a \code{mixedMemModel} object is created,
-#' it can be fit using the \code{mmVarFit} function. For additional details on usage, and model
-#' assumptions, see the included vignette.
+#' the specified model can be fit for the data using the \code{mmVarFit} function. For additional details on usage, and model
+#' assumptions, see the corresponding vignette "Fitting Mixed Membership Models using \texttt{mixedMem}".
 #' 
 #'    
 #' @param Total the number of individuals in the sample
 #' @param J the number of variables observed on each individual
 #' @param Rj vector of length J specifying the number of repeated measurements
-#'  on each variable
+#'  for each variable
 #' @param Nijr an array of dimension (Total, J, max(Rj)) indicating the number
-#'  of ranking levels for each replication. For multinomial and bernoulli
+#'  of ranking levels for each variable and each replication. For multinomial and bernoulli
 #'  variables, Nijr[i,j,r] = 1. For rank variables, Nijr[i,j,r] indicates the
-#'  number of candidates ranked.
+#'  number of alternatives ranked.
 #' @param K the number of sub-populations
 #' @param Vj vector of length J specifying the number of possible candidates
 #'  for each variable. For a bernoulli variable Vj[j] = 1. 
@@ -24,20 +24,22 @@
 #'  membership distribution
 #' @param theta array of dimension (J,K,max(Vj)) which governs the variable
 #'  distributions. theta[j,k,] is the parameter for how sub-population k responds
-#'  to the variable j. Initially, any element of theta corresponding to a valid candidate/category must be positive (ie cannot be numerically 0).
-#'  However, if the number of candidates differs across variables, any unusued portions of theta should be 0.
+#'  to the variable j. For instance, if variable j is a Bernoulli variable, theta[j,k,1] is the probability of success; if
+#'  variable j is a multinomial variable, theta[j,k, 1:Vj[j]] is the probability for each of the Vj[j] categories ; if variable j
+#'  is a rank variable, theta[j,k, 1:Vj[j]] are the support parameters for each of the Vj[j] alternatives. Since the dimension of the relevant parameters
+#'  can differ across variables, any unused elements of the array should be set to 0, while all other elements should be positive.
 #' @param phi array of dimension (Total,K) which specifies the variational
-#'  parameters for the membership vectors, lambda. If left NULL, it is initialized 
-#'  to a uniformly across all groups. It is highly recommended to leave these NULL.
+#'  parameters for the membership vectors, lambda. The default group membership initialization is uniform across all groups (phi[i,k] = 1/K for all k).
+#'  The default initialization is highly recommended.
 #' @param delta array of dimension (Total,J,max(Rj), max(N), K) which specifies
-#'  the variational parameters for the context vectors Z. If left blank, it is
-#'   initialized to a uniformly across all sub-populations. It is highly recommended to leave these NULL.
+#'  the variational parameters for the context vectors Z. The default initialization is
+#'   uniform across all sub-populations (delta[i, j, r, n, k] = 1/K for all k). The default initialization is highly recommended.
 #' @param dist vector of length J specifying variable types. Options are
 #'  "bernoulli", "multinomial" or "rank" corresponing to the distributions
 #'   of the observed variables
 #' @param obs an array of dimension (Total,J,max(Rj), max(N)) corresponding to 
-#' the observed data. For bernoulli random variables, this consists of 0/1's. 
-#' For multinomial or rank data this consists of integers 0,1,\ldots,(Vj[j]-1).
+#' the observed data. For bernoulli random variables, the data consist of 0/1's. 
+#' For multinomial or rank data the data consist of integers 0,1,\ldots,(Vj[j]-1).
 #' @return The \code{mixedMemModel} object
 #' @examples
 #' set.seed(123)
@@ -52,7 +54,7 @@
 #' K <- 4 # 4 sub-populations
 #' alpha <- rep(.5, K) #hyperparameter for dirichlet distribution
 #' 
-#' # Number of choices for each variable. Note the Bernoulli must have 1 choice
+#' # Number of categories/alternatives for each variable. Note the Bernoulli must Vj = 1
 #' Vj <- c(10, 1, 4) 
 #' 
 #' 
@@ -64,7 +66,7 @@
 #' theta[3,,] <- cbind(gtools::rdirichlet(K, rep(.3, Vj[3])),
 #'  matrix(0, nrow = K, ncol = Vj[1]-Vj[3]))
 #' 
-#' # Candidates selected for each observation. For Multinomial and Bernoulli, this is always 1
+#' # Alternatives selected for each observation. For Multinomial and Bernoulli, this is always 1
 #' # For rank data, this will be the number of candidates ranked
 #' Nijr = array(0, dim = c(Total, J, max(Rj)))
 #' Nijr[,1,c(1:Rj[1])] = 1 # N_ijr is 1 for multinomial variables
@@ -170,10 +172,10 @@ mixedMemModel = function(Total, J, Rj, Nijr, K, Vj, alpha, theta, phi = NULL, de
 
 #' Summary of a Mixed Membership Model
 #' 
-#' Summary of a mixedMemModel object 
+#' Provides a summary of a mixedMemModel object 
 #' 
-#' Prints summary data for a mixedMemModel object which includes the
-#' ELBO, the dimensions of the model and details about each variable.
+#' Generic S3 function to provide a summary for a given \code{mixedMemModel} object. The function 
+#' prints the the ELBO, the dimensions of the model and each variable type.
 #'  
 #' @param object the mixedMemModel object to be summarized
 #' @param ... additional parameters
@@ -191,12 +193,14 @@ summary.mixedMemModel = function(object,...)
 
 #' Plot a Mixed Membership Model
 #' 
-#' Visual representation of a mixedMemModel object 
+#' Generic function to produce visual representation of a mixedMemModel object. This function calls either the \code{vizTheta} or
+#' the \code{vizMem} function. 
 #' 
 #' @param x the mixedMemModel object to be plotted
-#' @param type which estimated parameters to plot; either "theta" or "membership" 
-#' @param compare model to compare. For type = "theta", compare should be an array the same size as x$theta
-#' for type = "membership", compare should be a matrix the same size as x$phi
+#' @param type which estimated parameters to plot; either "theta" or "membership". \code{vizTheta} is called when the type is "theta"
+#' and \code{vizMem} is called when the type is "membership". 
+#' @param compare object for comparison. When type = "theta", \code{compare} should be an array the same size as x$theta.
+#' When type = "membership", \code{compare} should be a matrix the same size as x$phi.
 #' @param main title for chart
 #' @param varNames vector of names for each variable if plotting theta
 #' @param groupNames vector of labels for each sub-population

@@ -1,19 +1,21 @@
 #' Mixed Membership Visualization
 #' 
 #' 
-#' Plots \eqn{\theta}, the parameters which govern the distributions of variables in a mixed membership model. \eqn{\theta_{j,k}} governs the
-#' distribution of variable j for sub-population k. The model fit is shown in black, and the comparison (if available) is shown in red.
+#' \code{vizTheta} plots \eqn{\theta}, the parameters which govern the sub-population distributions of variables in a mixed membership model.
+#'  The parameter \eqn{\theta_{j,k}} specifies the distribution of variable j for complete members of sub-population k. The model fit is shown in black, 
+#'  and the comparison (if available) is shown in red.
 #' 
-#' This is the function called by the plot generic function for mixedMemModel objects 
+#' This is the function called by the plot generic function for mixedMemModel objects. Each column corresponds to a sub-population. 
 #'  
-#' @param model the \code{mixedMemModel} object that will be plotted
-#' @param compare estimates to compare against. Should be an array with same dimensions as model$theta
-#' @param main title of plot
-#' @param varNames vector specifying labels for each variable
-#' @param groupNames vector specifying labels for each sub-population
-#' @param nrow the number of rows in each plot. If the argument is not specified, all variables will appear in one plot
-#' @param indices a vector which indicates specific variables to plot. If the argument is not specified, all variables will be plotted
-#' @param fitNames the names of the models plotted
+#' @param model the \code{mixedMemModel} object that will be plotted.
+#' @param compare an array of the same dimensions as model$theta which contains values to compare against the fitted value 
+#' @param main the main figure title
+#' @param varNames a vector of strings specifying labels for each variable.
+#' @param groupNames a vector of strings specifying labels for each sub-population.
+#' @param nrow the number of rows in each plot. If the argument is not specified, all variables will appear in one plot.
+#' @param indices a vector which indicates specific variables to plot. If the argument is not specified, all variables will be plotted. If the number of variables
+#' to plot is greater than nrow, then multiple plots will be produced.
+#' @param fitNames the names of the models plotted.
 vizTheta = function(model, compare = NULL, main = "Estimated Theta",
                     varNames = NULL, groupNames = NULL,nrow = NULL, fitNames = NULL, indices = NULL) {
   
@@ -120,20 +122,23 @@ vizTheta = function(model, compare = NULL, main = "Estimated Theta",
 #' Mixed Membership Visualization
 #' 
 #' 
-#' Plots estimates for individual group membership. The estimates used are the
-#' normalized phi, which are the posterior means from the variational distribution. The estimated model is shown in black,
+#' Plots estimates for individual group membership. This is the function called by the \code{mixedMemModel} class
+#' generic plot function. 
+#' 
+#' The estimates used are the normalized \eqn{\phi}, which are the posterior means from the variational distribution. The estimated model is shown in black,
 #' and the comparison (if available) is shown in red. 
 #' 
 #' This is the function called by the plot generic function for mixedMemModel objects
 #' 
 #' @param model the \code{mixedMemModel} object that will be plotted
-#' @param compare estimates to compare against. This should be a matrix with same dimensions as model$phi
-#' @param main title of plot
-#' @param groupNames vector specifying labels for each sub-population
+#' @param a matrix a matrix of the same dimensions as model$phi which contains estimates to compare
+#'  against the fitted model. 
+#' @param main the main figure title
+#' @param groupNames a vector specifying labels for each sub-population
 #' @param nrow the number of rows in each plot
 #' @param ncol the number of columns in each plot
-#' @param indices the specific individuals to plot. If the argument is left blank, all individuals will be plotted
-#' @param fitNames the names of the models plotted
+#' @param indices the specific individuals which will be shown in the plot. If the argument is left blank, all individuals will be plotted
+#' @param fitNames a vector of length 2 containing strings which correspond to the names of the models (fitted and comparison).
 #' @export
 vizMem <- function(model, compare = NULL, main = "Estimated Membership",
                    nrow = NULL, ncol = NULL,
