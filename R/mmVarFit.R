@@ -1,9 +1,9 @@
 #' Fit  Mixed Membership models using variational EM
 #' 
-#' This is the Main function of the \code{mixedMem} package. This function fits parameters \eqn{\phi} and \eqn{\delta} for the variational
+#' \code{mmVarFit} is the primary function of the \code{mixedMem} package. The function fits parameters \eqn{\phi} and \eqn{\delta} for the variational
 #'  distribution of latent variables as well as psuedo-MLE estimates for 
-#'  the population hyperparameters \eqn{\alpha} and \eqn{\theta}. See documentation for
-#'  \code{mixedMemModel} or the package vignette, "Fitting Mixed Membership Models using \texttt{mixedMem}" for a more detailed description of 
+#'  the population parameters \eqn{\alpha} and \eqn{\theta}. See documentation for
+#'  \code{mixedMemModel} or the package vignette, "Fitting Mixed Membership Models Using \code{mixedMem}" for a more detailed description of 
 #'  the variables and notation in a mixed membership model. 
 #' 
 #'  
@@ -11,65 +11,66 @@
 #' the posterior distribution for the latent variables through a mean field variational approach.
 #' The variational lower bound on the log-likelihood at the data given model parameters is given by Jensen's inequality:
 #' 
-#' \eqn{E_Q{\log[p(X,Z, \Lambda)]} - E_Q{\log[Q(Z, \Lambda|\phi, \delta)]} \le \log P(obs |\alpha, \theta)}
-#' 
-#' where
+#' \eqn{E_Q{\log[p(X,Z, \Lambda)]} - E_Q{\log[Q(Z, \Lambda|\phi, \delta)]} \le \log P(obs |\alpha, \theta)} where
 #' 
 #' \eqn{Q = \prod_i [Dirichlet(\lambda_i|\phi_i) \prod_j^J \prod_r^{R_j} \prod_n^{N_{i,j,r}}Multinomial(Z_{i,j,r,n}|\delta_{i,j,r,n})]}
 #' 
-#' The left hand side of the above equation is often referred to as the Evidence Lower Bound (or ELBO). The global parameters
+#' The left hand side of the above equation is often referred to as the Evidence Lower Bound (ELBO). The global parameters
 #' \eqn{\alpha} and \eqn{\theta} are selected to maximize this bound as a psuedo-MLE procedure. In addition, it can be shown that
-#' maximizing the ELBO with respect to the variational parameters \eqn{\phi} and \eqn{\delta}   
-#' minimizes the KL divergence between the tractable variational distribution and the true posterior.
+#' maximizing the ELBO with respect to the variational parameters \eqn{\phi} and \eqn{\delta} is equivalent to   
+#' minimizing the KL divergence between the tractable variational distribution and the true posterior.
 #'
 #' The method uses a variational EM approach. The E-step considers the global parameters \eqn{\alpha} and \eqn{\theta} fixed
 #' and picks appropriate variational parameters \eqn{\phi} and \eqn{\delta} to minimize the KL divergence between the 
-#' true posterior and the variational distribution. On the M-step
-#' the variational parameters are fixed and hyperparmaters are selected which maximize the lower bound 
+#' true posterior and the variational distribution (or maximize the ELBO). The M-step considers
+#' the variational parameters  fixed and global parameters \eqn{\theta} and \eqn{\alpha} are selected which maximize the lower bound 
 #' on the log-likelihood (ELBO).
 #'   
 #' @references
 #' Beal, Matthew James. Variational algorithms for approximate Bayesian inference. Diss. University of London, 2003.
 #'
-#' @param model a \code{mixedMemModel} object created by the \code{mixedMemModel} constructor
-#' @param printStatus Options are 1 (default) or 0. 1 will print status updates, 0 will not print status updates.
-#' @param printMod Positive integer which specifies how often to print status updates. The 
-#' status will be printed at each step which is a multiple of printMod. The default value is 1.
-#' @param stepType An integer from 0-3 which specifies what steps to carry out in estimation. 0 performs a single E-Step; this can be used
+#' @param model a \code{mixedMemModel} object created by the \code{mixedMemModel} constructor.
+#' @param printStatus an integer 0 or 1. When \code{printStatus} is 1 \code{mmVarFit} will print status updates, when
+#' \code{printStatus} is 0 \code{mmVarFit} will not print status updates.
+#' @param printMod a positive integer which specifies how often to print status updates. The 
+#' status will be printed at each step which is a multiple of \code{printMod}. The default value is 1.
+#' @param stepType an integer from 0-3 which specifies what steps to carry out in estimation. 0 performs a single E-Step; this can be used
 #' to find the held out ELBO. 1 performs iterates between E-steps and M-steps for estimating theta but keeps alpha constant.
 #'  2 iterates between  E-steps and M-steps for estimating alpha, but keeps theta constant. 3 completes full
-#' E and M steps.
-#' @param maxTotalIter The maximum total steps before termination. A full E and M step together count as 1 step.
+#' E and M steps. The default is 3.
+#' @param maxTotalIter the maximum total steps before termination. A full E and M step together count as 1 step.
 #'  If this maximum is ever achieved, a warning message will be printed at convergence. The default is 500.
-#' @param maxEIter The maximum iterations for each E-Step. If this maximum is ever achieved, a warning 
+#' @param maxEIter the maximum iterations for each E-Step. If this maximum is ever achieved, a warning 
 #' message will be printed at convergence. The default is 1000.
-#' @param maxAlphaIter The maximum iterations when fitting alpha. If this maximum is ever achieved, 
+#' @param maxAlphaIter the maximum iterations when fitting alpha. If this maximum is ever achieved, 
 #' a warning message will be printed at convergence. The default is 200.
-#' @param maxThetaIter The maximum iterations when fitting theta. If this maximum is ever achieved, 
+#' @param maxThetaIter the maximum iterations when fitting theta. If this maximum is ever achieved, 
 #' a warning message will be printed at convergence. The default is 1000.
-#' @param maxLSIter The maximum backtracking iterations in the line search for updating alpha and theta for rank data. 
-#' @param elboTol The convergence criteria for the EM Algorithim. When the relative increase in the ELBO is less than the convergence critiera,
-#' the algorithim converges. 
-#' @param alphaTol The convergence criteria for updates to alpha. When the relative increase in the ELBO is less than the convergence critiera,
-#' the update to alpha converges.
-#' @param thetaTol The convergence criteria for updates to theta. When the relative increase in the ELBO is less than the convergence critiera,
-#' the update to theta converges.
-#' @param aNaught The first step size in the backtracking line search used to update alpha and theta for rank data.
-#' @param tau The backtracking factor in the backtracking line search used to update alpha and theta for rank data.
-#' @param bMax The number of iterations for the interior point method for fitting theta for rank data.
-#' @param bNaught The initial scaling factor in the interior point method for fitting theta for rank data.
-#' @param bMult The factor by which bNaught is multiplied by in each iteration of the interior point method 
-#' for fitting theta for rank data.
-#' @param vCutoff The cutoff for Vj at which a gradient ascent method is used instead of the Newton Raphson interior point method. This is used to avoid inverting
-#' a large matrix. 
-#' @param holdConst A vector of integers specifying groups to be held fixed during the estimation procedure. The estimation algorithim will hold the
-#'  theta parameters of these specific groups constant, but update all other parameters. The group numbers range from 0 to K - 1.
-#' @return a \code{mixedMemModel} containing updated variational parameters and hyperparameters
+#' @param maxLSIter the maximum backtracking iterations in the line search for updating alpha and theta for rank data. 
+#' @param elboTol the convergence criteria for the EM Algorithim. When the relative increase in the ELBO is less than the convergence critiera,
+#' the algorithm converges. The default is 400.
+#' @param alphaTol the convergence criteria for updates to alpha. When the relative increase in the ELBO is less than the convergence critiera,
+#' the update to alpha converges. The defualt is 1e-6.
+#' @param thetaTol the convergence criteria for updates to theta. When the relative increase in the ELBO is less than the convergence critiera,
+#' the update to theta converges. The default is 1e-10.
+#' @param aNaught the first step size in the backtracking line search used to update alpha and theta for rank data. The default is 1.
+#' @param tau the backtracking factor in the backtracking line search used to update alpha and theta for rank data. The default is .899.
+#' @param bMax the number of times the penalization factor is increased in the interior point method 
+#' for fitting theta for rank data. The default is 3.
+#' @param bNaught the initial penalization factor in the interior point method for fitting theta for rank data. 
+#' \code{bNaught} must be positive and the default value is 1000.
+#' @param bMult a positive number by which bNaught is multiplied by in each iteration of the interior point method 
+#' for fitting theta for rank data. The default is 1000.
+#' @param vCutoff a positive integer cutoff for Vj at which a gradient ascent method is used instead of the Newton Raphson interior point method. This is used to avoid inverting
+#' a large matrix. The default is 13.
+#' @param holdConst a vector of integers specifying groups to be held fixed during the estimation procedure. The estimation algorithim will hold the
+#'  theta parameters of these specific groups constant, but update all other parameters. The group numbers range from 0 to K - 1. To estimate all groups, use the default value of c(-1). 
+#' @return \code{mmVarFit} returns a \code{mixedMemModel} object containing updated variational parameters and global parameters.
 #' @seealso mixedMemModel
 #' @examples
 #' ## The following example generates multivariate observations (both variables are multinomial)
-#' ## from the mixed membership generative model. The data is then used to fit a 
-#' ## mixed membership model using mmVarFit.
+#' ## from a mixed membership model. The observed data is then used to fit a 
+#' ## mixed membership model using mmVarFit
 #' 
 #' ## Generate Data 
 #' Total <- 30 #30 Individuals

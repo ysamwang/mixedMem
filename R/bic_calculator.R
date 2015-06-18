@@ -8,7 +8,7 @@
 #' where p is the number of estimated parameters and Total is the number of individuals in
 #' the sample. 
 #'
-#' This BIC model selection criteria is used in Erosheva et al (2007). The number of estimated parapers P includes the
+#' This BIC model selection criteria is used in Erosheva et al (2007). The number of estimated parameters P includes the
 #' parameters \eqn{\theta} and \eqn{\alpha}, but omits the variational parameters \eqn{\phi} and \eqn{\delta}.
 #'  
 #' @param model the \code{mixedMemModel} object for which the BIC will be calculated.

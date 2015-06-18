@@ -3,52 +3,54 @@
 \alias{findLabels}
 \title{Mixed Membership Post-Processing}
 \usage{
-findLabels(model, training, exhaustive = TRUE)
+findLabels(model, comparison, exhaustive = TRUE)
 }
 \arguments{
-\item{model}{the fitted \code{mixedMemModel} object}
+\item{model}{the fitted \code{mixedMemModel} object.}
 
-\item{training}{the comparison theta. This should be an array the same dimensions as model$theta}
+\item{comparison}{an array of the same dimensions as model$theta which contains the subpopulation parameters from another model.
+\code{findLabels} will return a permutation of the labels of \code{model} which match to \code{comparison} most closely.}
 
-\item{exhaustive}{a boolean for whether an exhaustive search should be performed. If false, a greedy algorithim is used instead}
+\item{exhaustive}{a boolean for whether an exhaustive search should be performed. If false, a greedy algorithim is used instead.}
 }
 \value{
-perm optimal permutation of the labels with respect to squared error loss
-
-loss the sum of squared error loss of the optimal permutation weighted by relative frequency
+\code{findLabels} returns a list with two objects: perm and loss. \code{perm} is the optimal permutation of the labels with respect to the squared error loss.
+\code{loss} is the calculated value of the weighted squared error loss (shown above) for the optimal permutation.
 }
 \description{
-Finds the permutation of labels that minimizes
-the weighted squared error loss between the fitted theta and a comparison model.
+\code{findLabels} finds the optimal permutation of labels that minimizes
+the weighted squared difference between the arrays of subpopulation parameters from a fitted mixed membership
+model, \eqn{\theta} and a given comparison model.
 }
 \details{
-Mixed Membership models are invariant to permutations of the sub-population labels and the ordering of the labels in a fitted model
-is dependent on the initialization points of the variational EM algorithim. The \code{findLabels} function selects an
-optimal permutation of the labels to match a given comparison model.
-The loss function is the weighted sum of squared differences where the weights are determined by the relative frequency of each group.
+Mixed Membership models are invariant to permutations of the sub-population labels; swapping the names of each sub-population yields an equivalent model.
+The ordering of the labels in a fitted model is dependent on the initialization points of the variational EM algorithim. The function \code{findLabels} selects a
+permutation of the sub-population labels that best matches a given comparison model by minimizing the weighted squared difference between the
+\eqn{\theta} arrays. The weights are determined by the relative frequencies of each group.
 
 \eqn{Loss = \sum_j \sum_k \alpha_k/\alpha_0 [\sum_v (\hat\theta_{k,v} - \theta_{k,v})^2]}
 where \eqn{\alpha_0 = \sum_k \alpha_k}
 
-If K, number of sub-populations, is small, the method can search through all K! permutations and
-select the permutation which minimizes the loss. If K is large, a greedy algorithim can be used instead. This
+If K, number of sub-populations, is small, the method searches through all K! permutations of the sub-population labels and
+selects the permutation which minimizes the loss. If K is large, a greedy algorithim can be used instead. This
 algorithim selects the best match for each fitted sub-population starting with the group with the largest fitted
 relative frequency.
 }
 \examples{
 \dontrun{
 # See mixedMemModel documentation for how to generate data and instantiate a mixedMemModel object
-# After the data as been generated, we initialize theta to a permutation of the true labeling
+# After the data as been generated, we initialize the array of sub-population parameters (theta)
+# according to a permutation of the true labeling
 set.seed(123)
 perm = sample.int(K, size = K, replace = FALSE)
-theta1 = theta[,perm,]
+theta1 = theta_truth[,perm,]
 test_model <- mixedMemModel(Total = Total, J = J,Rj = Rj, Nijr= Nijr, K = K, Vj = Vj,dist = dist,
  obs = obs, alpha = alpha, theta = theta1)
 out <- mmVarFit(test_model)
-opt.perm <- findLabels(out, theta)
+opt.perm <- findLabels(out, theta_truth)
 opt.perm
 
-# produce mixedMemModel object with labels permuted to match ground truth
+# produce mixedMemModel object with sub-population labels permuted to best match the comparison model
 out = permuteLabels(out, opt.perm$perm)
 }
 }

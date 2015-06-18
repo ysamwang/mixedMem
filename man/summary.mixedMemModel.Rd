@@ -11,11 +11,11 @@
 \item{...}{additional parameters}
 }
 \description{
-Summary of a mixedMemModel object
+Generic S3 summary function for \code{mixedMemModel} class.
 }
 \details{
-Prints summary data for a mixedMemModel object which includes the
-ELBO, the dimensions of the model and details about each variable.
+\code{summary} provides a summary of the given \code{mixedMemModel} object. The function
+prints the the ELBO, the dimensions of the model and each variable type.
 }
 \seealso{
 mixedMemModel

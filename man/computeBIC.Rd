@@ -6,13 +6,13 @@
 computeBIC(model)
 }
 \arguments{
-\item{model}{the \code{mixedMemModel} object for which the BIC will be calculated}
+\item{model}{the \code{mixedMemModel} object for which the BIC will be calculated.}
 }
 \value{
-the approximate BIC value
+\code{computeBIC} returns the approximate BIC value, a real number.
 }
 \description{
-Computes the approximate BIC of a given \code{mixedMemModel}, where the lower bound on the log-likelihood
+\code{computeBIC} computes the approximate BIC of a given \code{mixedMemModel}, where the lower bound on the log-likelihood
 (also called ELBO) is used instead of the intractable true log-likelihood.
 }
 \details{
@@ -21,9 +21,8 @@ Computes the approximate BIC of a given \code{mixedMemModel}, where the lower bo
 where p is the number of estimated parameters and Total is the number of individuals in
 the sample.
 
-This BIC model selection criteria is used
-in Erosheva (2007). When counting the number of fitted parameters, we only include the
-hyperparameters \eqn{\theta} and \eqn{\alpha} and omit the variational parameters \eqn{\phi} and \eqn{\delta}.
+This BIC model selection criteria is used in Erosheva et al (2007). The number of estimated parapers P includes the
+parameters \eqn{\theta} and \eqn{\alpha}, but omits the variational parameters \eqn{\phi} and \eqn{\delta}.
 }
 \references{
 Erosheva, E. A., Fienberg, S. E., & Joutard, C. (2007). Describing disability through individual-level mixture models for multivariate binary data. The annals of applied statistics, 1(2), 346.

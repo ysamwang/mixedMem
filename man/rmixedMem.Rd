@@ -6,48 +6,48 @@
 rmixedMem(Total, J, Rj, Nijr, K, Vj, dist, theta, alpha, lambda = NULL)
 }
 \arguments{
-\item{Total}{the number of individuals in the sample}
+\item{Total}{the number of individuals in the sample.}
 
-\item{J}{the number of variables observed on each individual}
+\item{J}{the number of variables observed on each individual.}
 
-\item{Rj}{vector of length J specifying the number of repeated measurements
-for each variable}
+\item{Rj}{a vector of positive integers of length \code{J} specifying the number of repeated measurements
+for each variable.}
 
-\item{Nijr}{an array of dimension (Total, J, max(Rj)) indicating the number
-of ranking levels for each replication. For multinomial and bernoulli
-variables, Nijr[i,j,r] = 1. For rank variables, Nijr[i,j,r] indicates the
-number of candidates ranked.}
+\item{Nijr}{an array of dimension (\code{Total}, \code{J}, \code{max(Rj)}) indicating the number
+of ranking levels for each replication. For multinomial and Bernoulli
+variables, \code{Nijr}[i,j,r] = 1. For rank variables, \code{Nijr}[i,j,r] indicates the
+number of items ranked for each individual.}
 
-\item{K}{the number of latent sub-populations}
+\item{K}{the number of latent sub-populations.}
 
-\item{Vj}{vector of length J specifying the number of possible candidates
-for each variable. For a bernoulli variable Vj[j] = 1. For a multinomial
- or rank variable, Vj[j] is the number of possible categories/candidates}
+\item{Vj}{a vector of length \code{J} specifying the number of possible candidates
+for each variable. For a Bernoulli variable \code{Vj}[j] = 1. For a multinomial
+ or rank variable, \code{Vj}[j] is the number of possible categories/items.}
 
-\item{dist}{vector of length J specifying variable types. Options are
+\item{dist}{a vector of strings of length \code{J} specifying variable types. Options are
 "bernoulli", "multinomial" or "rank" corresponing to the distributions
- of the observed variables}
+ of the observed variables.}
 
-\item{theta}{array of dimension (J,K,max(Vj)) which governs the variable
-distributions. theta[j,k,] is the parameter for how sub-population k responds
-to variable j. If the number of candidates differs across variables, any
-unusued portions of theta should be 0.}
+\item{theta}{an 3 way array of dimensions (\code{J},\code{K},\code{max(Vj)}) which governs the variable
+distributions. Parameter \code{theta}[j,k,] governs the distirbution of responses on variable j for an inidvidually completely in sub-population k.
+If the number of items/categories differs across variables, any
+unusued portions of \code{theta} should be set to 0.}
 
-\item{alpha}{vector of length K which is the hyperparameter for Dirichlet
-membership distribution}
+\item{alpha}{a positive \code{K}-length vector  which is the parameter for the Dirichlet
+distribution of membership scores.}
 
-\item{lambda}{a matrix containing the group membership for each individual. If the lambda
-argument is not specified, the lambda's will be automatically sampled from a Dirichlet(alpha)}
+\item{lambda}{an optional matrix of dimensions (\code{Total}, \code{K}) containing the membership scores for each individual. If the \code{lambda}
+argument is not specified, the group membership scores will be automatically sampled from a Dirichlet(\code{alpha})}
 }
 \value{
-A list containing a three items. A matrix of group memberships (lambda),
-an array of context indicators (Z) and an array of observations (obs)
+\code{rmixedMem} returns a list containing a three items: A matrix of group memberships scores \code{lambda},
+an array of context indicators \code{Z} and an array of observations \code{obs}.
 }
 \description{
-Simulate data from the mixed membership generative model
+Simulate data from a mixed membership model.
 }
 \details{
-Given the parameters and dimensions of a mixed membership model, the function
-returns a random sample of observed values (X), context indicators (Z) and group memberships (lambda).
+\code{rmixedMem} simulates data from a mixed membership model given the specified parameters and dimensions. The function
+returns a random sample of observations X, context indicators Z, and group membership scores \eqn{lambda}.
 }
 

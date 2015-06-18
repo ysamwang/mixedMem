@@ -1,6 +1,8 @@
 #ifndef VARINF_H
 #define VARINF_H
 
+#define BOOST_DISABLE_ASSERTS true
+
 #include <stdlib.h>
 #include <math.h>
 #include <RcppArmadillo.h>

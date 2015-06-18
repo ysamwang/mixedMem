@@ -1,6 +1,6 @@
 #' Responses from 1983 American National Election Survey Pilot
 #'
-#' \code{ANES} contains political Ideology Survey data from the 1983 American National Election Survey Pilot. Respondents were read a value statement and asked 
+#' \code{ANES} contains political ideology survey data from the 1983 American National Election Survey Pilot. Respondents were read a value statement and asked 
 #' to report their level of agreement: `strongly agree', `agree', `can't decide', `disagree', and strongly disagree'.
 #' The 279 complete responses to the 19 statements selected by Feldman (1988)
 #' and reanalyzed by Gross and Manrique-Vallier (2014) are included. `Strongly disagree' and `disagree' as well 
@@ -9,7 +9,8 @@
 #' indicates `disagree'. The statements have been grouped into 3 overarching themes as 
 #' indicated in the variable names- Equality (EQ), Economic Individualism (IND), and Free Enterprise (ENT).
 #' Variable ID's from the original ANES questionnaire are included in parentheses.
-#' An example analysis of the data is included in the \code{mixedMem} vignette. 
+#' An example analysis of the data is included in the 
+#' "Fitting Mixed Membership Models Using \code{mixedMem}" vignette. 
 #'
 #' @name ANES
 #' @docType data
@@ -68,7 +69,7 @@ NULL
 #' the first dimension corresponding to each latent sub-population, the second dimension corresponding to
 #' each variable, and the 3rd dimension corresponding to response choices (Agree, Can't Decide,
 #' Disagree). Gross and Manrique-Vallier do not report results for group 3 for reasons discussed in the vignette
-#' so all values reported for group 3 in theta[1, , ] are 0.
+#' so all values for group 3 in theta[1, , ] are 0.
 #'   
 #' @name gmv_theta
 #' @docType data

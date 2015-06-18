@@ -1,6 +1,9 @@
 #ifndef ESTEP_H
 #define ESTEP_H
 
+
+#define BOOST_DISABLE_ASSERTS true
+
 #include<stdlib.h>
 #include<math.h>
 #include <RcppArmadillo.h>

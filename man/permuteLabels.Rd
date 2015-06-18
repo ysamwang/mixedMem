@@ -6,18 +6,21 @@
 permuteLabels(model, perm)
 }
 \arguments{
-\item{model}{the fitted \code{mixedMemModel} object}
+\item{model}{a fitted \code{mixedMemModel} object which will be relabeled.}
 
-\item{perm}{the permutation by which to relabel the \code{mixedMemModel} object. Must be a vector of length model$K.}
+\item{perm}{a vector of length K with integers 1:K. This is the permutation by which to relabel the \code{mixedMemModel} object such that
+group i in the returned mixedMemModel object corresponds to group perm[i] from the input mixedMemModel object.}
 }
 \value{
-a permuted \code{mixedMemModel} object
+\code{permuteLabels} returns a \code{mixedMemModel} object such that
+group i in the returned \code{mixedMemModel} object corresponds to group perm[i] from the input \code{mixedMemModel} object
 }
 \description{
-Mixed Membership models are invariant to permutations of the sub-population labels and the ordering of the labels
-is dependent on the initialization of the variational EM algorithim.
-Given a permutation, which can be found using \code{findLabels},
-the method returns a \code{mixedMemModel} object with permuted labels
+Mixed Membership models are invariant to permutations of the sub-population labels; swapping the names of each sub-population yields an equivalent model.
+The ordering of the labels in a fitted model is dependent on the initialization points of the variational EM algorithim.
+The \code{permuteLabels} function returns a \code{mixedMemModel} object where the labels (for \eqn{\theta}, \eqn{\phi}, \eqn{\delta} and \eqn{\alpha}) have been permuted
+according a given permutation of the integers 1 through K. The \code{findLabels} function can be used to find a permutation of the labels which
+most closely matches another fitted model.
 }
 \seealso{
 findLabels

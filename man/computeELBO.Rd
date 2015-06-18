@@ -6,18 +6,19 @@
 computeELBO(model)
 }
 \arguments{
-\item{model}{a \code{mixedMemModel} object created by the \code{mixedMemModel} constructor}
+\item{model}{a \code{mixedMemModel} object created by the \code{mixedMemModel} constructor.}
 }
 \value{
-value of the lower bound on the log-likelihood
+\code{computeELBO} returns the lower bound on the log-likelihood, a real number.
 }
 \description{
-Computes the value of a lower bound on the log-likelihood, also called the ELBO, for a mixed membership model.
+\code{computeELBO} computes the variational lower bound on the log-likelihood, also called the ELBO, for a mixed membership model.
 }
 \details{
-The lower bound (ELBO) is the objective function in the variational EM algorithim. It is a function of the latent variables (\eqn{\phi} and \eqn{\delta}) and the hyperparameters (\eqn{\alpha} and \eqn{\theta}) and
-can be derived by Jensen's inequality.
+The lower bound (ELBO) is the objective function in the variational EM algorithim.
+It is a function of the latent variables (\eqn{\phi} and \eqn{\delta}) and the parameters (\eqn{\alpha} and \eqn{\theta})
+that be derived from Jensen's inequality:
 
-\eqn{P(obs |\alpha, \theta) \ge E_Q{\log[p(X,Z, \Lambda)]} - E_Q{\log[Q(Z, \Lambda|\phi, \delta)]}}
+\eqn{E_Q{\log[p(X,Z, \Lambda)]} - E_Q{\log[Q(Z, \Lambda|\phi, \delta)]} \le\log P(obs |\alpha, \theta) }
 }
 

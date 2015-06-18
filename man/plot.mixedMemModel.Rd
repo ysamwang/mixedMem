@@ -8,32 +8,35 @@
   ncol = NULL, indices = NULL, fitNames = NULL, ...)
 }
 \arguments{
-\item{x}{the mixedMemModel object to be plotted}
+\item{x}{the \code{mixedMemModel} object to be plotted.}
 
-\item{type}{which estimated parameters to plot; either "theta" or "membership"}
+\item{type}{a string which indicates which estimated parameters to plot; valid options are "theta" or "membership".
+\code{vizTheta} is called when the type is "theta" and \code{vizMem} is called when the type is "membership".}
 
-\item{compare}{model to compare. For type = "theta", compare should be an array the same size as x$theta
-for type = "membership", compare should be a matrix the same size as x$phi}
+\item{compare}{an array or matrix for comparison. When type = "theta", \code{compare} should be an array the same size as x$theta.
+When type = "membership", \code{compare} should be a matrix the same size as x$phi.}
 
-\item{main}{title for chart}
+\item{main}{the main figure title.}
 
-\item{varNames}{vector of names for each variable if plotting theta}
+\item{varNames}{a vector of strings corresponding to names for each variable if plot type is theta.}
 
-\item{groupNames}{vector of labels for each sub-population}
+\item{groupNames}{a vector of strings corresponding to labels for each sub-population.}
 
-\item{nrow}{number of rows for the grid of plots}
+\item{nrow}{the number of rows for the grid of plots.}
 
-\item{ncol}{number of columns for the grid of plots. if plotting theta, this
-must be K, if plotting membership, this can be specified}
+\item{ncol}{the number of columns for the grid of plots. If plot type is "theta", this
+must be K, if plot type is  "membership", this must be a positive integer.}
 
-\item{indices}{when plotting memberships, which individuals to plot. When plotting theta, which variables to plot}
+\item{indices}{a vector of integers. If the plot type is  "membership", this indicates which individuals to plot.
+When plot type is  "theta", this indicates which variables to plot.}
 
-\item{fitNames}{vector of labels for each fit}
+\item{fitNames}{a vector of strings corresponding to labels for each fit.}
 
-\item{...}{additional parameters}
+\item{...}{additional parameters to be passed.}
 }
 \description{
-Visual representation of a mixedMemModel object
+Generic S3 function to produce visual representation of a \code{mixedMemModel} object. This function calls either the \code{vizTheta} or
+the \code{vizMem} function.
 }
 \seealso{
 mixedMemModel, vizTheta, vizMem

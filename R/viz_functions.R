@@ -2,14 +2,15 @@
 #' 
 #' 
 #' \code{vizTheta} plots \eqn{\theta}, the parameters which govern the sub-population distributions of variables in a mixed membership model.
-#'  The parameter \eqn{\theta_{j,k}} specifies the distribution of variable j for complete members of sub-population k. The model fit is shown in black, 
-#'  and the comparison (if available) is shown in red.
+#'  The parameter \eqn{\theta_{j,k}} specifies the distribution of variable j for complete members of sub-population k. The estimated
+#' parameters from the given model are shown in black in each plot; the parameters from a comparison model (if available) are shown in red.
+#' Each row of plots represents a single variable, and each column of the plots represents a sub-population. 
 #' 
-#' This is the function called by the plot generic function for mixedMemModel objects. Each column corresponds to a sub-population. 
+#' This is the function called by the plot generic function for \code{mixedMemModel} objects.  
 #'  
 #' @param model the \code{mixedMemModel} object that will be plotted.
-#' @param compare an array of the same dimensions as model$theta which contains values to compare against the fitted value 
-#' @param main the main figure title
+#' @param compare an array of the same dimensions as model$theta which contains values to compare against the fitted value. 
+#' @param main the main figure title.
 #' @param varNames a vector of strings specifying labels for each variable.
 #' @param groupNames a vector of strings specifying labels for each sub-population.
 #' @param nrow the number of rows in each plot. If the argument is not specified, all variables will appear in one plot.
@@ -122,22 +123,24 @@ vizTheta = function(model, compare = NULL, main = "Estimated Theta",
 #' Mixed Membership Visualization
 #' 
 #' 
-#' Plots estimates for individual group membership. This is the function called by the \code{mixedMemModel} class
+#' \code{vizMem} plots estimates for the group membership scores of each individual. This is the function called by the \code{mixedMemModel} class
 #' generic plot function. 
 #' 
-#' The estimates used are the normalized \eqn{\phi}, which are the posterior means from the variational distribution. The estimated model is shown in black,
-#' and the comparison (if available) is shown in red. 
+#' The estimates plotted are the normalized \eqn{\phi}, which are the posterior means from the variational distribution. The
+#' estimated group membership scores are  shown in black, and the estimates from a comparison model (if available) are shown in red. Each plot
+#' represents an individual. 
 #' 
-#' This is the function called by the plot generic function for mixedMemModel objects
+#' This is the function called by the plot generic function for mixedMemModel objects.
 #' 
-#' @param model the \code{mixedMemModel} object that will be plotted
-#' @param a matrix a matrix of the same dimensions as model$phi which contains estimates to compare
+#' @param model the \code{mixedMemModel} object that will be plotted.
+#' @param compare a matrix of the same dimensions as \code{model$phi} which contains parameters to compare
 #'  against the fitted model. 
-#' @param main the main figure title
-#' @param groupNames a vector specifying labels for each sub-population
-#' @param nrow the number of rows in each plot
-#' @param ncol the number of columns in each plot
-#' @param indices the specific individuals which will be shown in the plot. If the argument is left blank, all individuals will be plotted
+#' @param main the main figure title.
+#' @param groupNames a vector specifying labels for each sub-population.
+#' @param nrow the number of rows in each plot.
+#' @param ncol the number of columns in each plot.
+#' @param indices the specific individuals which will be shown in the plot. If the argument is left blank, all individuals will be plotted.
+#' If the number of individuals to be plotted is larger than \code{nrow * ncol} then multiple plots will be produced.
 #' @param fitNames a vector of length 2 containing strings which correspond to the names of the models (fitted and comparison).
 #' @export
 vizMem <- function(model, compare = NULL, main = "Estimated Membership",

@@ -44,7 +44,7 @@
 data(ANES)
 }
 \description{
-Survey data from the 1983 American National Election Survey Pilot. Respondents were read a value statement and asked
+\code{ANES} contains political Ideology Survey data from the 1983 American National Election Survey Pilot. Respondents were read a value statement and asked
 to report their level of agreement: `strongly agree', `agree', `can't decide', `disagree', and strongly disagree'.
 The 279 complete responses to the 19 statements selected by Feldman (1988)
 and reanalyzed by Gross and Manrique-Vallier (2014) are included. `Strongly disagree' and `disagree' as well

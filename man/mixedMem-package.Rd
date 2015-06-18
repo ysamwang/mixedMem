@@ -80,15 +80,15 @@ The package supports multivariate models (with or without repeated measurements)
 \item{For each individual i = 1,\ldots Total:
     \itemize{
       \item{Draw \eqn{\lambda_i} from a Dirichlet(\eqn{\alpha}). \eqn{\lambda_i} is a vector of length K whose components indicates the degree of membership for individual i in each of the K sub-populations.}
-      \item{For each variable j = 1 \ldots, J
-                          \itemize{
-                                  \item {For each of replicate r = 1, \dots, \eqn{R_j}
-                                        \itemize{
-                                                \item{For each ranking level n = 1\ldots, \eqn{N_{i,j,r}}:
+      \item{For each variable j = 1 \ldots, J:}
+      \item {For each of replicate r = 1, \dots, \eqn{R_j}:}
+      \item{For each ranking level n = 1\ldots, \eqn{N_{i,j,r}}:
                                                       \itemize{
                                                       \item Draw \eqn{Z_{i,j,r,n}} from a multinomial(1, \eqn{\lambda_i}). The latent sub-population indicator \eqn{Z_{i,j,r,n}} determines the sub-population which governs the response for observation \eqn{X_{i,j,r,n}}. This is sometimes referred to as the context vector because it determines the context from which the individual responds.
 \item  Draw \eqn{X_{i,j,r,n}} from the latent sub-population distribution parameterized by \eqn{\theta_{j,Z_{i,j,r,n}}}. The parameter \eqn{\theta} governs the observations for each sub-population. For example, if variable j is a multinomial or rank distribution with \eqn{V_j} categories/candidates, then \eqn{\theta_{j,k}} is a vector of length \eqn{V_j} which parameterizes the responses to variable j for sub-population k. Likewise, if variable j is a Bernoulli random variable, then \eqn{\theta_{j,k}} is a value which determines the probability of success. 
-}}}}}}}}}
+}}}}}
+
+}
 
 \author{
 Sam Wang <ysamwang@uw.edu>, Elena Erosheva <erosheva@uw.edu>

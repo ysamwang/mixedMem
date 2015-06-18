@@ -7,27 +7,30 @@ vizTheta(model, compare = NULL, main = "Estimated Theta", varNames = NULL,
   groupNames = NULL, nrow = NULL, fitNames = NULL, indices = NULL)
 }
 \arguments{
-\item{model}{the \code{mixedMemModel} object that will be plotted}
+\item{model}{the \code{mixedMemModel} object that will be plotted.}
 
-\item{compare}{estimates to compare against. Should be an array with same dimensions as model$theta}
+\item{compare}{an array of the same dimensions as model$theta which contains values to compare against the fitted value.}
 
-\item{main}{title of plot}
+\item{main}{the main figure title.}
 
-\item{varNames}{vector specifying labels for each variable}
+\item{varNames}{a vector of strings specifying labels for each variable.}
 
-\item{groupNames}{vector specifying labels for each sub-population}
+\item{groupNames}{a vector of strings specifying labels for each sub-population.}
 
-\item{nrow}{the number of rows in each plot. If the argument is not specified, all variables will appear in one plot}
+\item{nrow}{the number of rows in each plot. If the argument is not specified, all variables will appear in one plot.}
 
-\item{fitNames}{the names of the models plotted}
+\item{fitNames}{the names of the models plotted.}
 
-\item{indices}{a vector which indicates specific variables to plot. If the argument is not specified, all variables will be plotted}
+\item{indices}{a vector which indicates specific variables to plot. If the argument is not specified, all variables will be plotted. If the number of variables
+to plot is greater than nrow, then multiple plots will be produced.}
 }
 \description{
-Plots \eqn{\theta}, the parameters which govern the distributions of variables in a mixed membership model. \eqn{\theta_{j,k}} governs the
-distribution of variable j for sub-population k. The model fit is shown in black, and the comparison (if available) is shown in red.
+\code{vizTheta} plots \eqn{\theta}, the parameters which govern the sub-population distributions of variables in a mixed membership model.
+ The parameter \eqn{\theta_{j,k}} specifies the distribution of variable j for complete members of sub-population k. The estimated
+parameters from the given model are shown in black in each plot; the parameters from a comparison model (if available) are shown in red.
+Each row of plots represents a single variable, and each column of the plots represents a sub-population.
 }
 \details{
-This is the function called by the plot generic function for mixedMemModel objects
+This is the function called by the plot generic function for \code{mixedMemModel} objects.
 }
 
