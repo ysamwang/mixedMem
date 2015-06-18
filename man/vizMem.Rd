@@ -7,28 +7,33 @@ vizMem(model, compare = NULL, main = "Estimated Membership", nrow = NULL,
   ncol = NULL, indices = NULL, groupNames = NULL, fitNames = NULL)
 }
 \arguments{
-\item{model}{the \code{mixedMemModel} object that will be plotted}
+\item{model}{the \code{mixedMemModel} object that will be plotted.}
 
-\item{compare}{estimates to compare against. This should be a matrix with same dimensions as model$phi}
+\item{compare}{a matrix of the same dimensions as \code{model$phi} which contains parameters to compare
+against the fitted model.}
 
-\item{main}{title of plot}
+\item{main}{the main figure title.}
 
-\item{nrow}{the number of rows in each plot}
+\item{nrow}{the number of rows in each plot.}
 
-\item{ncol}{the number of columns in each plot}
+\item{ncol}{the number of columns in each plot.}
 
-\item{indices}{the specific individuals to plot. If the argument is left blank, all individuals will be plotted}
+\item{indices}{the specific individuals which will be shown in the plot. If the argument is left blank, all individuals will be plotted.
+If the number of individuals to be plotted is larger than \code{nrow * ncol} then multiple plots will be produced.}
 
-\item{groupNames}{vector specifying labels for each sub-population}
+\item{groupNames}{a vector specifying labels for each sub-population.}
 
-\item{fitNames}{the names of the models plotted}
+\item{fitNames}{a vector of length 2 containing strings which correspond to the names of the models (fitted and comparison).}
 }
 \description{
-Plots estimates for individual group membership. The estimates used are the
-normalized phi, which are the posterior means from the variational distribution. The estimated model is shown in black,
-and the comparison (if available) is shown in red.
+\code{vizMem} plots estimates for the group membership scores of each individual. This is the function called by the \code{mixedMemModel} class
+generic plot function.
 }
 \details{
-This is the function called by the plot generic function for mixedMemModel objects
+The estimates plotted are the normalized \eqn{\phi}, which are the posterior means from the variational distribution. The
+estimated group membership scores are  shown in black, and the estimates from a comparison model (if available) are shown in red. Each plot
+represents an individual.
+
+This is the function called by the plot generic function for mixedMemModel objects.
 }
 
