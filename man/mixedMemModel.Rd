@@ -14,40 +14,40 @@ mixedMemModel(Total, J, Rj, Nijr, K, Vj, alpha, theta, phi = NULL,
 \item{Rj}{a vector of length J specifying the number of repeated measurements
 for each variable.}
 
-\item{Nijr}{an array with dimension (Total, J, max(Rj)) indicating the number
-of ranking levels for each variable and each replication. For multinomial and Bernoulli
-variables, Nijr[i,j,r] = 1. For rank variables, Nijr[i,j,r] indicates the
-number of alternatives ranked.}
-
 \item{K}{the number of sub-populations.}
 
-\item{Vj}{a vector of length J specifying the number of possible candidates
-for each variable. For a Bernoulli variable Vj[j] = 1.}
+\item{Vj}{a vector of length \code{J} specifying the number of possible candidates
+for each variable. For a Bernoulli variable \code{Vj}[j] = 1.}
 
-\item{alpha}{a vector of length K which is the parameter for Dirichlet
+\item{alpha}{a vector of length \code{K} which is the parameter for Dirichlet
 membership distribution.}
 
-\item{theta}{an array with dimensions (J,K,max(Vj)) which governs the variable
-distributions. The parameter theta[j,k,] governs the distribution of variable J for a complete member of sub-population k. For instance, if variable j is a Bernoulli variable, theta[j,k,1] is the probability of success; if
-variable j is a multinomial variable, theta[j,k, 1:Vj[j]] is the probability for each of the Vj[j] categories; if variable j
-is a rank variable, theta[j,k, 1:Vj[j]] are the support parameters for each of the Vj[j] alternatives. Since the dimension of the relevant parameters
+\item{theta}{an array with dimensions (\code{J},\code{K},\code{max(Vj)}) which governs the variable
+distributions. The parameter \code{theta}[j,k,] governs the distribution of variable J for a complete member of sub-population k. For instance, if variable j is a Bernoulli variable, theta[j,k,1] is the probability of success; if
+variable j is a multinomial variable, \code{theta}[j,k, 1:Vj[j]] is the probability for each of the \code{Vj}[j] categories; if variable j
+is a rank variable, \code{theta}[j,k, 1:Vj[j]] are the support parameters for each of the \code{Vj}[j] alternatives. Since the dimension of the relevant parameters
 can differ across variables, any unused elements of the array should be set to 0, while all other elements should be positive.}
 
-\item{phi}{an array with dimensions (Total,K) which specifies the variational
+\item{phi}{an array with dimensions (\code{Total},\code{K}) which specifies the variational
 parameters for the membership vectors, \eqn{\lambda}. The default group membership initialization is uniform across all groups (phi[i,k] = 1/K for all k).
 The default initialization is highly recommended.}
 
-\item{delta}{an array with dimensions (Total,J,max(Rj), max(N), K) which specifies
+\item{delta}{an array with dimensions (\code{Total},\code{J},\code{max(Rj)}, \code{max(Nijr)}, \code{K}) which specifies
 the variational parameters for the context vectors Z. The default initialization is
- uniform across all sub-populations (delta[i, j, r, n, k] = 1/K for all k).}
+ uniform across all sub-populations (\code{delta}[i, j, r, n, k] = 1/K for all k).}
 
-\item{dist}{a vector of length J specifying variable types. Options are
+\item{dist}{a vector of length \code{J} specifying variable types. Options are
 "bernoulli", "multinomial" or "rank" corresponing to the distributions
  of the observed variables.}
 
-\item{obs}{an array with dimensions (Total,J,max(Rj), max(N)) corresponding to
+\item{obs}{an array with dimensions (\code{Total},\code{J},\code{max(Rj)}, \code{max(Nijr)}) corresponding to
 the observed data. For Bernoulli random variables, the data consist of 0/1's.
 For multinomial or rank data the data consist of integers 0,1,\ldots,(Vj[j]-1).}
+
+\item{\code{Nijr}}{an array with dimension (\code{Total}, \code{J}, \code{max(Rj)}) indicating the number
+of ranking levels for each variable and each replication. For multinomial and Bernoulli
+variables, \code{Nijr}[i,j,r] = 1. For rank variables, \code{Nijr}[i,j,r] indicates the
+number of alternatives ranked.}
 }
 \value{
 \code{mixedMemModel} returns an object of class \code{mixedMemModel}.
@@ -61,7 +61,7 @@ The function returns an object of \code{mixedMemModel} class. This object contai
 the observed data, and the model parameters. Once a \code{mixedMemModel} object is created,
 the specified model can be fit for the data using the \code{mmVarFit} function. If the inputs are inconsistent (ie if dimensions do not match,
 or if observations and distribution types are not compatible,\code{mixedMemModel} will throw an error. For additional details on usage, and model
-assumptions, see the corresponding vignette "Fitting Mixed Membership Models using \code{mixedMem}".
+assumptions, see the corresponding vignette "Fitting Mixed Membership Models Using \code{mixedMem}".
 }
 \examples{
 set.seed(123)

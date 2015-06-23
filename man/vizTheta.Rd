@@ -22,7 +22,7 @@ vizTheta(model, compare = NULL, main = "Estimated Theta", varNames = NULL,
 \item{fitNames}{the names of the models plotted.}
 
 \item{indices}{a vector which indicates specific variables to plot. If the argument is not specified, all variables will be plotted. If the number of variables
-to plot is greater than nrow, then multiple plots will be produced.}
+to plot is greater than \code{nrow}, then multiple plots will be produced.}
 }
 \description{
 \code{vizTheta} plots \eqn{\theta}, the parameters which govern the sub-population distributions of variables in a mixed membership model.

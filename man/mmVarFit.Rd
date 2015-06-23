@@ -73,7 +73,7 @@ theta parameters of these specific groups constant, but update all other paramet
 \code{mmVarFit} is the primary function of the \code{mixedMem} package. The function fits parameters \eqn{\phi} and \eqn{\delta} for the variational
  distribution of latent variables as well as psuedo-MLE estimates for
  the population parameters \eqn{\alpha} and \eqn{\theta}. See documentation for
- \code{mixedMemModel} or the package vignette, "Fitting Mixed Membership Models using \code{mixedMem}" for a more detailed description of
+ \code{mixedMemModel} or the package vignette, "Fitting Mixed Membership Models Using \code{mixedMem}" for a more detailed description of
  the variables and notation in a mixed membership model.
 }
 \details{
@@ -93,7 +93,7 @@ minimizing the KL divergence between the tractable variational distribution and 
 The method uses a variational EM approach. The E-step considers the global parameters \eqn{\alpha} and \eqn{\theta} fixed
 and picks appropriate variational parameters \eqn{\phi} and \eqn{\delta} to minimize the KL divergence between the
 true posterior and the variational distribution (or maximize the ELBO). The M-step considers
-the variational parameters  fixed and global parameters \eqn{theta} and \eqn{\alpha} are selected which maximize the lower bound
+the variational parameters  fixed and global parameters \eqn{\theta} and \eqn{\alpha} are selected which maximize the lower bound
 on the log-likelihood (ELBO).
 }
 \examples{

@@ -3,7 +3,7 @@
 
 using namespace Rcpp ;
 using namespace arma;
-
+using namespace boost::math;
 
 mm_model::mm_model(List model)
 {
@@ -17,11 +17,12 @@ mm_model::mm_model(List model)
     Vj = as<IntegerVector>(model[5]);
     maxV = max(Vj);
     alpha = as<NumericVector>(model[6]);
-    theta = as<NumericVector>(model[7]);
-    phi = as<NumericVector>(model[8]);
-    delta = as<NumericVector>(model[9]);
-    dist = as<CharacterVector>(model[10]);
-    obs = as<NumericVector>(model[11]);
+    beta = as<NumericVector>(model[7]);
+    betaBar = as<NumericVector>(model[8]);
+    phi = as<NumericVector>(model[9]);
+    delta = as<NumericVector>(model[10]);
+    dist = as<CharacterVector>(model[11]);
+    obs = as<NumericVector>(model[12]);
 }
 
 int mm_model::indN(int i, int j, int r)
@@ -29,9 +30,14 @@ int mm_model::indN(int i, int j, int r)
     return(i + T*j + (T*J)*r);
 }
 
-int mm_model::indTheta(int j, int k, int v)
+int mm_model::indBeta(int j, int k, int v)
 {
     return(j + J*k + (J*K)*v);
+}
+
+int mm_model::indDigammaBetaBar(int j, int k)
+{
+    return(j + J*k);
 }
 
 int mm_model::indPhi(int i, int k)
@@ -97,9 +103,24 @@ int mm_model::getN(int i, int j, int r)
     return(Nijr[i + T*j + (T*J)*r]);
 }
 
-double mm_model::getTheta(int j, int k, int v)
+double mm_model::getBeta(int j, int k, int v)
 {
-    return(theta[j + J*k + (J*K)*v]);
+    return(beta[j + J*k + (J*K)*v]);
+}
+
+double mm_model::getBetaBar(int j, int k, int v)
+{
+    return(betaBar[j + J*k + (J*K)*v]);
+}
+
+double mm_model::getBetaBarSum(int j, int k)
+{
+    int v;
+    double ret = 0.0;
+    for(v = 0; v < model.getV(j); v++){
+        ret += betaBar[j + J*k + (J*K)*v];
+    }
+    return ret;
 }
 
 double mm_model::getPhi(int i, int k)
@@ -118,10 +139,6 @@ int mm_model::getObs(int i, int j, int r, int n)
 }
 
 //Set Functions
-void mm_model::setTheta(int j, int k, int v, double target)
-{
-    theta[j + J*k + (J*K)*v] = target;
-}
 
 void mm_model::setPhi(int i, int k, double target)
 {
@@ -180,40 +197,9 @@ void mm_model::normalizeDelta(int i, int j, int r, int n, double delta_sum)
     }
 }
 
-void mm_model::normalizeTheta(int j, int k, double theta_sum)
+void mm_model::setBetaBar(int j, int k, int v, double target)
 {
-    int v;
-    int check = 0;
-    for(v = 0; v < Vj[j]; v++)
-    {
-        theta[indTheta(j,k,v)] /= theta_sum;
-        //Check for 0 or 1
-        if(theta[indTheta(j,k,v)]==1)
-        {
-            theta[indTheta(j,k,v)] = 1.0-BUMP;
-            check--;
-        }
-        else if(theta[indTheta(j,k,v)] == 0)
-        {
-            theta[indTheta(j,k,v)] = BUMP;
-            check++;
-        }
-    }
-
-    if(check != 0 )
-    {
-        for(v = 0; v < Vj[j]; v++)
-        {
-            theta[indTheta(j,k,v)] /= (1.0 + check*BUMP);
-        }
-    }
-
-
-}
-
-void mm_model::incTheta(int j, int k, int v, double inc)
-{
-    theta[indTheta(j,k,v)] += inc;
+    betaBar[j + J*k + J*K*v] = target;
 }
 
 void mm_model::incPhi(int i, int k, double inc)

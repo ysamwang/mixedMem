@@ -15,7 +15,7 @@ Generic S3 summary function for \code{mixedMemModel} class.
 }
 \details{
 \code{summary} provides a summary of the given \code{mixedMemModel} object. The function
-prints the the ELBO, the dimensions of the model and each variable type.
+prints the ELBO, the dimensions of the model and each variable type.
 }
 \seealso{
 mixedMemModel

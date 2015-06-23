@@ -4,14 +4,14 @@
 //[[Rcpp::export]]
 double varInfInputC(Rcpp::List model_r, int print,
                     int printMod, int stepType, int maxTotalIter,
-                    int maxEIter, int maxAlphaIter, int maxThetaIter, int maxLSIter,
-                    double elboTol, double alphaTol, double thetaTol, double aNaught,
-                    double tau, int bMax, double bNaught, double bMult, int vCutoff, SEXP holdConstSEXP) {
+                    int maxEIter, int maxAlphaIter, int maxBetaIter, int maxLSIter,
+                    double elboTol, double alphaTol, double betaTol, double aNaught,
+                    double tau, SEXP holdConstSEXP) {
 
     mm_model model = mm_model(model_r);
     NumericVector holdConst(holdConstSEXP);
-    double elbo = varInfC(model, print , printMod, stepType, maxTotalIter, maxEIter, maxAlphaIter, maxThetaIter, maxLSIter,
-                              elboTol, alphaTol, thetaTol, aNaught, tau, bMax, bNaught, bMult, vCutoff, holdConst);
+    double elbo = varInfC(model, print, printMod, stepType, maxTotalIter, maxEIter, maxAlphaIter, maxBetaIter, maxLSIter,
+                              elboTol, alphaTol, thetaTol, aNaught, tau, holdConst);
     return(elbo);
 }
 

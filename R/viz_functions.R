@@ -15,7 +15,7 @@
 #' @param groupNames a vector of strings specifying labels for each sub-population.
 #' @param nrow the number of rows in each plot. If the argument is not specified, all variables will appear in one plot.
 #' @param indices a vector which indicates specific variables to plot. If the argument is not specified, all variables will be plotted. If the number of variables
-#' to plot is greater than nrow, then multiple plots will be produced.
+#' to plot is greater than \code{nrow}, then multiple plots will be produced.
 #' @param fitNames the names of the models plotted.
 vizTheta = function(model, compare = NULL, main = "Estimated Theta",
                     varNames = NULL, groupNames = NULL,nrow = NULL, fitNames = NULL, indices = NULL) {
@@ -126,7 +126,7 @@ vizTheta = function(model, compare = NULL, main = "Estimated Theta",
 #' \code{vizMem} plots estimates for the group membership scores of each individual. This is the function called by the \code{mixedMemModel} class
 #' generic plot function. 
 #' 
-#' The estimates plotted are the normalized \eqn{\phi}, which are the posterior means from the variational distribution. The
+#' The estimates plotted are the normalized \eqn{\phi}, which are the posterior means for the variational distribution. The
 #' estimated group membership scores are  shown in black, and the estimates from a comparison model (if available) are shown in red. Each plot
 #' represents an individual. 
 #' 

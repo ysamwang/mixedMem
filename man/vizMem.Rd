@@ -30,7 +30,7 @@ If the number of individuals to be plotted is larger than \code{nrow * ncol} the
 generic plot function.
 }
 \details{
-The estimates plotted are the normalized \eqn{\phi}, which are the posterior means from the variational distribution. The
+The estimates plotted are the normalized \eqn{\phi}, which are the posterior means for the variational distribution. The
 estimated group membership scores are  shown in black, and the estimates from a comparison model (if available) are shown in red. Each plot
 represents an individual.
 

@@ -48,6 +48,6 @@ Simulate data from a mixed membership model.
 }
 \details{
 \code{rmixedMem} simulates data from a mixed membership model given the specified parameters and dimensions. The function
-returns a random sample of observations X, context indicators Z, and group membership scores \eqn{lambda}.
+returns a random sample of observations \code{obs}, context indicators \code{Z}, and group membership scores \code{lambda}.
 }
 

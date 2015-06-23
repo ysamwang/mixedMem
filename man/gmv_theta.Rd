@@ -12,7 +12,7 @@ Manrique-Vallier 2014 analysis. It is a 3 by 19 by 3 dimensional array with
 the first dimension corresponding to each latent sub-population, the second dimension corresponding to
 each variable, and the 3rd dimension corresponding to response choices (Agree, Can't Decide,
 Disagree). Gross and Manrique-Vallier do not report results for group 3 for reasons discussed in the vignette
-so all values reported for group 3 in theta[1, , ] are 0.
+so all values for group 3 in theta[1, , ] are 0.
 }
 \references{
 Gross, J.H.; Manrique-Vallier, D. "A Mixed-Membership Approach to the Assessment of Political Ideology from Survey Responses."
