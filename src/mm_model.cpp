@@ -35,11 +35,6 @@ int mm_model::indBeta(int j, int k, int v)
     return(j + J*k + (J*K)*v);
 }
 
-int mm_model::indDigammaBetaBar(int j, int k)
-{
-    return(j + J*k);
-}
-
 int mm_model::indPhi(int i, int k)
 {
     return(i + T*k);
@@ -117,8 +112,18 @@ double mm_model::getBetaBarSum(int j, int k)
 {
     int v;
     double ret = 0.0;
-    for(v = 0; v < model.getV(j); v++){
+    for(v = 0; v < Vj[j]; v++){
         ret += betaBar[j + J*k + (J*K)*v];
+    }
+    return ret;
+}
+
+double mm_model::getBetaSum(int j, int k)
+{
+    int v;
+    double ret = 0.0;
+    for(v = 0; v < Vj[j]; v++){
+        ret += beta[j + J*k + (J*K)*v];
     }
     return ret;
 }

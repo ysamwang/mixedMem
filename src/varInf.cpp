@@ -1,3 +1,4 @@
+
 #include "varInf.h"
 
 // [[Rcpp::depends(BH)]]
@@ -21,12 +22,12 @@ double varInfC(mm_model model, int print,
 
     //only run an E-step
     if (stepType == 0) {
-        elbo_T = eStep_C(model, elbo_T, maxEIter, elboTol, iterReached);
+        elbo_T = eStep_C(model, elbo_T, maxEIter, maxBetaIter, maxLSIter, elboTol, betaTol,
+                         aNaught, tau, holdConst, iterReached, stepType);
         if((nT % printMod == 0) && (print==1)) {
             Rcout<<"E-Step: "<<elbo_T<<endl;
         }
     } else {     //go through E and M steps
-
         while((converged_T > elboTol) && (nT < maxTotalIter)) {
 
             nT++; //increment count of iterations
@@ -40,25 +41,28 @@ double varInfC(mm_model model, int print,
             old_elbo_T = elbo_T;
 
             // E Step
-            elbo_T = eStep_C(model, elbo_T, maxEIter, elboTol, iterReached); //defined in eStep.cpp
+            elbo_T = eStep_C(model, elbo_T, maxEIter, maxBetaIter, maxLSIter, elboTol, betaTol,
+                             aNaught, tau, holdConst, iterReached, stepType); //defined in eStep.cpp
 
             //print if necessary
             if((nT % printMod == 0) && (print==1)) {
                 Rcout<<"E-Step: "<<elbo_T<<endl;
             }
 
-            //M-step; choice of which parameters to update handled inside mStep_C function
-            elbo_T = mStep_C(model, elbo_T, stepType, maxAlphaIter, maxLSIter,
-                             alphaTol, thetaTol, aNaught, tau, iterReached); //defined in mStep.cpp
-
-            //print if necessary
-            if((nT % printMod == 0) && (print == 1)) {
-                Rcout<<"M-Step: "<<elbo_T<<endl;
-
-                for(k =0; k < model.getK(); k++) {
-                    Rcout<<model.getAlpha(k)<<" ";
+            if(stepType == 3) {
+                //M-step; choice of which parameters to update handled inside mStep_C function
+                elbo_T = mStep_C(model, elbo_T, stepType, maxAlphaIter, maxLSIter,
+                                 alphaTol, aNaught, tau, iterReached); //defined in mStep.cpp
+                if((nT % printMod == 0) && (print == 1)) {
+                    Rcout<<"M-Step: "<<elbo_T<<endl;
+                    for(k =0; k < model.getK(); k++) {
+                        Rcout<<model.getAlpha(k)<<" ";
+                    }
+                    Rcout<<endl;
                 }
-                Rcout<<endl;
+
+                //print if necessary
+
             }
 
             //update convergence criteria
@@ -89,110 +93,105 @@ double varInfC(mm_model model, int print,
 }
 
 
+
 double compute_ELBO(mm_model model)
 {
-    double t1,t2,t3,t4;
-    double phi_sum;
-    double elbo;
-    int i,j,k,r,n;
+    double t1, t2, t3, t4, t5;
+    int i, j, k, v, n, r;
     int T = model.getT();
-    int K = model.getK();
     int J = model.getJ();
-    double back_term;
-    double dg_phi_sum;
-    double phi_ik, delta_ijrnk;
-    int Nijr;
-
-
-    //Calculate first line and second line
+    int K = model.getK();
+    double sumAlpha = sum(model.getAlpha());
     t1 = 0.0;
-    t2 = 0.0;
-    t3 = 0.0;
-    t4 = 0.0;
-
-
-    t1 = T*lgamma(sum(model.getAlpha())) - T*sum(lgamma(model.getAlpha()));
-    for(i = 0; i < T; i++) {
-        phi_sum = 0.0;
+    for(j = 0; j < J; j++) {
         for(k = 0; k < K; k++) {
-            phi_sum += model.getPhi(i,k);
-        }
-        dg_phi_sum = boost::math::digamma(phi_sum);
-
-        t4 += lgamma(phi_sum);
-        for(k = 0; k < K; k++) {
-            phi_ik = model.getPhi(i,k);
-            back_term = (boost::math::digamma(phi_ik) - dg_phi_sum);
-            t1+= (model.getAlpha(k)-1)*back_term;
-
-            t4 += -lgamma(phi_ik);
-            t4 += (phi_ik-1)*back_term;
-
-            for(j = 0; j < J; j++) {
-                for(r = 0; r < model.getR(j); r++) {
-                    Nijr = model.getN(i,j,r);
-                    for(n = 0; n < Nijr; n++) {
-                        delta_ijrnk = model.getDelta(i,j,r,n,k);
-                        t2 += delta_ijrnk*back_term;
-                        t4 += delta_ijrnk*log(delta_ijrnk);
-                    }
-                }
+            t1 += lgamma(model.getBetaSum(j, k)) - lgamma(model.getBetaBarSum(j, k));
+            for(v = 0; v < model.getV(j); v++) {
+                t1 += -lgamma(model.getBeta(j,k,v)) + lgamma(model.getBetaBar(j,k,v));
+                t1 += (model.getBeta(j,k,v) - model.getBetaBar(j,k,v)) * (digamma(model.getBetaBar(j,k,v)) - digamma(model.getBetaBarSum(j,k)));
             }
         }
     }
 
-    //compute 3rd line
-    t3 = compute_logf(model);
+    //Note uses overloaded lgamma; first one takes doubles, second one is vectorized sugar
+    t2 = T * lgamma(sumAlpha) - T*sum(Rcpp::lgamma(model.getAlpha()));
+    t3 = 0.0;
+    t4 = 0.0;
+    t5 = 0.0;
 
-    elbo = t1+t2+t3-t4;
+    double phiSum;
+    double backTerm;
+    double delta;
+    for(i = 0; i < T; i++) {
 
-    //debug!
-    if(!(elbo > -INFINITY)) {
-        Rcout<< t1 <<" "<<t2 <<" "<<t3 <<" "<<t4 <<endl<<"Alpha: "<<endl;
+        phiSum = 0.0;
         for(k = 0; k < K; k++) {
-            Rcout<<model.getAlpha(k)<<" ";
+            phiSum += model.getPhi(i,k);
         }
-        Rcout<<endl;
+        t5 += -lgamma(phiSum);
+        phiSum = digamma(phiSum);
+
+        for(k = 0; k < K; k++) {
+            t5 += lgamma(model.getPhi(i,k));
+            backTerm = digamma(model.getPhi(i,k)) - phiSum;
+            t2 += (model.getAlpha(k) - 1.0) * backTerm;
+            t5 += -(model.getPhi(i,k) - 1.0) * backTerm;
+            for(j = 0; j < J; j++) {
+                for(r = 0; r < model.getR(j); r++) {
+                    for(n = 0; n < model.getN(i,j,r); n++) {
+                        delta = model.getDelta(i,j,r,n,k);
+                        t3 += delta * backTerm;
+                        t5 += -delta * log(delta);
+                    }
+                }
+            }
+
+        }
     }
-    return(elbo);
+
+    t4 = compute_logf(model);
+
+    double elbo = t1+ t2 + t3 + t4 + t5;
+    return elbo;
 }
+
 
 
 double compute_logf(mm_model model)
 {
     double logf = 0.0;
     double back_term;
-    int i,j,k,r,n,v, Nijr;
+    int i,j,k,r,n, Nijr;
 
     for(i = 0; i < model.getT(); i++) {
         for(j = 0; j < model.getJ(); j++) {
             if(model.getDist(j) == BERNOULLI) {
-                n = 0;
-                v = 0;
-                for(r = 0; r < model.getR(j); r++) {
-                    for(k = 0; k < model.getK(); k++) {
-                        logf += ( model.getObs(i,j,r,n) ? model.getDelta(i,j,r,n,k)*log(model.getTheta(j,k,v)) :
-                                  model.getDelta(i,j,r,n,k)*log(1.0 - model.getTheta(j,k,v))) ;
-                    }
-                }
+//                n = 0;
+//                v = 0;
+//                for(r = 0; r < model.getR(j); r++) {
+//                    for(k = 0; k < model.getK(); k++) {
+//                        logf += ( model.getObs(i,j,r,n) ? model.getDelta(i,j,r,n,k)*log(model.getTheta(j,k,v)) :
+//                                  model.getDelta(i,j,r,n,k)*log(1.0 - model.getTheta(j,k,v))) ;
+//                    }
+//                }
             } //end bernoulli
             else if(model.getDist(j)== MULTINOMIAL) {
-                n = 0;
-                for(r = 0; r < model.getR(j); r++) {
-                    for(k = 0; k < model.getK(); k++) {
-                        logf += model.getDelta(i,j,r,n,k)*log(model.getTheta(j,k,model.getObs(i,j,r,n)));
-                    }
-                }
+//                n = 0;
+//                for(r = 0; r < model.getR(j); r++) {
+//                    for(k = 0; k < model.getK(); k++) {
+//                        logf += model.getDelta(i,j,r,n,k)*log(model.getTheta(j,k,model.getObs(i,j,r,n)));
+//                    }
+//                }
             } //end Multinomial
             else if(model.getDist(j) == RANK) {
                 for(r = 0; r < model.getR(j); r++) {
                     Nijr = model.getN(i,j,r);
                     for(k = 0; k < model.getK(); k++) {
-                        back_term = 0.0;
+                        back_term = model.getBetaBarSum(j,k);
                         for(n = 0; n < Nijr; n++) {
-                            logf += -model.getDelta(i,j,r,n,k)*log(1.0 - back_term);
-                            logf += model.getDelta(i,j,r,n,k)*log(model.getTheta(j,k,model.getObs(i,j,r,n))) ;
-                            back_term += model.getTheta(j,k,model.getObs(i,j,r,n));
+                            logf += model.getDelta(i,j,r,n,k) *
+                                    (digamma(model.getBetaBar(j, k, model.getObs(i,j,r,n))) - digamma(back_term));
+                            back_term += -model.getBetaBar(j, k, model.getObs(i,j,r,n) );
                         }
                     }
                 }
@@ -210,16 +209,16 @@ double alpha_Objective(mm_model model, vec alph)
     int K = model.getK();
     int i;
     int k;
-    double back_term;
     double phi_sum;
     double dg_phi_sum;
     double sum_lgamma_alpha = 0.0;
+    double alphSum = sum(alph);
 
     for(k = 0; k < K; k++) {
         sum_lgamma_alpha += lgamma(alph(k));
     }
 
-    objective = T*lgamma(sum(alph)) - T*sum_lgamma_alpha;
+    objective = T*lgamma(alphSum) - T*sum_lgamma_alpha;
     for(i = 0; i < T; i++) {
         phi_sum = 0.0;
         for(k = 0; k < K; k++) {
@@ -228,8 +227,7 @@ double alpha_Objective(mm_model model, vec alph)
         dg_phi_sum = boost::math::digamma(phi_sum);
 
         for(k = 0; k < K; k++) {
-            back_term = (boost::math::digamma(model.getPhi(i,k)) - dg_phi_sum);
-            objective += (alph(k)-1)*back_term;
+            objective += (alph(k)-1)*(boost::math::digamma(model.getPhi(i,k)) - dg_phi_sum);
         }
     }
     return objective;
@@ -241,12 +239,12 @@ double alpha_Objective(mm_model model)
     int K = model.getK();
     int i;
     int k;
-    double back_term;
     double phi_sum;
     double dg_phi_sum;
+    double alphaSum = sum(model.getAlpha());
 
     double objective;
-    objective = T*lgamma(sum(model.getAlpha())) - T*sum(lgamma(model.getAlpha()));
+    objective = T*lgamma(alphaSum) - T*sum(Rcpp::lgamma(model.getAlpha()));
     for(i = 0; i < T; i++) {
         phi_sum = 0.0;
         for(k = 0; k < K; k++) {
@@ -255,11 +253,8 @@ double alpha_Objective(mm_model model)
         dg_phi_sum = boost::math::digamma(phi_sum);
 
         for(k = 0; k < K; k++) {
-            back_term = (boost::math::digamma(model.getPhi(i,k)) - dg_phi_sum);
-            objective += (model.getAlpha(k)-1)*back_term;
+            objective += (model.getAlpha(k)-1)*(boost::math::digamma(model.getPhi(i,k)) - dg_phi_sum);
         }
     }
     return objective;
 }
-
-

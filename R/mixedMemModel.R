@@ -22,11 +22,8 @@
 #'  for each variable. For a Bernoulli variable \code{Vj}[j] = 1. 
 #' @param alpha a vector of length \code{K} which is the parameter for Dirichlet
 #'  membership distribution.
-#' @param theta an array with dimensions (\code{J},\code{K},\code{max(Vj)}) which governs the variable
-#'  distributions. The parameter \code{theta}[j,k,] governs the distribution of variable J for a complete member of sub-population k. For instance, if variable j is a Bernoulli variable, theta[j,k,1] is the probability of success; if
-#'  variable j is a multinomial variable, \code{theta}[j,k, 1:Vj[j]] is the probability for each of the \code{Vj}[j] categories; if variable j
-#'  is a rank variable, \code{theta}[j,k, 1:Vj[j]] are the support parameters for each of the \code{Vj}[j] alternatives. Since the dimension of the relevant parameters
-#'  can differ across variables, any unused elements of the array should be set to 0, while all other elements should be positive.
+#' @param beta an array with dimensions (\code{J},\code{K},\code{max(Vj)}) which are the parameters of the
+#' prior Dirichlet for Theta
 #' @param phi an array with dimensions (\code{Total},\code{K}) which specifies the variational
 #'  parameters for the membership vectors, \eqn{\lambda}. The default group membership initialization is uniform across all groups (phi[i,k] = 1/K for all k).
 #'  The default initialization is highly recommended.
@@ -86,25 +83,25 @@
 #' plot(test_model) 
 #' @export
 
-mixedMemModel = function(Total, J, Rj, Nijr, K, Vj, alpha, theta, phi = NULL, delta = NULL, dist, obs)
+mixedMemModel = function(Total, J, Rj, Nijr, K, Vj, alpha, beta, betaBar = NULL, phi = NULL, delta = NULL, dist, obs)
 {
   # Checks if model defaults are used and fills in defaults
   if(is.null(alpha))
   {alpha = rep(1/K,K)}
   
-  if(is.null(theta))
+  if(is.null(betaBar))
   {
-    theta = array(0, dim = c(J,K,max(Vj)))
+    betaBar = array(0, dim = c(J,K,max(Vj)))
     for(j in 1:J)
     {
       if(dist[j] != "bernoulli")
       {
         for(k in 1:K)
         {
-          theta[j,k,] = c(gtools::rdirichlet(1,rep(1,Vj[j])), rep(0, max(Vj)-Vj[j]))
+          betaBar[j,k,] = c(gtools::rdirichlet(1, beta[j,k, 1:Vj[j]]), rep(0, max(Vj)-Vj[j]))
         }
       } else {
-        theta[j,,1] =rbeta(K,1,1)
+        betaBar[j,,1] = rbeta(K,1,1)
       }
     }
   }
@@ -132,15 +129,18 @@ mixedMemModel = function(Total, J, Rj, Nijr, K, Vj, alpha, theta, phi = NULL, de
     phi = array(1/K, dim = c(Total,K))
   }
   #put objects in a list
-  model_obj = list(Total, J, Rj, Nijr, K, Vj, alpha, theta, phi, delta, dist, obs);
-  names(model_obj) = c("Total", "J", "Rj", "Nijr", "K", "Vj", "alpha","theta", "phi", "delta", "dist" ,"obs")
+  model_obj = list(Total, J, Rj, Nijr, K, Vj, alpha, beta, betaBar, phi, delta, dist, obs);
+  names(model_obj) = c("Total", "J", "Rj", "Nijr", "K", "Vj", "alpha","beta", "betaBar", "phi", "delta", "dist" ,"obs")
   class(model_obj) = "mixedMemModel"
   
-  dimnames(model_obj$theta) <- list(paste("Var", c(1:J)),
+  dimnames(model_obj$beta) <- list(paste("Var", c(1:J)),
                                     paste("Group", c(1:K)),
                                     paste("Cand", c(0:(max(Vj)-1))))
+  dimnames(model_obj$betaBar) <- list(paste("Var", c(1:J)),
+                                   paste("Group", c(1:K)),
+                                   paste("Cand", c(0:(max(Vj)-1))))
   
-  names(model_obj$alpha) <- paste("Group", c(0:(K-1)))
+  names(model_obj$alpha) <- paste("Group", c(1:K))
   
   names(model_obj$Vj) <- paste("Var", c(1:J))
   names(model_obj$Rj) <- paste("Var", c(1:J))
@@ -153,7 +153,7 @@ mixedMemModel = function(Total, J, Rj, Nijr, K, Vj, alpha, theta, phi = NULL, de
                                     paste("Var", c(1:J)),
                                     paste("Rep", c(1:max(Rj))),
                                     paste("Rank", c(1:max(Nijr))),
-                                    paste("Group", c(0:(K-1))))
+                                    paste("Group", c(1:K)))
   
   dimnames(model_obj$Nijr) <- list(paste("Ind", c(1:Total)),
                                    paste("Var", c(1:J)),

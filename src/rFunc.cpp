@@ -11,7 +11,7 @@ double varInfInputC(Rcpp::List model_r, int print,
     mm_model model = mm_model(model_r);
     NumericVector holdConst(holdConstSEXP);
     double elbo = varInfC(model, print, printMod, stepType, maxTotalIter, maxEIter, maxAlphaIter, maxBetaIter, maxLSIter,
-                              elboTol, alphaTol, thetaTol, aNaught, tau, holdConst);
+                              elboTol, alphaTol, betaTol, aNaught, tau, holdConst);
     return(elbo);
 }
 

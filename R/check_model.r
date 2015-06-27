@@ -7,11 +7,12 @@ checkModel = function(model)
   K= model[[5]]
   Vj = model[[6]]
   alpha = model[[7]]
-  theta = model[[8]]
-  phi = model[[9]]
-  delta = model[[10]]
-  dist = tolower(model[[11]])
-  obs = model[[12]]
+  beta = model[[8]]
+  betaBar = model[[9]]
+  phi = model[[10]]
+  delta = model[[11]]
+  dist = tolower(model[[12]])
+  obs = model[[13]]
 
   #Check Total
   if(Total<1 || Total != round(Total))
@@ -75,18 +76,16 @@ checkModel = function(model)
   {stop("Input of incorrect dimensions: ", "alpha", " must be of dimension ", "K")}
   
   #check theta
-  if(any(theta < 0) )
+  if(any(beta < 0) )
   {stop("Input must be positive: ", "theta")}
-  if(any(dim(theta)!=c(J,K,maxV)))
+  if(any(dim(beta)!=c(J,K,maxV)))
   {stop("Input of incorrect dimensions: ", "theta", " must be of dimension ", "{J,K,max(V)}")}
-  for(j in 1:J)
-  {
-    for(k in 1:K)
-    {
-      if(abs(sum(theta[j,k,])-1)>1e-10 & dist[j] !="bernoulli")
-      {stop("Distribution must sum to 1 for theta for Variable ", j)}
-    }
-  }
+  
+  #check theta
+  if(any(betaBar < 0) )
+  {stop("Input must be positive: ", "theta")}
+  if(any(dim(betaBar)!=c(J,K,maxV)))
+  {stop("Input of incorrect dimensions: ", "theta", " must be of dimension ", "{J,K,max(V)}")}
   
   
   #check phi

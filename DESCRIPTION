@@ -1,8 +1,8 @@
 Package: mixedMem
 Type: Package
 Title: Tools for Discrete Multivariate Mixed Membership Models
-Version: 1.0.2
-Date: 2015-04-29
+Version: 1.0.3
+Date: 2015-06-26
 Authors@R: c( person("Y. Samuel", "Wang", email = "ysamwang@uw.edu", role =
     c("aut","cre")), person("Elena A.", "Erosheva", email =
     "erosheva@uw.edu", role = "aut"))

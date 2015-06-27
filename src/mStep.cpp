@@ -32,14 +32,15 @@ mat getHess(mm_model model)
 {
     int k;
     int K = model.getK();
-    double tri_gam_eval;
     mat hess = mat(K,K);
-    double sum_alpha = sum(model.getAlpha());
-    tri_gam_eval = trigamma(sum_alpha);
+    NumericVector y(1);
+
+    y[0] = sum(model.getAlpha());
+
     hess.ones();
-    hess = hess*tri_gam_eval*model.getT();
+    hess = hess * Rcpp::trigamma(y)[0] * model.getT();
     for(k = 0; k < K; k++) {
-        hess(k,k) -= trigamma(model.getAlpha(k))*model.getT();
+        hess(k,k) -= Rcpp::trigamma(model.getAlpha())[k] * model.getT();
     }
     return hess;
 }
@@ -69,7 +70,7 @@ double mStep_C(mm_model model, double elbo_T, int stepType, int maxAlphaIter, in
 
     //Update Alpha
     if (stepType == 2 || stepType == 3) {
-        while( (conv_crit_m > alphaTol) & (nA <= maxAlphaIter) ) {
+        while( (conv_crit_m > alphaTol) & (nA < maxAlphaIter) ) {
             old_obj = alpha_Objective(model);
             nA++;
 
@@ -107,7 +108,7 @@ double mStep_C(mm_model model, double elbo_T, int stepType, int maxAlphaIter, in
                     model.incAlpha(k, a*update(k));
                 }
             } else {
-                new_obj = alpha_Objective(model);
+                nA = maxAlphaIter;
             }
 
             //check for convergence

@@ -36,8 +36,7 @@ public:
     double getBeta(int j, int k, int v);
     double getBetaBar(int j, int k, int v);
     double getBetaBarSum(int j, int k);
-
-    double getBeta(int j, int k, int v);
+    double getBetaSum(int j, int k);
     int getObs(int i, int j, int r, int n);
     CharacterVector getDist();
     std::string getDist(int j);

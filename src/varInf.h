@@ -8,7 +8,6 @@
 #include <RcppArmadillo.h>
 #include <boost/math/special_functions/digamma.hpp>
 #include <boost/math/special_functions/gamma.hpp>
-#include <boost/math/special_functions/polygamma.hpp>
 #include "mm_model.h"
 #include "settings.h"
 #include "mStep.h"
@@ -17,6 +16,7 @@
 
 using namespace Rcpp;
 using namespace arma;
+using namespace boost::math;
 
 double varInfC(mm_model model_old, int print,
                     int printMod, int stepType, int maxTotalIter,
