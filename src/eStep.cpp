@@ -32,6 +32,7 @@ double eStep_C(mm_model model, double elbo_E, int maxEIter, int maxBetaIter, int
         elbo_E = compute_ELBO(model);
         //calculate convergence criteria
         converged_E = (old_elbo_E- elbo_E)/old_elbo_E;
+        Rcout<<"Iter: "<< nE<<"; "<<elbo_E<<endl;
     }
 
     if (nE == maxEIter) {
