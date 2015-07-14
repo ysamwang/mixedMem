@@ -22,6 +22,10 @@ mm_model::mm_model(List model)
     delta = as<NumericVector>(model[9]);
     dist = as<CharacterVector>(model[10]);
     obs = as<NumericVector>(model[11]);
+    fixedObs as<NumericVector>(model[12]);
+    P = (double) as<NumericVector(model[13])[0];
+    beta = (double) as<NumericVector(model[14])[0];
+    NumericVector stayers(T);
 }
 
 int mm_model::indN(int i, int j, int r)
@@ -117,7 +121,40 @@ int mm_model::getObs(int i, int j, int r, int n)
     return(obs[i + T*j + (T*J)*r + (T*J*maxR)*n]);
 }
 
+int mm_model::getFixedObs(int i, int j, int r, int n)
+{
+    return(fixedObs[j + (J)*r + (J*maxR)*n]);
+}
+
+double mm_model::getP()
+{
+    return(P);
+}
+
+double mm_model::getBeta()
+{
+    return(beta);
+}
+
+NumericVector mm_model::getStayers()
+{
+    return(stayers);
+}
+
+int mm_model::getStayers(int i)
+{
+    return(stayers[i]);
+}
+
+
+
+
 //Set Functions
+void mm_model::setAlpha(int k, double target)
+{
+    alpha[k] = target;
+}
+
 void mm_model::setTheta(int j, int k, int v, double target)
 {
     theta[j + J*k + (J*K)*v] = target;
@@ -133,10 +170,21 @@ void mm_model::setDelta(int i, int j, int r, int n, int k, double target)
     delta[i + T*j + (T*J)*r + (T*J*maxR)*n+ (T*J*maxR*maxN)*k] = target;
 }
 
-void mm_model::setAlpha(int k, double target)
+void mm_model::setP(double target)
 {
-    alpha[k] = target;
+    P = target;
 }
+
+void mm_model::setBeta(double target)
+{
+    beta = target;
+}
+
+void mm_model::setStayers(int i, int target)
+{
+    stayers[i] = target;
+}
+
 
 //Update Helpers
 void mm_model::normalizeDelta(int i, int j, int r, int n, double delta_sum)

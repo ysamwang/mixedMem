@@ -108,6 +108,8 @@ mmVarFit = function(model, printStatus = 1,
   output$theta = (model$theta+ 1 - 1)
   output$phi = (model$phi+0)
   output$delta = (model$delta+0)
+  output$P = (model$P+0)
+  output$beta = (model$beta+0)
   
   checkModel(output) # R function which checks inputs
   print("Model Check: Ok!")

@@ -86,7 +86,8 @@
 #' plot(test_model) 
 #' @export
 
-mixedMemModel = function(Total, J, Rj, Nijr, K, Vj, alpha, theta, phi = NULL, delta = NULL, dist, obs)
+mixedMemModel = function(Total, J, Rj, Nijr, K, Vj, alpha, theta, phi = NULL, delta = NULL, dist, obs,
+                         fixedObs = NULL, P = NULL, beta = NULL)
 {
   # Checks if model defaults are used and fills in defaults
   if(is.null(alpha))
@@ -133,7 +134,8 @@ mixedMemModel = function(Total, J, Rj, Nijr, K, Vj, alpha, theta, phi = NULL, de
   }
   #put objects in a list
   model_obj = list(Total, J, Rj, Nijr, K, Vj, alpha, theta, phi, delta, dist, obs);
-  names(model_obj) = c("Total", "J", "Rj", "Nijr", "K", "Vj", "alpha","theta", "phi", "delta", "dist" ,"obs")
+  names(model_obj) = c("Total", "J", "Rj", "Nijr", "K", "Vj", "alpha","theta", "phi",
+                       "delta", "dist" ,"obs", "fixedObs", "P", "beta")
   class(model_obj) = "mixedMemModel"
   
   dimnames(model_obj$theta) <- list(paste("Var", c(1:J)),
