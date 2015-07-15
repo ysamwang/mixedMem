@@ -35,11 +35,6 @@ public:
     int getObs(int i, int j, int r, int n);
     CharacterVector getDist();
     std::string getDist(int j);
-    int getFixedObs(int j, int r, int n);
-    double getP();
-    double getBeta();
-    NumericVector getStayers();
-    int getStayers(int i);
 
 
 
@@ -48,9 +43,6 @@ public:
     void setTheta(int j, int k, int v, double target);
     void setPhi(int i, int k, double target);
     void setDelta(int i, int j, int r, int n, int k, double target);
-    void setP(double target);
-    void setBeta(double target);
-    void setStayers(int i, int target);
 
     //update helpers
     void normalizeDelta(int i, int j, int r, int n, double delta_sum);
@@ -75,10 +67,6 @@ protected:
     NumericVector delta ;
     NumericVector obs ;
     CharacterVector dist;
-    NumericVector fixedObs;
-    NumericVector stayers;
-    double P;
-    double beta;
 private:
 };
 #endif // MM_MODEL_H
