@@ -4,6 +4,28 @@ using namespace Rcpp ;
 using namespace arma;
 
 
+mm_modelExt::mm_modelExt(List model) : mm_model::mm_model(model)
+{
+    fixedObs = as<NumericVector>(model[12]);
+    P = (double) as<NumericVector>(model[13])[0];
+    beta = (double) as<NumericVector>(model[14])[0];
+    NumericVector stayers(T);
+    stayerID = 0;
+//        updateStayer();
+    int i, check;
+    check = 1;
+    for(i = 0; i < T; i++) {
+        stayers[i] = checkIndStayer(i);
+        if(check && stayers[i]){
+            stayerID = i;
+            check = 0;
+        }
+    }
+    numStayers = (int) std::accumulate(stayers.begin(), stayers.end(), 0.0);
+
+    Rcout <<"Check :" << numStayers << " " << stayerID <<endl;
+    Rcout << "New Constructor Complete!"<<std::endl;
+}
 
 
 int mm_modelExt::getFixedObs(int i, int j, int r, int n)
@@ -33,7 +55,8 @@ int mm_modelExt::getNumStayers()
 
 
 //sets list of stayers
-void mm_modelExt::updateStayer() {
+void mm_modelExt::updateStayer()
+{
     int i, check;
     check = 1;
     for(i = 0; i < T; i++) {
@@ -52,16 +75,17 @@ void mm_modelExt::updateStayer() {
 int mm_modelExt::checkIndStayer(int i)
 {
     int j, r, n;
+    int ret = 1;
     for(j = 0; j < J; j++) {
         for(r = 0; r < getR(j); r++) {
             for(n = 0; n < getN(i, j, r); n++ ) {
-                if(getObs(i, j, r, n) !=  getFixedObs(0, j, r, n)){
-                    return 0;
+                if(getObs(i, j, r, n) !=  getFixedObs(0, j, r, n)) {
+                    ret = 0;
                 }
             }
         }
     }
-    return 1;
+    return ret;
 }
 
 int mm_modelExt::getStayerID()
