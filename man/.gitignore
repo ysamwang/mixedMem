@@ -1,0 +1,15 @@
+/man/*
+ANES.Rd
+computeBIC.Rd
+computeELBO.Rd
+findLabels.Rd
+gmv_theta.Rd
+mixedMem-package.Rd
+mixedMemModel.Rd
+mmVarFit.Rd
+permuteLabels.Rd
+plot.mixedMemModel.Rd
+rmixedMem.Rd
+summary.mixedMemModel.Rd
+vizMem.Rd
+vizTheta.Rd
