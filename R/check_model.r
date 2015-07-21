@@ -13,6 +13,9 @@ checkModel = function(model)
   dist = tolower(model[[11]])
   obs = model[[12]]
   fixedObs = model[[13]]
+  P = model[[14]]
+  beta = model[[15]]
+  
 
   #Check Total
   if(Total<1 || Total != round(Total))
@@ -126,10 +129,10 @@ checkModel = function(model)
   
   # check fixed obs
   if(!is.null(fixedObs)){
-    if(dim(fixedObs) != c(1, J, maxR, maxN)) {
+    if(any(dim(fixedObs) != c(1, J, maxR, maxN))) {
       stop("fixedObs must be of dimension (J, max(Rj), max(Nijr)")
     }
-    if(!is.null(P))
+    if(is.null(P))
     {stop("P must be specified if fixedObs is not null")}
   }
 

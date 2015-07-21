@@ -31,7 +31,6 @@ double getStayerProb(mm_modelExt model){
     double back_term;
     double dg_phi_sum;
     double phi_ik, delta_ijrnk;
-    int Nijr;
 
     //Calculate first line and second line
     t1 = 0.0;
@@ -51,15 +50,14 @@ double getStayerProb(mm_modelExt model){
     for(k = 0; k < K; k++) {
         phi_ik = model.getPhi(stayerID,k);
         back_term = (boost::math::digamma(phi_ik) - dg_phi_sum);
-        t1+= (model.getAlpha(k)-1)*back_term;
+        t1+= (model.getAlpha(k) - 1.0) * back_term;
 
         t4 += -lgamma(phi_ik);
         t4 += (phi_ik - 1.0)*back_term;
 
         for(j = 0; j < J; j++) {
             for(r = 0; r < model.getR(j); r++) {
-                Nijr = model.getN(stayerID,j,r);
-                for(n = 0; n < Nijr; n++) {
+                for(n = 0; n < model.getN(stayerID, j, r); n++) {
                     delta_ijrnk = model.getDelta(stayerID, j, r, n, k);
                     t2 += delta_ijrnk*back_term;
                     t4 += delta_ijrnk*log(delta_ijrnk);
@@ -81,7 +79,7 @@ double getStayerProb(mm_modelExt model){
         }
         Rcout<<endl;
     }
-    return(elbo);
+    return elbo;
 }
 
 //evaluates log_f of stayer (helper for getStayerProb()
@@ -125,6 +123,6 @@ double getStayer_logf(mm_modelExt model, int stayerID)
             } //end Rank
     }
 
-    return(logf);
+    return logf;
 }
 

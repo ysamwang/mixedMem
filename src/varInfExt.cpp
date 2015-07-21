@@ -15,14 +15,14 @@ double varInfExtC(mm_modelExt model, int print,
     NumericVector iterReached(3); //Vector to keep track of whether any of the iteration limits are hit in the E-Step or M-Steps
     double converged_T = 1.0; //convergence criteria: (old_elbo_T - elbo_T)/old_elbo_T
     double old_elbo_T = 0.0; //value of elbo from previous iteration
-    double elbo_T = compute_ELBO_Ext(model); //updated Elbo
+    double elbo_T = compute_ELBOExt(model); //updated Elbo
     int k; //indexing variable
     int nT = 0; //count of Total EM Steps
 
     //only run an E-step
     if (stepType == 0) {
         updateBeta(model);
-        elbo_T = eStep_Ext(model, elbo_T, maxEIter, elboTol, iterReached);
+        elbo_T = eStepExt(model, elbo_T, maxEIter, elboTol, iterReached);
         if((nT % printMod == 0) && (print==1)) {
             Rcout<<"E-Step + Beta Update: "<<elbo_T<<endl;
         }
@@ -45,14 +45,14 @@ double varInfExtC(mm_modelExt model, int print,
             updateBeta(model);
             updateP(model);
 
-            elbo_T = compute_ELBO_Ext(model);
+            elbo_T = compute_ELBOExt(model);
             //print if necessary
             if((nT % printMod == 0) && (print==1)) {
                 Rcout<<"X-Step: "<<elbo_T<<endl;
             }
 
             // E Step
-            elbo_T = eStep_Ext(model, elbo_T, maxEIter, elboTol, iterReached); //defined in eStep.cpp
+            elbo_T = eStepExt(model, elbo_T, maxEIter, elboTol, iterReached); //defined in eStep.cpp
             //print if necessary
             if((nT % printMod == 0) && (print==1)) {
                 Rcout<<"E-Step: "<<elbo_T<<endl;
@@ -101,7 +101,7 @@ double varInfExtC(mm_modelExt model, int print,
 
 
 
-double compute_ELBO_Ext(mm_modelExt model)
+double compute_ELBOExt(mm_modelExt model)
 {
     double t1,t2,t3,t4, t5;
     double phi_sum;
@@ -156,7 +156,7 @@ double compute_ELBO_Ext(mm_modelExt model)
     }
 
     //compute 3rd line
-    t3 = compute_logf_Ext(model);
+    t3 = compute_logfExt(model);
 
     elbo = t1 + t2 + t3 - t4 - t5;
 
@@ -172,7 +172,7 @@ double compute_ELBO_Ext(mm_modelExt model)
 }
 
 
-double compute_logf_Ext(mm_modelExt model)
+double compute_logfExt(mm_modelExt model)
 {
     double logf = 0.0;
     double back_term;

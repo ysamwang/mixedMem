@@ -15,9 +15,18 @@ class mm_modelExt: public mm_model
 {
 public:
     //constructor
-    mm_modelExt(List model);
+    mm_modelExt(List model) : mm_model(model)
+    {
+        fixedObs = as<NumericVector>(model[12]);
+        P = (double) as<NumericVector>(model[13])[0];
+        beta = (double) as<NumericVector>(model[14])[0];
+        NumericVector stayers(T);
+        stayerID = 0;
+        updateStayer();
+        Rcout << "New Constructor Complete!"<<std::endl;
+    }
 
-    int getFixedObs(int j, int r, int n);
+    int getFixedObs(int i, int j, int r, int n);
     double getP();
     double getBeta();
     NumericVector getStayers();
@@ -25,8 +34,7 @@ public:
     int getNumStayers();
     double getStayerProb();
     int getStayerID();
-
-
+    void updateStayer();
 
     //set individual element
     void setP(double target);
@@ -41,7 +49,7 @@ protected:
     int numStayers;
     int stayerID;
 
-    void updateStayer();
+
     int checkIndStayer(int i);
 
 private:

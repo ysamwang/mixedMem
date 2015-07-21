@@ -133,7 +133,7 @@ mixedMemModel = function(Total, J, Rj, Nijr, K, Vj, alpha, theta, phi = NULL, de
     phi = array(1/K, dim = c(Total,K))
   }
   #put objects in a list
-  model_obj = list(Total, J, Rj, Nijr, K, Vj, alpha, theta, phi, delta, dist, obs);
+  model_obj = list(Total, J, Rj, Nijr, K, Vj, alpha, theta, phi, delta, dist, obs, fixedObs, P, beta);
   names(model_obj) = c("Total", "J", "Rj", "Nijr", "K", "Vj", "alpha","theta", "phi",
                        "delta", "dist" ,"obs", "fixedObs", "P", "beta")
   class(model_obj) = "mixedMemModel"

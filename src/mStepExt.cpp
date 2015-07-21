@@ -39,7 +39,7 @@ mat getHessExt(mm_modelExt model)
     hess.ones();
     hess = hess * tri_gam_eval * (model.getT() - model.getBeta() * model.getNumStayers());
     for(k = 0; k < K; k++) {
-        hess(k,k) -= trigamma(model.getAlpha(k))* (model.getT() - model.getBeta() * model.getNumStayers());
+        hess(k,k) -= trigamma(model.getAlpha(k)) * (model.getT() - model.getBeta() * model.getNumStayers());
     }
     return hess;
 }
@@ -127,7 +127,7 @@ double mStepExt(mm_modelExt model, double elbo_T, int stepType, int maxAlphaIter
                     bMax, bNaught, bMult, vCutoff, holdConst, iterReached);
     }
 
-    double elbo = compute_ELBO_Ext(model);
+    double elbo = compute_ELBOExt(model);
     return elbo;
 } //end m-step
 
@@ -190,7 +190,7 @@ void updateThetaExt(mm_modelExt model, int maxThetaIter,
                             theta_sum += model.getDelta(i,j,r,n,k) * (model.getStayers(i) ? 1.0 - model.getBeta() : 1.0 );
                         }
                     }
-                    model.normalizeTheta(j,k,theta_sum);
+                    model.normalizeTheta(j, k, theta_sum);
                 }
             }
         } else if(model.getDist(j) == RANK) {
@@ -344,8 +344,8 @@ mat getHessPLExt(mm_modelExt model, int j, int k, double b)
                 for(eta1 = 0; eta1 < n; eta1++) {
                     for(eta2 = 0; eta2 < eta1; eta2++) {
                         hess(model.getObs(i,j,r,eta1),model.getObs(i,j,r,eta2)) -= model.getDelta(i,j,r,n,k)/pow(1.0 - back_term,2) * (model.getStayers(i) ? 1.0 - model.getBeta() : 1);
-                        hess(model.getObs(i,j,r,eta2),model.getObs(i,j,r,eta1)) = hess(model.getObs(i,j,r,eta1),model.getObs(i,j,r,eta2))* (model.getStayers(i) ? 1.0 - model.getBeta() : 1);
-                    }
+                        hess(model.getObs(i,j,r,eta2),model.getObs(i,j,r,eta1)) = hess(model.getObs(i,j,r,eta1),model.getObs(i,j,r,eta2));
+                        }
 
                     hess(model.getObs(i,j,r,eta1),model.getObs(i,j,r,eta1)) -= model.getDelta(i,j,r,n,k)/pow(1.0-back_term,2) * (model.getStayers(i) ? 1.0 - model.getBeta() : 1);
                 }

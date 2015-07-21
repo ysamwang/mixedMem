@@ -22,6 +22,7 @@ mm_model::mm_model(List model)
     delta = as<NumericVector>(model[9]);
     dist = as<CharacterVector>(model[10]);
     obs = as<NumericVector>(model[11]);
+    Rcout << "Old Constructor!!" <<std::endl;
 }
 
 int mm_model::indN(int i, int j, int r)
@@ -50,11 +51,6 @@ int mm_model::indObs(int i, int j, int r, int n)
 }
 
 //get functions
-CharacterVector mm_model::getDist()
-{
-    return(dist);
-}
-
 std::string mm_model::getDist(int j)
 {
     return as<std::string>(dist[j]);

@@ -12,7 +12,6 @@
 #include "settings.h"
 #include "mStep.h"
 #include "eStep.h"
-#include "extended.h"
 #include "utils.h"
 
 

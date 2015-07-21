@@ -9,3 +9,11 @@ computeElboC <- function(model_r) {
     .Call('mixedMem_computeElboC', PACKAGE = 'mixedMem', model_r)
 }
 
+varInfInputExtC <- function(model_r, print, printMod, stepType, maxTotalIter, maxEIter, maxAlphaIter, maxThetaIter, maxLSIter, elboTol, alphaTol, thetaTol, aNaught, tau, bMax, bNaught, bMult, vCutoff, holdConstSEXP) {
+    .Call('mixedMem_varInfInputExtC', PACKAGE = 'mixedMem', model_r, print, printMod, stepType, maxTotalIter, maxEIter, maxAlphaIter, maxThetaIter, maxLSIter, elboTol, alphaTol, thetaTol, aNaught, tau, bMax, bNaught, bMult, vCutoff, holdConstSEXP)
+}
+
+computeElboExtC <- function(model_r) {
+    .Call('mixedMem_computeElboExtC', PACKAGE = 'mixedMem', model_r)
+}
+

@@ -3,7 +3,7 @@
 using namespace boost::math;
 
 // [[Rcpp::depends(BH)]]
-double eStep_Ext(mm_modelExt model, double elbo_E, int maxEIter, double elboTol, NumericVector iterReached) {
+double eStepExt(mm_modelExt model, double elbo_E, int maxEIter, double elboTol, NumericVector iterReached) {
     int nE = 0;
     double old_elbo_E;
     int T = model.getT();
@@ -50,7 +50,7 @@ double eStep_Ext(mm_modelExt model, double elbo_E, int maxEIter, double elboTol,
                         //update deltas
                         for(k = 0; k <  K; k++)
                         {
-                            placeholder = exp(digamma(model.getPhi(i,k)) - phi_sum_dg + dl_ddelta_Ext(model, i, j,r,n,k));
+                            placeholder = exp(digamma(model.getPhi(i,k)) - phi_sum_dg + dl_ddeltaExt(model, i, j,r,n,k));
                             model.setDelta(i,j,r,n,k, placeholder);
                             delta_sum += model.getDelta(i,j,r,n,k);
                         }
@@ -90,7 +90,7 @@ double eStep_Ext(mm_modelExt model, double elbo_E, int maxEIter, double elboTol,
         }
 
         //calculate convergence criteria
-        elbo_E = compute_ELBO_Ext(model);
+        elbo_E = compute_ELBOExt(model);
         converged_E = (old_elbo_E- elbo_E)/old_elbo_E;
     }
     if (nE == maxEIter) {
@@ -102,7 +102,7 @@ double eStep_Ext(mm_modelExt model, double elbo_E, int maxEIter, double elboTol,
 
 
 //referred to as  dL/ddelta in derivations
-double dl_ddelta_Ext(mm_modelExt model, int i, int j, int r, int n, int k)
+double dl_ddeltaExt(mm_modelExt model, int i, int j, int r, int n, int k)
 {
     double dl_dd = 0.0;
 

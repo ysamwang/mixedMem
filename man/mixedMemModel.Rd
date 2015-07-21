@@ -5,7 +5,7 @@
 \title{Constructor for a Mixed Membership Model Object}
 \usage{
 mixedMemModel(Total, J, Rj, Nijr, K, Vj, alpha, theta, phi = NULL,
-  delta = NULL, dist, obs)
+  delta = NULL, dist, obs, fixedObs = NULL, P = NULL, beta = NULL)
 }
 \arguments{
 \item{Total}{the number of individuals in the sample.}

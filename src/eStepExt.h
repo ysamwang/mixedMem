@@ -18,8 +18,8 @@
 using namespace Rcpp ;
 using namespace arma;
 
-double eStep_Ext(mm_modelExt model, double elbo_E, int maxEIter, double elboTol, NumericVector iterReached);
-double dl_ddelta_Ext(mm_modelExt model, int i, int j, int r, int n, int k);
+double eStepExt(mm_modelExt model, double elbo_E, int maxEIter, double elboTol, NumericVector iterReached);
+double dl_ddeltaExt(mm_modelExt model, int i, int j, int r, int n, int k);
 
 #endif
 
