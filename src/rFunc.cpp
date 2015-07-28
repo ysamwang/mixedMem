@@ -34,8 +34,9 @@ double varInfInputExtC(Rcpp::List model_r, int print,
 
     mm_modelExt model = mm_modelExt(model_r);
     NumericVector holdConst(holdConstSEXP);
-//    double elbo = varInfExtC(model, print , printMod, stepType, maxTotalIter, maxEIter, maxAlphaIter, maxThetaIter, maxLSIter,
-//                              elboTol, alphaTol, thetaTol, aNaught, tau, bMax, bNaught, bMult, vCutoff, holdConst);
+    double elbo = varInfExtC(model, print , printMod, stepType, maxTotalIter, maxEIter, maxAlphaIter, maxThetaIter, maxLSIter,
+                              elboTol, alphaTol, thetaTol, aNaught, tau, bMax, bNaught, bMult, vCutoff, holdConst);
+    Rcout<< model.getP()<<" "<<model.getBeta()<<" "<< model.getNumStayers()<<endl;
     return(0.0);
 }
 

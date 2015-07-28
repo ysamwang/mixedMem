@@ -12,7 +12,7 @@ void updateP(mm_modelExt model){
 //Updates Beta based on current model estimates
 void updateBeta(mm_modelExt model) {
     double target;
-    target = model.getP() / ( (1.0 - model.getP()) * getStayerProb(model) + model.getP());
+    target = model.getP() / ( (1.0 - model.getP()) * exp(getStayerProb(model)) + model.getP());
     model.setBeta(target);
 }
 

@@ -7,8 +7,8 @@ using namespace arma;
 mm_modelExt::mm_modelExt(List model) : mm_model::mm_model(model)
 {
     fixedObs = as<NumericVector>(model[12]);
-    P = (double) as<NumericVector>(model[13])[0];
-    beta = (double) as<NumericVector>(model[14])[0];
+    P = as<NumericVector>(model[13]);
+    beta =  as<NumericVector>(model[14]);
     NumericVector stayers(T);
     stayerID = 0;
 //        updateStayer();
@@ -35,12 +35,12 @@ int mm_modelExt::getFixedObs(int i, int j, int r, int n)
 
 double mm_modelExt::getP()
 {
-    return P;
+    return P[0];
 }
 
 double mm_modelExt::getBeta()
 {
-    return beta;
+    return beta[0];
 }
 
 NumericVector mm_modelExt::getStayers()
@@ -100,10 +100,10 @@ int mm_modelExt::getStayers(int i)
 
 void mm_modelExt::setP(double target)
 {
-    P = target;
+    P[0] = target;
 }
 
 void mm_modelExt::setBeta(double target)
 {
-    beta = target;
+    beta[0] = target;
 }

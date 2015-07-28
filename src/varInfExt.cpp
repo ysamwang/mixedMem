@@ -43,7 +43,7 @@ double varInfExtC(mm_modelExt model, int print,
             old_elbo_T = elbo_T;
 
             updateBeta(model);
-            updateP(model);
+//            updateP(model);
 
             elbo_T = compute_ELBOExt(model);
             //print if necessary

@@ -34,8 +34,8 @@ public:
 protected:
     NumericVector fixedObs;
     NumericVector stayers;
-    double P;
-    double beta;
+    NumericVector P;
+    NumericVector beta;
     int numStayers;
     int stayerID;
 
