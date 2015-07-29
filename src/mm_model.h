@@ -49,6 +49,7 @@ public:
     void incPhi(int i, int k, double inc);
     void incAlpha(int k, double inc);
     void incTheta(int j, int k, int v, double inc);
+    Rcpp::List returnModel();
 
 protected:
     int T;

@@ -7,7 +7,7 @@
 using namespace Rcpp;
 
 // varInfInputC
-double varInfInputC(Rcpp::List model_r, int print, int printMod, int stepType, int maxTotalIter, int maxEIter, int maxAlphaIter, int maxThetaIter, int maxLSIter, double elboTol, double alphaTol, double thetaTol, double aNaught, double tau, int bMax, double bNaught, double bMult, int vCutoff, SEXP holdConstSEXP);
+Rcpp::List varInfInputC(Rcpp::List model_r, int print, int printMod, int stepType, int maxTotalIter, int maxEIter, int maxAlphaIter, int maxThetaIter, int maxLSIter, double elboTol, double alphaTol, double thetaTol, double aNaught, double tau, int bMax, double bNaught, double bMult, int vCutoff, SEXP holdConstSEXP);
 RcppExport SEXP mixedMem_varInfInputC(SEXP model_rSEXP, SEXP printSEXP, SEXP printModSEXP, SEXP stepTypeSEXP, SEXP maxTotalIterSEXP, SEXP maxEIterSEXP, SEXP maxAlphaIterSEXP, SEXP maxThetaIterSEXP, SEXP maxLSIterSEXP, SEXP elboTolSEXP, SEXP alphaTolSEXP, SEXP thetaTolSEXP, SEXP aNaughtSEXP, SEXP tauSEXP, SEXP bMaxSEXP, SEXP bNaughtSEXP, SEXP bMultSEXP, SEXP vCutoffSEXP, SEXP holdConstSEXPSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
@@ -47,7 +47,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // varInfInputExtC
-double varInfInputExtC(Rcpp::List model_r, int print, int printMod, int stepType, int maxTotalIter, int maxEIter, int maxAlphaIter, int maxThetaIter, int maxLSIter, double elboTol, double alphaTol, double thetaTol, double aNaught, double tau, int bMax, double bNaught, double bMult, int vCutoff, SEXP holdConstSEXP);
+Rcpp::List varInfInputExtC(Rcpp::List model_r, int print, int printMod, int stepType, int maxTotalIter, int maxEIter, int maxAlphaIter, int maxThetaIter, int maxLSIter, double elboTol, double alphaTol, double thetaTol, double aNaught, double tau, int bMax, double bNaught, double bMult, int vCutoff, SEXP holdConstSEXP);
 RcppExport SEXP mixedMem_varInfInputExtC(SEXP model_rSEXP, SEXP printSEXP, SEXP printModSEXP, SEXP stepTypeSEXP, SEXP maxTotalIterSEXP, SEXP maxEIterSEXP, SEXP maxAlphaIterSEXP, SEXP maxThetaIterSEXP, SEXP maxLSIterSEXP, SEXP elboTolSEXP, SEXP alphaTolSEXP, SEXP thetaTolSEXP, SEXP aNaughtSEXP, SEXP tauSEXP, SEXP bMaxSEXP, SEXP bNaughtSEXP, SEXP bMultSEXP, SEXP vCutoffSEXP, SEXP holdConstSEXPSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;

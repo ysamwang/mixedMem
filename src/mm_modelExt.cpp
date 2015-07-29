@@ -15,7 +15,7 @@ mm_modelExt::mm_modelExt(List model) : mm_model::mm_model(model)
     check = 1;
     for(i = 0; i < T; i++) {
         stayers[i] = checkIndStayer(i);
-        if(check && stayers[i]){
+        if(check && stayers[i]) {
             stayerID = i;
             check = 0;
         }
@@ -85,4 +85,14 @@ void mm_modelExt::setP(double target)
 void mm_modelExt::setBeta(double target)
 {
     beta[0] = target;
+}
+
+Rcpp::List mm_modelExt::returnModel()
+{
+    return Rcpp::List::create(Rcpp::Named("alpha", alpha),
+                              Rcpp::Named("theta", theta),
+                              Rcpp::Named("phi", phi),
+                              Rcpp::Named("delta", delta),
+                              Rcpp::Named("P", P),
+                              Rcpp::Named("beta", beta));
 }

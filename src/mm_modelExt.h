@@ -28,7 +28,7 @@ public:
     //set individual element
     void setP(double target);
     void setBeta(double target);
-
+    Rcpp::List returnModel();
 
 protected:
     NumericVector fixedObs;

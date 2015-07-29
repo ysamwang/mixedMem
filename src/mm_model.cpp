@@ -223,3 +223,12 @@ void mm_model::incAlpha(int k, double inc)
 {
     alpha[k] += inc;
 }
+
+Rcpp::List mm_model::returnModel()
+{
+    return Rcpp::List::create(Rcpp::Named("alpha", alpha),
+                              Rcpp::Named("theta", theta),
+                              Rcpp::Named("phi", phi),
+                              Rcpp::Named("delta", delta));
+}
+
