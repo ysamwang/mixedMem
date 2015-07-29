@@ -12,10 +12,13 @@ checkModel = function(model)
   delta = model[[10]]
   dist = tolower(model[[11]])
   obs = model[[12]]
-  fixedObs = model[[13]]
-  P = model[[14]]
-  beta = model[[15]]
-  
+  if (length(model) > 12) {
+    print("Extended check model")
+    fixedObs = model[[13]]
+    P = model[[14]]
+    beta = model[[15]]
+  }
+    
 
   #Check Total
   if(Total<1 || Total != round(Total))
@@ -87,7 +90,7 @@ checkModel = function(model)
   {
     for(k in 1:K)
     {
-      if(abs(sum(theta[j,k,])-1)>1e-10 & dist[j] !="bernoulli")
+      if(abs(sum(theta[j,k,])-1) > 1e-10 & dist[j] !="bernoulli")
       {stop("Distribution must sum to 1 for theta for Variable ", j)}
     }
   }
@@ -113,7 +116,7 @@ checkModel = function(model)
       {
         for(n in 1:Nijr[i,j,r])
         {
-          if(abs(sum(delta[i,j,r,n,])-1)>1e-10)
+          if(abs(sum(delta[i,j,r,n,])-1) > 1e-10)
           {browser()
             stop("Delta must sum to 1 for delta[",paste(i,j,r,n,sep = ","),", ]")}
         }
@@ -127,6 +130,7 @@ checkModel = function(model)
   if(any(dim(obs)!= c(Total, J, maxR, maxN)))
   {stop("Input of incorrect dimensions: ", "Obs", " must be of dimension ", "{Total,J,max(Rj),max(Nijr)}")}
   
+  if(length(model) > 12){
   # check fixed obs
   if(!is.null(fixedObs)){
     if(any(dim(fixedObs) != c(1, J, maxR, maxN))) {
@@ -134,6 +138,6 @@ checkModel = function(model)
     }
     if(is.null(P))
     {stop("P must be specified if fixedObs is not null")}
+    }
   }
-
 }

@@ -6,12 +6,11 @@ using namespace arma;
 
 mm_modelExt::mm_modelExt(List model) : mm_model::mm_model(model)
 {
-    fixedObs = as<NumericVector>(model[12]);
-    P = as<NumericVector>(model[13]);
-    beta =  as<NumericVector>(model[14]);
+    fixedObs = Rcpp::clone(as<NumericVector>(model[12]));
+    P = Rcpp::clone(as<NumericVector>(model[13]));
+    beta =  Rcpp::clone(as<NumericVector>(model[14]));
     NumericVector stayers(T);
     stayerID = 0;
-//        updateStayer();
     int i, check;
     check = 1;
     for(i = 0; i < T; i++) {
@@ -23,8 +22,6 @@ mm_modelExt::mm_modelExt(List model) : mm_model::mm_model(model)
     }
     numStayers = (int) std::accumulate(stayers.begin(), stayers.end(), 0.0);
 
-    Rcout <<"Check :" << numStayers << " " << stayerID <<endl;
-    Rcout << "New Constructor Complete!"<<std::endl;
 }
 
 
@@ -51,24 +48,6 @@ NumericVector mm_modelExt::getStayers()
 int mm_modelExt::getNumStayers()
 {
     return numStayers;
-}
-
-
-//sets list of stayers
-void mm_modelExt::updateStayer()
-{
-    int i, check;
-    check = 1;
-    for(i = 0; i < T; i++) {
-        stayers[i] = checkIndStayer(i);
-        Rcout << "Ind "<< i << " Status: " << stayers[i] <<std::endl;
-//        if(check && stayers[i]){
-//            stayerID = i;
-//            check = 0;
-//            Rcout <<"First Stayer Found!! " << i <<std::endl;
-//        }
-    }
-//    numStayers = (int) std::accumulate(stayers.begin(), stayers.end(), 0.0);
 }
 
 // checks if an individual is a stayer

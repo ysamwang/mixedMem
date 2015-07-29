@@ -7,22 +7,22 @@ using namespace arma;
 
 mm_model::mm_model(List model)
 {
-    T = (int) as<IntegerVector>(model[0])[0];
-    J = (int) as<IntegerVector>(model[1])[0];
-    Rj = as<IntegerVector>(model[2]);
+    T = (int) as<NumericVector>(model[0])[0];
+    J = (int) as<NumericVector>(model[1])[0];
+    Rj = as<NumericVector>(model[2]);
     maxR = max(Rj);
-    Nijr = as<IntegerVector>(model[3]);
+    Nijr = as<NumericVector>(model[3]);
     maxN = max(Nijr);
-    K = (int) as<IntegerVector>(model[4])[0];
-    Vj = as<IntegerVector>(model[5]);
+    K = (int) as<NumericVector>(model[4])[0];
+    Vj = as<NumericVector>(model[5]);
     maxV = max(Vj);
-    alpha = as<NumericVector>(model[6]);
-    theta = as<NumericVector>(model[7]);
-    phi = as<NumericVector>(model[8]);
-    delta = as<NumericVector>(model[9]);
+
+    alpha = Rcpp::clone(as<NumericVector>(model[6]));
+    theta = Rcpp::clone(as<NumericVector>(model[7]));
+    phi = Rcpp::clone(as<NumericVector>(model[8]));
+    delta = Rcpp::clone(as<NumericVector>(model[9]));
     dist = as<CharacterVector>(model[10]);
-    obs = as<NumericVector>(model[11]);
-    Rcout << "Old Constructor!!" <<std::endl;
+    obs = Rcpp::clone(as<NumericVector>(model[11]));
 }
 
 int mm_model::indN(int i, int j, int r)

@@ -24,7 +24,6 @@ public:
     int getNumStayers();
     double getStayerProb();
     int getStayerID();
-    void updateStayer();
 
     //set individual element
     void setP(double target);

@@ -90,26 +90,6 @@ mixedMemModel = function(Total, J, Rj, Nijr, K, Vj, alpha, theta, phi = NULL, de
                          fixedObs = NULL, P = NULL, beta = NULL)
 {
   # Checks if model defaults are used and fills in defaults
-  if(is.null(alpha))
-  {alpha = rep(1/K,K)}
-  
-  if(is.null(theta))
-  {
-    theta = array(0, dim = c(J,K,max(Vj)))
-    for(j in 1:J)
-    {
-      if(dist[j] != "bernoulli")
-      {
-        for(k in 1:K)
-        {
-          theta[j,k,] = c(gtools::rdirichlet(1,rep(1,Vj[j])), rep(0, max(Vj)-Vj[j]))
-        }
-      } else {
-        theta[j,,1] =rbeta(K,1,1)
-      }
-    }
-  }
-  
   if(is.null(delta))
   {
     delta = array(0, dim = c(Total,J, max(Rj), max(Nijr), K))
@@ -133,9 +113,20 @@ mixedMemModel = function(Total, J, Rj, Nijr, K, Vj, alpha, theta, phi = NULL, de
     phi = array(1/K, dim = c(Total,K))
   }
   #put objects in a list
-  model_obj = list(Total, J, Rj, Nijr, K, Vj, alpha, theta, phi, delta, dist, obs, fixedObs, P, beta);
-  names(model_obj) = c("Total", "J", "Rj", "Nijr", "K", "Vj", "alpha","theta", "phi",
-                       "delta", "dist" ,"obs", "fixedObs", "P", "beta")
+  if(is.null(fixedObs)){
+    model_obj = list(Total, J, Rj, Nijr, K, Vj,
+                     alpha + 1 -1, theta + 1 -1, phi + 1 -1, delta + 1 -1,
+                     dist, obs);
+    names(model_obj) = c("Total", "J", "Rj", "Nijr", "K", "Vj", "alpha","theta", "phi",
+                         "delta", "dist" ,"obs")
+  } else {
+    model_obj = list(Total, J, Rj, Nijr, K, Vj,
+                     alpha + 1 -1, theta + 1 -1, phi + 1 -1, delta + 1 -1,
+                     dist, obs, fixedObs,
+                     P+ 1 -1, beta + 1 -1);
+    names(model_obj) = c("Total", "J", "Rj", "Nijr", "K", "Vj", "alpha","theta", "phi",
+                         "delta", "dist" ,"obs", "fixedObs", "P", "beta")    
+  }
   class(model_obj) = "mixedMemModel"
   
   dimnames(model_obj$theta) <- list(paste("Var", c(1:J)),

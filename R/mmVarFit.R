@@ -102,29 +102,30 @@ mmVarFit = function(model, printStatus = 1,
                     maxLSIter = 400, elboTol = 1e-6, alphaTol = 1e-6,
                     thetaTol = 1e-10, aNaught = 1.0, tau = .899,
                     bMax = 3, bNaught = 1000.0, bMult = 1000.0, vCutoff = 13, holdConst = c(-1)) {
+  
   output = model
   names(output) = c("Total", "J", "Rj", "Nijr", "K", "Vj", "alpha","theta", "phi", "delta", "dist" ,"obs",
-                    "fixedObs", "P", "beta")
-  output$alpha = (model$alpha+0)
-  output$theta = (model$theta+ 1 - 1)
-  output$phi = (model$phi+0)
-  output$delta = (model$delta+0)
-  if(!is.null(model$P)){
-    output$P = model$P+0
-    output$beta = (model$beta+0)
+                    "fixedObs", "P", "beta")[1:length(model)]
+  output$alpha = model$alpha + 1 -1
+  output$theta = model$theta + 1 -1
+  output$phi = model$phi + 1 -1
+  output$delta = model$delta  + 1 -1
+  if(!is.null(model$fixedObs)){
+    output$P = model$P + 1 -1
+    output$beta = model$beta + 1 -1
   }
-
     
   checkModel(output) # R function which checks inputs
   print("Model Check: Ok!")
-  print("<== Beginning Model Fit! ==>")
   
-  if(is.null(fixedObs)){
+  
+  if(is.null(output$fixedObs)){
+    print("<== Beginning Model Fit! ==>")
     varInfInputC(output, printStatus, printMod, stepType, maxTotalIter, maxEIter, maxAlphaIter,
                  maxThetaIter, maxLSIter, elboTol, alphaTol, thetaTol, aNaught, tau, bMax, bNaught, 
                  bMult, vCutoff, holdConst) # R wrapper function
   } else {
-    print("<== Extended Model! ==>")
+    print("<== Beginning Extended Model Fit! ==>")
     varInfInputExtC(output, printStatus, printMod, stepType, maxTotalIter, maxEIter, maxAlphaIter,
                  maxThetaIter, maxLSIter, elboTol, alphaTol, thetaTol, aNaught, tau, bMax, bNaught, 
                  bMult, vCutoff, holdConst) # R wrapper function
