@@ -15,6 +15,7 @@ void updateBeta(mm_modelExt model) {
     Rcout<< "Beta Update: " <<exp(getStayerProb(model))<<endl;
     Rcout<< "P: " <<model.getP()<<endl;
     target = model.getP() / ( (1.0 - model.getP()) * exp(getStayerProb(model)) + model.getP());
+    Rcout << target <<endl;
     model.setBeta(target);
 }
 

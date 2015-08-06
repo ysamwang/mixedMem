@@ -68,6 +68,7 @@ double varInfExtC(mm_modelExt model, int print,
             }
 
             updateP(model);
+            Rcout<< "Updated P: " << compute_ELBOExt(model)<<endl;
             updateBeta(model);
             elbo_T = compute_ELBOExt(model);
             //print if necessary
@@ -126,10 +127,21 @@ double compute_ELBOExt(mm_modelExt model)
     t4 = 0.0;
 
     t1 = (T - model.getNumStayers()*model.getBeta())*(lgamma(sum(model.getAlpha())) - sum(lgamma(model.getAlpha())));
-    t5 = model.getNumStayers() * (model.getBeta()*log(model.getP()) + (1.0 - model.getBeta()) * log(1.0 - model.getP()) );
-    t5 += (T - model.getNumStayers()) * log(1.0 - model.getP());
-    t5 += -model.getNumStayers() * (model.getBeta()*log(model.getBeta()) + (1.0 - model.getBeta())*log(1.0-model.getBeta()));
+    t5 = model.getNumStayers() * (model.getBeta() * log(model.getP()) + (1.0 - model.getBeta()) * log(1.0 - model.getP()) );
+        if(!(t5> -INFINITY)) {
+        Rcout <<"Term 1"<<endl;
+    }
 
+    t5 += (T - model.getNumStayers()) * log(1.0 - model.getP());
+        if(!(t5> -INFINITY)) {
+        Rcout <<"Term 2"<<endl;
+    }
+
+    t5 += -model.getNumStayers() * (model.getBeta() * log(model.getBeta()) +  (model.getBeta() ? 0 : ((1.0 - model.getBeta())*log(1.0 - model.getBeta())) ) );
+
+    if(!(t5> -INFINITY)) {
+        Rcout <<"Term 3"<<endl;
+    }
     for(i = 0; i < T; i++) {
         phi_sum = 0.0;
         for(k = 0; k < K; k++) {
@@ -161,7 +173,7 @@ double compute_ELBOExt(mm_modelExt model)
     //compute 3rd line
     t3 = compute_logfExt(model);
 
-    elbo = t1 + t2 + t3 - t4;
+    elbo = t1 + t2 + t3 - t4 + t5;
 
     //debug!
     if(!(elbo > -INFINITY)) {
