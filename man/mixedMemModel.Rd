@@ -45,6 +45,14 @@ the variational parameters for the context vectors Z. The default initialization
 the observed data. For Bernoulli random variables, the data consist of 0/1's.
 For multinomial or rank data the data consist of integers 0,1,\ldots,(Vj[j]-1).}
 
+\item{fixedObs}{an array with dimensions (1, \code{J}, \code{max(Rj), \code{max(Nijr)}}) corresonding to the observed
+responses for a fixed group in the extended GoM model}
+
+\item{P}{scalar between 0 and 1 corresponding to initial value for the proportion of individuals in the fixed group}
+
+\item{beta}{scalar between 0 and 1 corresponding to the initial value of beta, the conditional probability of being in the fixed group
+for an individual who's observed responses match the fixed group.}
+
 \item{\code{Nijr}}{an array with dimension (\code{Total}, \code{J}, \code{max(Rj)}) indicating the number
 of ranking levels for each variable and each replication. For multinomial and Bernoulli
 variables, \code{Nijr}[i,j,r] = 1. For rank variables, \code{Nijr}[i,j,r] indicates the

@@ -12,6 +12,8 @@ void updateP(mm_modelExt model){
 //Updates Beta based on current model estimates
 void updateBeta(mm_modelExt model) {
     double target;
+    Rcout<< "Beta Update: " <<exp(getStayerProb(model))<<endl;
+    Rcout<< "P: " <<model.getP()<<endl;
     target = model.getP() / ( (1.0 - model.getP()) * exp(getStayerProb(model)) + model.getP());
     model.setBeta(target);
 }
@@ -70,15 +72,6 @@ double getStayerProb(mm_modelExt model){
     t3 = getStayer_logf(model, stayerID);
 
     elbo = t1 + t2 + t3 - t4;
-
-//debug!
-    if(!(elbo > -INFINITY)) {
-        Rcout<< t1 <<" "<<t2 <<" "<<t3 <<" "<<t4 <<endl<<"Alpha: "<<endl;
-        for(k = 0; k < K; k++) {
-            Rcout<<model.getAlpha(k)<<" ";
-        }
-        Rcout<<endl;
-    }
     return elbo;
 }
 

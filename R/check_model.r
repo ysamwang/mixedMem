@@ -13,7 +13,6 @@ checkModel = function(model)
   dist = tolower(model[[11]])
   obs = model[[12]]
   if (length(model) > 12) {
-    print("Extended check model")
     fixedObs = model[[13]]
     P = model[[14]]
     beta = model[[15]]

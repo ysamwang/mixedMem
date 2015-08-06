@@ -74,7 +74,7 @@ int mm_modelExt::getStayerID()
 
 int mm_modelExt::getStayers(int i)
 {
-    return stayers[i] ;
+    return stayers[i];
 }
 
 void mm_modelExt::setP(double target)

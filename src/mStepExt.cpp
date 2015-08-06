@@ -16,13 +16,13 @@ vec getGradExt(mm_modelExt model)
     double sum_alpha = sum(model.getAlpha());
     double dg_sum_alpha = digamma(sum_alpha);
     for(k = 0; k < K; k++) {
-        grad(k) = (T - model.getBeta() * model.getNumStayers()) *(dg_sum_alpha - digamma(model.getAlpha(k)));
+        grad(k) = (T - model.getBeta() * model.getNumStayers()) * (dg_sum_alpha - digamma(model.getAlpha(k)));
         for(i = 0; i < T; i++) {
             sum_phi = 0.0;
             for(c = 0; c < K; c++) {
                 sum_phi += model.getPhi(i,c);
             }
-            grad(k) += (model.getStayers(i) ? (1.0 - model.getBeta()) * (digamma(model.getPhi(i,k)) - digamma(sum_phi)) : (digamma(model.getPhi(i,k)) - digamma(sum_phi))) ;
+            grad(k) += (model.getStayers(i)) ? ((1.0 - model.getBeta()) * (digamma(model.getPhi(i,k)) - digamma(sum_phi))) : (digamma(model.getPhi(i,k)) - digamma(sum_phi)) ;
         }
     }
     return grad;
@@ -121,6 +121,7 @@ double mStepExt(mm_modelExt model, double elbo_T, int stepType, int maxAlphaIter
             iterReached[1] = 1;
         }
     } // End Alpha Update
+    Rcout << "Alpha Update: " <<compute_ELBOExt(model) <<endl;
 
     if ( (stepType == 1) || (stepType == 3) ) {
         updateThetaExt(model, maxThetaIter, maxLSIter, thetaTol, aNaught, tau,
@@ -128,6 +129,7 @@ double mStepExt(mm_modelExt model, double elbo_T, int stepType, int maxAlphaIter
     }
 
     double elbo = compute_ELBOExt(model);
+    Rcout<< "Update Theta " <<elbo << endl;
     return elbo;
 } //end m-step
 
@@ -180,14 +182,14 @@ void updateThetaExt(mm_modelExt model, int maxThetaIter,
             for(k = 0; k < K; k++) {
                 if(is_true( all(k != holdConst) ) ) {
                     theta_sum = 0.0;
-                    for(v = 0; v< model.getV(j); v++) {
+                    for(v = 0; v < model.getV(j); v++) {
                         model.setTheta(j, k, v, 0.0);
                     }
 
                     for(i = 0; i < model.getT(); i++) {
-                        for(r = 0; r<model.getR(j); r++) {
-                            model.incTheta(j,k,model.getObs(i,j,r,n), model.getDelta(i,j,r,n,k) * (model.getStayers(i) ? 1.0 - model.getBeta() : 1.0) );
-                            theta_sum += model.getDelta(i,j,r,n,k) * (model.getStayers(i) ? 1.0 - model.getBeta() : 1.0 );
+                        for(r = 0; r < model.getR(j); r++) {
+                            model.incTheta(j, k, model.getObs(i,j,r,n), model.getDelta(i,j,r,n,k) * (model.getStayers(i) ? (1.0 - model.getBeta()) : 1.0) );
+                            theta_sum += model.getDelta(i,j,r,n,k) * (model.getStayers(i) ? (1.0 - model.getBeta()) : 1.0 );
                         }
                     }
                     model.normalizeTheta(j, k, theta_sum);
