@@ -4,7 +4,7 @@
 //Updates P based on current model estimates
 void updateP(mm_modelExt model){
     double target;
-    target = model.getNumStayers() * model.getBeta() / model.getT();
+    target = (model.getNumStayers() * model.getBeta()) / model.getT();
     model.setP(target);
 }
 
@@ -12,8 +12,6 @@ void updateP(mm_modelExt model){
 //Updates Beta based on current model estimates
 void updateBeta(mm_modelExt model) {
     double target;
-    Rcout<< "Beta Update: " <<exp(getStayerProb(model))<<endl;
-    Rcout<< "P: " <<model.getP()<<endl;
     target = model.getP() / ( (1.0 - model.getP()) * exp(getStayerProb(model)) + model.getP());
     Rcout << target <<endl;
     model.setBeta(target);
@@ -56,7 +54,7 @@ double getStayerProb(mm_modelExt model){
         t1+= (model.getAlpha(k) - 1.0) * back_term;
 
         t4 += -lgamma(phi_ik);
-        t4 += (phi_ik - 1.0)*back_term;
+        t4 += (phi_ik - 1.0) * back_term;
 
         for(j = 0; j < J; j++) {
             for(r = 0; r < model.getR(j); r++) {

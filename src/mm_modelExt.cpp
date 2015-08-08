@@ -9,17 +9,18 @@ mm_modelExt::mm_modelExt(List model) : mm_model::mm_model(model)
     fixedObs = Rcpp::clone(as<NumericVector>(model[12]));
     P = Rcpp::clone(as<NumericVector>(model[13]));
     beta =  Rcpp::clone(as<NumericVector>(model[14]));
-    NumericVector stayers(T);
+    NumericVector stayersTemp(T);
     stayerID = 0;
     int i, check;
     check = 1;
     for(i = 0; i < T; i++) {
-        stayers[i] = checkIndStayer(i);
+        stayersTemp[i] = checkIndStayer(i);
         if(check && stayers[i]) {
             stayerID = i;
             check = 0;
         }
     }
+    stayers = Rcpp::clone(as<NumericVector>(stayersTemp));
     numStayers = (int) std::accumulate(stayers.begin(), stayers.end(), 0.0);
 
 }
@@ -74,7 +75,7 @@ int mm_modelExt::getStayerID()
 
 int mm_modelExt::getStayers(int i)
 {
-    return stayers[i];
+    return (int) stayers[i];
 }
 
 void mm_modelExt::setP(double target)

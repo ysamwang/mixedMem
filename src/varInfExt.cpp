@@ -9,6 +9,8 @@ double varInfExtC(mm_modelExt model, int print,
                double tau, int bMax, double bNaught, double bMult, int vCutoff, NumericVector holdConst)
 {
 
+
+
     /*
     * Initializations
     */
@@ -18,6 +20,7 @@ double varInfExtC(mm_modelExt model, int print,
     double elbo_T = compute_ELBOExt(model); //updated Elbo
     int k; //indexing variable
     int nT = 0; //count of Total EM Steps
+
 
     //only run an E-step
     if (stepType == 0) {
@@ -53,9 +56,12 @@ double varInfExtC(mm_modelExt model, int print,
                 Rcout<<"E-Step: "<<elbo_T<<endl;
             }
 
+            Rcout<<"beta: "<<model.getBeta()<<endl;
+
             //M-step; choice of which parameters to update handled inside mStep_C function
             elbo_T = mStepExt(model, elbo_T, stepType, maxAlphaIter, maxThetaIter, maxLSIter,
                              alphaTol, thetaTol, aNaught, tau, bMax, bNaught, bMult, vCutoff, holdConst, iterReached); //defined in mStep.cpp
+            Rcout<<"beta Done: "<<model.getBeta()<<endl;
 
             //print if necessary
             if((nT % printMod == 0) && (print == 1)) {
@@ -68,12 +74,12 @@ double varInfExtC(mm_modelExt model, int print,
             }
 
             updateP(model);
-            Rcout<< "Updated P: " << compute_ELBOExt(model)<<endl;
             updateBeta(model);
             elbo_T = compute_ELBOExt(model);
             //print if necessary
             if((nT % printMod == 0) && (print==1)) {
                 Rcout<<"X-Step: "<<elbo_T<<endl;
+                Rcout<<model.getP() <<" : " <<model.getBeta()<<endl;
             }
 
             //update convergence criteria

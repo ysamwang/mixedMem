@@ -48,6 +48,8 @@ double mStepExt(mm_modelExt model, double elbo_T, int stepType, int maxAlphaIter
                double alphaTol, double thetaTol, double aNaught, double tau,
                int bMax, double bNaught, double bMult, int vCutoff, NumericVector holdConst, NumericVector iterReached)
 {
+    Rcout<<"beta Inner: "<<model.getBeta()<<endl;
+
     int K = model.getK();
     vec grad = vec(K);
     mat hess = mat(K, K);
@@ -188,8 +190,13 @@ void updateThetaExt(mm_modelExt model, int maxThetaIter,
 
                     for(i = 0; i < model.getT(); i++) {
                         for(r = 0; r < model.getR(j); r++) {
-                            model.incTheta(j, k, model.getObs(i,j,r,n), model.getDelta(i,j,r,n,k) * (model.getStayers(i) ? (1.0 - model.getBeta()) : 1.0) );
-                            theta_sum += model.getDelta(i,j,r,n,k) * (model.getStayers(i) ? (1.0 - model.getBeta()) : 1.0 );
+                                if( model.getStayers(i)){
+                                    model.incTheta(j, k, model.getObs(i,j,r,n), model.getDelta(i,j,r,n,k) * (1.0 - model.getBeta()));
+                                    theta_sum += model.getDelta(i,j,r,n,k) * (1.0 - model.getBeta());
+                                } else {
+                                   model.incTheta(j, k, model.getObs(i,j,r,n), model.getDelta(i,j,r,n,k));
+                                   theta_sum += model.getDelta(i,j,r,n,k);
+                                }
                         }
                     }
                     model.normalizeTheta(j, k, theta_sum);
