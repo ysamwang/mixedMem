@@ -239,14 +239,14 @@ out$alpha
 
 \subsubsection{Visual Representation of $\hat \theta$}
 
-We can now plot our estimated $\hat \theta$ values and compare them to the values found in the original analysis. In figures \ref{fig:theta}, each row of plots represents an individual question, the columns represent each of the identified sub-populations and the plots show the sub-population's response probability for each variable. The black dots indicate the values estimated using \texttt{mixedMem} and the red X's indicate the values reported by \citep{grossManriqueVallier}. Note that Gross and Manrique-Vallier do not report values for group 3 for reasons discussed in subsection \ref{alphaHat}. Recall that 0 indicates ``agree" and 2 indicates ``disagree".
+We can now plot our estimated $\hat \theta$ values and compare them to the values found in the original analysis. In Figure \ref{fig:theta}, each row of plots represents an individual question, the columns represent each of the identified sub-populations and the plots show the sub-population's response probability for each variable. The black dots indicate the values estimated using \texttt{mixedMem} and the red X's indicate the values reported by \citep{grossManriqueVallier}. Note that Gross and Manrique-Vallier do not report values for group 3 for reasons discussed in subsection \ref{alphaHat}. Recall that 0 indicates ``agree" and 2 indicates ``disagree".
 
-<<theta, fig.height = 7, fig.width = 7, fig.align = 'center', fig.cap = "Individuals were asked to indicate their level of agreement with 19 opinion based statements. The fitted multinomial response probabilities for each ideology bloc to each of the first 10 statements are displayed. On the horizontal axis, 0 indicates agree, 1 indicates can't decide, and 2 indicates disagree. The estimates from our variational analysis are denoted by the dots, the Gross and Manrique-Vallier results using MCMC are shown by the red X's. Since they do not report estimates for Group 3, the Can't Decide group, those estimates are shown as 0's.">>=
+<<theta, fig.height = 7, fig.width = 7, fig.align = 'center', fig.cap = "Individuals were asked to indicate their level of agreement with 19 opinion based statements. The fitted multinomial response probabilities for each ideology bloc to each of the first 10 statements are displayed. On the horizontal axis, 0 indicates agree, 1 indicates can't decide, and 2 indicates disagree. The estimates from our variational analysis are denoted by the dots, the Gross and Manrique-Vallier results using MCMC are shown by the red X's. Since they do not report estimates for Group 3, the Can't Decide group, those estimates are shown as 0's. The estimates for the first 10 questions are shown.">>=
 plot(out.permute, type = "theta", compare = gmv_theta, varNames = colnames(ANES),
-         groupNames = c("Conservative", "Liberal", "Undecided"), nrow = 10)
+         groupNames = c("Conservative", "Liberal", "Undecided"), nrow = 10, indices = c(1:10))
 @
 
-When examining the estimates of $\hat \theta$, we can see from figure \ref{fig:consprop} that of the 19 variables, the statements most likely to elicit agreement from sub-population 1 are statement \texttt{IND1} (``Any person who is willing to work hard has a good chance of succeeding"), \texttt{IND3} (``Most people who don't get ahead should not blame the system; they really have only themselves to blame") and \texttt{ENT1} (``The less government gets involved with business and the economy, the better off this country will be"). Using traditional political ideology labels, sub-population 1 could be identified as the conservative bloc. In figure \ref{fig:consprop}, bars shown in green indicate question to which sub-population 1 is more likely to agree ($\theta_{j,1,1} \geq .5$) and bars shown in red indicate questions to which the sub-population is not likely to agree.
+When examining the estimates of $\hat \theta$, we can see from Figure \ref{fig:consprop} that of the 19 variables, the statements most likely to elicit agreement from sub-population 1 are statement \texttt{IND1} (``Any person who is willing to work hard has a good chance of succeeding"), \texttt{IND3} (``Most people who don't get ahead should not blame the system; they really have only themselves to blame") and \texttt{ENT1} (``The less government gets involved with business and the economy, the better off this country will be"). Using traditional political ideology labels, sub-population 1 could be identified as the conservative bloc. In Figure \ref{fig:consprop}, bars shown in green indicate question to which sub-population 1 is more likely to agree ($\theta_{j,1,1} \geq .5$) and bars shown in red indicate questions to which the sub-population is not likely to agree.
 
 <<consprop, fig.width = 4, fig.height = 4, fig.align='center', fig.cap = "Propensity to agree with each opinion-based statement for the conservative bloc">>=
 pop1VarOrder <- colnames(ANES)[order(out.permute$theta[, 1, 1], decreasing = T)]
@@ -258,7 +258,7 @@ barplot(height = pop1VarAgree, names.arg = pop1VarOrder,
         col = ifelse(pop1VarAgree > .5, "forestgreen", "darkred"))
 @
 
-We can see from figure \ref{fig:libprop} that for sub-population 2, the statements most likely to elicit agreement are statements \texttt{EQ7} (``One of the big problems in this country is that we don't give everyone an equal chance"), \texttt{IND6} (``Even if people try hard, they often cannot reach their goals
+We can see from Figure \ref{fig:libprop} that for sub-population 2, the statements most likely to elicit agreement are statements \texttt{EQ7} (``One of the big problems in this country is that we don't give everyone an equal chance"), \texttt{IND6} (``Even if people try hard, they often cannot reach their goals
 ") and \texttt{EQ1} (``If people were treated more equally in this country, we would have many fewer problems
 "). Sub-population 2 could be identified as the liberal bloc. 
 
@@ -305,7 +305,7 @@ We might also be interested in seeing which questions are the most polarizing (t
 H(P,Q) = \frac{1}{\sqrt{2}}\sqrt{\sum_i \left(\sqrt{p_i} - \sqrt{q_i}\right)^2}.
 \end{equation}
 
-A Hellinger distance close to 1 indicates that two probability distributions are dissimilar, while a Hellinger distance close to 0 indicates that the two probaility distirbutions are similar. We can see in figure \ref{fig:polarizing} that the three most polarizing questions, as measured by the Hellinger distance, are statements \texttt{IND5} (``If people work hard, they almost always get what they want"), \texttt{IND3} (``Most people who don't get ahead should not blame the system; they really have only themselves to blame") and \texttt{EQ7} (``One of the big problems in this country is that we don't give everyone an equal chance"). Thus, it would seem that the most polarizing issues in 1983 revolved around access and opportunity for advancement.
+A Hellinger distance close to 1 indicates that two probability distributions are dissimilar, while a Hellinger distance close to 0 indicates that the two probaility distirbutions are similar. We can see in Figure \ref{fig:polarizing} that the three most polarizing questions, as measured by the Hellinger distance, are statements \texttt{IND5} (``If people work hard, they almost always get what they want"), \texttt{IND3} (``Most people who don't get ahead should not blame the system; they really have only themselves to blame") and \texttt{EQ7} (``One of the big problems in this country is that we don't give everyone an equal chance"). Thus, it would seem that the most polarizing issues in 1983 revolved around access and opportunity for advancement.
 
 <<polarizing, fig.width = 4, fig.height = 4, fig.align = 'center', fig.cap = "Using Hellinger distance indicates that the most polarizing statements are IND 5, IND 3, and EQ 7. These were all issues involving opportunity for advancement">>=
 hellingerDist <- (1/sqrt(2)) * sqrt(rowSums( (sqrt(out.permute$theta[, 1, ]) 
@@ -321,7 +321,7 @@ colnames(ANES)[order(hellingerDist, decreasing = T)][1:3]
 
 \subsection{Visualizing Group Dispersion}
 
-For the groups memberships for individuals, we use the posterior mean, $\frac{\hat \phi_i}{\sum_k \hat \phi_{i,k}}$ as point estimates for $\lambda_i$. Plotting the poster mean of each individual in figure \ref{fig:mems}, we can see a fair amount of intra-individual mixing. \Sexpr{sum(lambda.point[, 1] > .4 & lambda.point[, 2] > .4)} out of the \Sexpr{Total} individuals have estimated memberships of at least 40\% in both the conservative and liberal blocs. This is not particularly uprising since we observed relatively large values of $\hat \alpha_1$ and $\hat \alpha_2$.
+For the groups memberships for individuals, we use the posterior mean, $\frac{\hat \phi_i}{\sum_k \hat \phi_{i,k}}$ as point estimates for $\lambda_i$. Plotting the poster mean of each individual in Figure \ref{fig:mems}, we can see a fair amount of intra-individual mixing. \Sexpr{sum(lambda.point[, 1] > .4 & lambda.point[, 2] > .4)} out of the \Sexpr{Total} individuals have estimated memberships of at least 40\% in both the conservative and liberal blocs. This is not particularly uprising since we observed relatively large values of $\hat \alpha_1$ and $\hat \alpha_2$.
 <<>>=
 # number of individuals with at least 40% membership in
 # both conservative and liberal blocs
@@ -332,7 +332,7 @@ sum( (lambda.point[, 1] > .4) & (lambda.point[, 2] > .4))
 plot(out.permute, type = "membership", indices = c(1:20), nrow = 5, ncol = 4, main = "Estimated Memberships",
      groupNames = c("Cons", "Lib", "Cant Decide"), fitNames = c("mixedMem"))
 @
-We can also plot the ``empirical CDF" of estimated membership in conservative bloc as shown in figure \ref{fig:posteriorMem}. Since the marginal distribution of a Dirichlet distribution is a Beta distribution, we can also plot the 95\% credible intervals for the posterior membership in the conservative bloc. We observe that there is still a relatively large amount of uncertainty in the estimated membership of each individual.
+We can also plot the ``empirical CDF" of estimated membership in conservative bloc as shown in Figure \ref{fig:posteriorMem}. Since the marginal distribution of a Dirichlet distribution is a Beta distribution, we can also plot the 95\% credible intervals for the posterior membership in the conservative bloc. We observe that there is still a relatively large amount of uncertainty in the estimated membership of each individual.
 
 
 <<posteriorMem, fig.cap = "We observe a relatively high rate of intra-individual mixing", fig.width = 5, fig.align = 'center', fig.height = 5>>=
@@ -359,7 +359,7 @@ legend("bottomright", legend = c("posterior mean", "95% CI"), pch = c(19, NA),
 
 
 \subsection{Comparison of MCMC and Variational Results}
-Comparing the results of the MCMC analysis by \cite{grossManriqueVallier} to the results from our variational analysis, we see they are very similar. In both analyses, we identify two dominant profiles- a conservative bloc and a liberal bloc- as well as a much smaller undecided faction. As can be seen in figure 2, the variational estimates of $\theta$ agree well with the MCMC estimates.
+Comparing the results of the MCMC analysis by \cite{grossManriqueVallier} to the results from our variational analysis, we see they are very similar. In both analyses, we identify two dominant profiles- a conservative bloc and a liberal bloc- as well as a much smaller undecided faction. As can be seen in Figure 2, the variational estimates of $\theta$ agree well with the MCMC estimates.
 
 Since Gross and Manrique-Vallier utilize a fully Bayesian specification, they  are able to utilize a hypothesis testing framework with $\theta$ to find the most polarizing issues. Because the variational analysis only provides point estimates of $\theta$, we used Hellinger distances instead. However, both analyses agree that the three most polarizing statements are  \texttt{IND5}, \texttt{IND3} and \texttt{EQ7}.
 
