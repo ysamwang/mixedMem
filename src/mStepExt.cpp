@@ -48,7 +48,6 @@ double mStepExt(mm_modelExt model, double elbo_T, int stepType, int maxAlphaIter
                double alphaTol, double thetaTol, double aNaught, double tau,
                int bMax, double bNaught, double bMult, int vCutoff, NumericVector holdConst, NumericVector iterReached)
 {
-    Rcout<<"beta Inner: "<<model.getBeta()<<endl;
 
     int K = model.getK();
     vec grad = vec(K);
@@ -123,7 +122,6 @@ double mStepExt(mm_modelExt model, double elbo_T, int stepType, int maxAlphaIter
             iterReached[1] = 1;
         }
     } // End Alpha Update
-    Rcout << "Alpha Update: " <<compute_ELBOExt(model) <<endl;
 
     if ( (stepType == 1) || (stepType == 3) ) {
         updateThetaExt(model, maxThetaIter, maxLSIter, thetaTol, aNaught, tau,
@@ -131,7 +129,6 @@ double mStepExt(mm_modelExt model, double elbo_T, int stepType, int maxAlphaIter
     }
 
     double elbo = compute_ELBOExt(model);
-    Rcout<< "Update Theta " <<elbo << endl;
     return elbo;
 } //end m-step
 

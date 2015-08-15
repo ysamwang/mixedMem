@@ -16,7 +16,6 @@ double varInfC(mm_model model, int print,
     double converged_T = 1.0; //convergence criteria: (old_elbo_T - elbo_T)/old_elbo_T
     double old_elbo_T = 0.0; //value of elbo from previous iteration
     double elbo_T = compute_ELBO(model); //updated Elbo
-    int k; //indexing variable
     int nT = 0; //count of Total EM Steps
 
     //only run an E-step
@@ -54,11 +53,6 @@ double varInfC(mm_model model, int print,
             //print if necessary
             if((nT % printMod == 0) && (print == 1)) {
                 Rcout<<"M-Step: "<<elbo_T<<endl;
-
-                for(k =0; k < model.getK(); k++) {
-                    Rcout<<model.getAlpha(k)<<" ";
-                }
-                Rcout<<endl;
             }
 
             //update convergence criteria

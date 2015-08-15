@@ -50,9 +50,9 @@ double eStepExt(mm_modelExt model, double elbo_E, int maxEIter, double elboTol, 
                         //update deltas
                         for(k = 0; k <  K; k++)
                         {
-                            placeholder = exp(digamma(model.getPhi(i,k)) - phi_sum_dg + dl_ddeltaExt(model, i, j,r,n,k));
+                            placeholder = exp((model.getStayers(i) ? (1.0 - model.getBeta()) : 1.0) * (digamma(model.getPhi(i,k)) - phi_sum_dg + dl_ddeltaExt(model, i, j,r,n,k)));
                             model.setDelta(i,j,r,n,k, placeholder);
-                            delta_sum += model.getDelta(i,j,r,n,k);
+                            delta_sum += placeholder;
                         }
                         model.normalizeDelta(i,j,r,n,delta_sum);
                     }
@@ -67,7 +67,7 @@ double eStepExt(mm_modelExt model, double elbo_E, int maxEIter, double elboTol, 
         {
             for(k = 0; k < K; k++)
             {
-                model.setPhi(i,k, model.getAlpha(k));
+                model.setPhi(i,k, (model.getStayers(i) ? (1.0 - model.getBeta()) : 1.0) * (model.getAlpha(k) - 1.0) + 1.0);
             }
         }
 
@@ -82,7 +82,7 @@ double eStepExt(mm_modelExt model, double elbo_E, int maxEIter, double elboTol, 
                     {
                         for(k = 0; k < K; k ++)
                         {
-                            model.incPhi(i,k, model.getDelta(i,j,r,n,k)) ;
+                            model.incPhi(i,k, (model.getStayers(i) ? (1.0 - model.getBeta()) : 1.0) * model.getDelta(i,j,r,n,k) ) ;
                         }
                     }
                 }

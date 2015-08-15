@@ -18,7 +18,6 @@ double varInfExtC(mm_modelExt model, int print,
     double converged_T = 1.0; //convergence criteria: (old_elbo_T - elbo_T)/old_elbo_T
     double old_elbo_T = 0.0; //value of elbo from previous iteration
     double elbo_T = compute_ELBOExt(model); //updated Elbo
-    int k; //indexing variable
     int nT = 0; //count of Total EM Steps
 
 
@@ -56,21 +55,15 @@ double varInfExtC(mm_modelExt model, int print,
                 Rcout<<"E-Step: "<<elbo_T<<endl;
             }
 
-            Rcout<<"beta: "<<model.getBeta()<<endl;
+
 
             //M-step; choice of which parameters to update handled inside mStep_C function
             elbo_T = mStepExt(model, elbo_T, stepType, maxAlphaIter, maxThetaIter, maxLSIter,
                              alphaTol, thetaTol, aNaught, tau, bMax, bNaught, bMult, vCutoff, holdConst, iterReached); //defined in mStep.cpp
-            Rcout<<"beta Done: "<<model.getBeta()<<endl;
 
             //print if necessary
             if((nT % printMod == 0) && (print == 1)) {
                 Rcout<<"M-Step: "<<elbo_T<<endl;
-
-                for(k =0; k < model.getK(); k++) {
-                    Rcout<<model.getAlpha(k)<<" ";
-                }
-                Rcout<<endl;
             }
 
             updateP(model);
@@ -79,7 +72,6 @@ double varInfExtC(mm_modelExt model, int print,
             //print if necessary
             if((nT % printMod == 0) && (print==1)) {
                 Rcout<<"X-Step: "<<elbo_T<<endl;
-                Rcout<<model.getP() <<" : " <<model.getBeta()<<endl;
             }
 
             //update convergence criteria
@@ -159,7 +151,12 @@ double compute_ELBOExt(mm_modelExt model)
         for(k = 0; k < K; k++) {
             phi_ik = model.getPhi(i,k);
             back_term = (boost::math::digamma(phi_ik) - dg_phi_sum);
-            t1 += (model.getAlpha(k) - 1.0) * back_term  * (model.getStayers(i) ? (1.0 - model.getBeta()) : 1.0);
+            if(model.getStayers(i)) {
+                t1 += (model.getAlpha(k) - 1.0) * back_term  * (1.0 - model.getBeta());
+            } else {
+                 t1 += (model.getAlpha(k) - 1.0) * back_term;
+            }
+
             t4 += -lgamma(phi_ik);
             t4 += (phi_ik - 1.0)*back_term;
 

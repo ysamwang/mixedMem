@@ -48,7 +48,7 @@ vizTheta = function(model, compare = NULL, main = "Estimated Theta",
     }
   }
   
-  par(oma = c(3,5,3,1), mfrow = c(nrow, model$K), mar = rep(.1,4))
+  graphics::par(oma = c(3,5,3,1), mfrow = c(nrow, model$K), mar = rep(.1,4))
   count = 1
   for(j in indices)
   {
@@ -56,67 +56,67 @@ vizTheta = function(model, compare = NULL, main = "Estimated Theta",
     {
       for(k in 1:model$K)
       {
-        plot(model$theta[j,k,], type = "p", lwd = 2, col = "black", ylim = c(-v.space, 1+v.space), xlim = c(h.space, model$Vj[j] + h.space),
+        graphics::plot(model$theta[j,k,], type = "p", lwd = 2, col = "black", ylim = c(-v.space, 1+v.space), xlim = c(h.space, model$Vj[j] + h.space),
              yaxt = "n", xaxt = "n", pch = 16)
         if(!is.null(compare)) {
-          points(c(1:model$Vj[j]), compare[j,k,c(1:model$Vj[j])], col = "red", pch = 4, lwd = 1.5)
+          graphics::points(c(1:model$Vj[j]), compare[j,k,c(1:model$Vj[j])], col = "red", pch = 4, lwd = 1.5)
         }
         if (k == 1) {
-          mtext(varNames[j], line = 3, side = 2, cex = .7)
-          axis(side = 2, at = c(0,.5,1), labels = c(0,.5,1))
+          graphics::mtext(varNames[j], line = 3, side = 2, cex = .7)
+          graphics::axis(side = 2, at = c(0,.5,1), labels = c(0,.5,1))
         }
         if(count == indices[length(indices)]| (count %% nrow) == 0) {
-          mtext(paste(groupNames[k], sep = " "), line = .2, side = 1, cex = 1-min(model$J,10)*.4)
+          graphics::mtext(paste(groupNames[k], sep = " "), line = .2, side = 1, cex = 1-min(model$J,10)*.4)
         }
       }
     } else if (model$dist[j] == "bernoulli") {
       for(k in 1:model$K) {
-        plot(model$theta[j,k,], type = "p", lwd = 2, col = "black", ylim = c(-v.space,1+ v.space), xlim = c(h.space, 1 + h.space),
+        graphics::plot(model$theta[j,k,], type = "p", lwd = 2, col = "black", ylim = c(-v.space,1+ v.space), xlim = c(h.space, 1 + h.space),
              yaxt = "n", xaxt = "n", pch = 16)
         if(!is.null(compare)) {
-          points(c(1:model$Vj[j]), compare[j,k,], col = "red", pch = 4, lwd = 1.5)
+          graphics::points(c(1:model$Vj[j]), compare[j,k,], col = "red", pch = 4, lwd = 1.5)
         }
         if(k == 1){
-          mtext(varNames[j], line = 3, side = 2, cex = .7)
-          axis(side = 2, at = c(0,.5,1), labels = c(0,.5,1))
+          graphics::mtext(varNames[j], line = 3, side = 2, cex = .7)
+          graphics::axis(side = 2, at = c(0,.5,1), labels = c(0,.5,1))
         }
         if(count == indices[length(indices)]| (count %% nrow) == 0) {
-          mtext(paste(groupNames[k], sep = " "), line = .2, side = 1, cex = .8)
+          graphics::mtext(paste(groupNames[k], sep = " "), line = .2, side = 1, cex = .8)
         }
       }
     } 
     if((count %% nrow) == 0) {
-      title(main = main, outer = T, cex = 1.2)      
-      par(fig = c(0, 1, 0, 1), oma = c(0,5,0,1), mar = rep(0, 4), new = T)
+      graphics::title(main = main, outer = T, cex = 1.2)      
+      graphics::par(fig = c(0, 1, 0, 1), oma = c(0,5,0,1), mar = rep(0, 4), new = T)
       
-      plot(0, 0, type = "n", bty = "n", xaxt ="n", yaxt = "n")
+      graphics::plot(0, 0, type = "n", bty = "n", xaxt ="n", yaxt = "n")
       
       if(is.null(compare)){
-        legend("bottom", legend = fitNames, pch = 19,
+        graphics::legend("bottom", legend = fitNames, pch = 19,
                col = "black", cex = .8)
         
       } else {
-        legend("bottom", legend = fitNames,
+        graphics::legend("bottom", legend = fitNames,
                pch = c(19, 4), col = c("black", "red"), ncol = 2, cex = .8)
       }
-      par(oma = c(3,5,3,1), mfrow = c(nrow, model$K), mar = rep(.1,4))
+      graphics::par(oma = c(3,5,3,1), mfrow = c(nrow, model$K), mar = rep(.1,4))
     }
     count = count + 1
   }
-  title(main = main, outer = T, cex = 1.2)      
-  par(fig = c(0, 1, 0, 1), oma = c(0,5,0,1), mar = rep(0, 4), new = T)
+  graphics::title(main = main, outer = T, cex = 1.2)      
+  graphics::par(fig = c(0, 1, 0, 1), oma = c(0,5,0,1), mar = rep(0, 4), new = T)
   
-  plot(0, 0, type = "n", bty = "n", xaxt ="n", yaxt = "n")
+  graphics::plot(0, 0, type = "n", bty = "n", xaxt ="n", yaxt = "n")
   
   if(is.null(compare)){
-    legend("bottom", legend = fitNames, pch = 19,
+    graphics::legend("bottom", legend = fitNames, pch = 19,
            col = "black", cex = .8)
     
   } else {
-    legend("bottom", legend = fitNames,
+    graphics::legend("bottom", legend = fitNames,
            pch = c(19, 4), col = c("black", "red"), ncol = 2, cex = .8)
   }
-  par(oma = c(3,5,3,1), mfrow = c(nrow, model$K), mar = rep(.1,4))
+  graphics::par(oma = c(3,5,3,1), mfrow = c(nrow, model$K), mar = rep(.1,4))
 }
 
 
@@ -177,57 +177,57 @@ vizMem <- function(model, compare = NULL, main = "Estimated Membership",
   
   mem.est <- model$phi / rowSums(model$phi)
   
-  par(oma = c(3,5,3,1), mfrow = c(nrow, ncol), mar = rep(.1,4))
+  graphics::par(oma = c(3,5,3,1), mfrow = c(nrow, ncol), mar = rep(.1,4))
   count <- 0
   for(i in indices)
   {
     count <- count + 1
     
-    plot(mem.est[i,], type = "p", lwd = 2, col = "black", ylim = c(-v.space,1 + v.space), xlim = c(h.space, model$K + h.space),
+    graphics::plot(mem.est[i,], type = "p", lwd = 2, col = "black", ylim = c(-v.space,1 + v.space), xlim = c(h.space, model$K + h.space),
          yaxt = "n", xaxt = "n", pch = pch.list)
-    text(0, 1, labels = i , cex = .9, adj = c(0, 1), pos = 4)
+    graphics::text(0, 1, labels = i , cex = .9, adj = c(0, 1), pos = 4)
     if((count %% ncol) == 1) {
-      axis(2, at = c(0,.5,1), labels = c(0,.5,1), cex = 1)
+      graphics::axis(2, at = c(0,.5,1), labels = c(0,.5,1), cex = 1)
     }
     
     if(!is.null(compare)){
-      points(c(1:model$K), compare[i,], col = "red", pch = pch.list)
+      graphics::points(c(1:model$K), compare[i,], col = "red", pch = pch.list)
     }
     if((count %%(nrow*ncol)) == 0)
     {
-      title(main = main, outer = T, cex = 1.2)
-      mtext("Group Membership", side = 2, outer = T, line = 3)
-      mtext("Groups", side = 1, outer = T, line = 0)
+      graphics::title(main = main, outer = T, cex = 1.2)
+      graphics::mtext("Group Membership", side = 2, outer = T, line = 3)
+      graphics::mtext("Groups", side = 1, outer = T, line = 0)
       
-      par(fig = c(0, 1, 0, 1), oma = c(0,5,0,1), mar = rep(0, 4), new = T)
+      graphics::par(fig = c(0, 1, 0, 1), oma = c(0,5,0,1), mar = rep(0, 4), new = T)
       
-      plot(0, 0, type = "n", bty = "n", xaxt ="n", yaxt = "n")
+      graphics::plot(0, 0, type = "n", bty = "n", xaxt ="n", yaxt = "n")
       if(is.null(compare)){
-        legend("bottom", legend = paste(fitNames[1], groupNames), pch = pch.list[1:model$K],
+        graphics::legend("bottom", legend = paste(fitNames[1], groupNames), pch = pch.list[1:model$K],
                col = rep("black", model$K), cex = .8, ncol = model$K)
         
       } else {
-        legend("bottom", legend = c(paste(fitNames[1], groupNames),paste(fitNames[2], groupNames) ),
+        graphics::legend("bottom", legend = c(paste(fitNames[1], groupNames),paste(fitNames[2], groupNames) ),
                pch = pch.list[1:model$K], col = rep(c("black", "red"), each = model$K), ncol = model$K, cex = .8)
       }
-      par(oma = c(3,5,3,1), mfrow = c(nrow, ncol), mar = rep(.1,4))
+      graphics::par(oma = c(3,5,3,1), mfrow = c(nrow, ncol), mar = rep(.1,4))
     }
   }
-  title(main = main, outer = T, cex = 1.2)
-  mtext("Group Membership", side = 2, outer = T, line = 3)
-  mtext("Groups", side = 1, outer = T, line = 0)
+  graphics::title(main = main, outer = T, cex = 1.2)
+  graphics::mtext("Group Membership", side = 2, outer = T, line = 3)
+  graphics::mtext("Groups", side = 1, outer = T, line = 0)
   
-  par(fig = c(0, 1, 0, 1), oma = c(0,5,0,1), mar = rep(0, 4), new = T)
+  graphics::par(fig = c(0, 1, 0, 1), oma = c(0,5,0,1), mar = rep(0, 4), new = T)
   
-  plot(0, 0, type = "n", bty = "n", xaxt ="n", yaxt = "n")
+  graphics::plot(0, 0, type = "n", bty = "n", xaxt ="n", yaxt = "n")
   
   if(is.null(compare)){
-    legend("bottom", legend = paste(fitNames[1], groupNames), pch = pch.list[1:model$K],
+    graphics::legend("bottom", legend = paste(fitNames[1], groupNames), pch = pch.list[1:model$K],
            col = rep("black", model$K), cex = .8, ncol = model$K)
     
   } else {
-    legend("bottom", legend = c(paste(fitNames[1], groupNames),paste(fitNames[2], groupNames) ),
+    graphics::legend("bottom", legend = c(paste(fitNames[1], groupNames),paste(fitNames[2], groupNames) ),
            pch = pch.list[1:model$K], col = rep(c("black", "red"), each = model$K), ncol = model$K, cex = .8)
   }
-  par(oma = c(3,5,3,1), mfrow = c(nrow, ncol), mar = rep(.1,4))
+  graphics::par(oma = c(3,5,3,1), mfrow = c(nrow, ncol), mar = rep(.1,4))
 }
