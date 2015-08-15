@@ -51,7 +51,8 @@ out <- mmVarFit(test_model)
 opt.perm <- findLabels(out, theta_truth)
 opt.perm
 
-# produce mixedMemModel object with sub-population labels permuted to best match the comparison model
+# produce mixedMemModel object with sub-population labels permuted to best match
+# the comparison model
 out = permuteLabels(out, opt.perm$perm)
 }
 }

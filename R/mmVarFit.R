@@ -109,15 +109,6 @@ mmVarFit = function(model, printStatus = 1,
   names(output) = c("Total", "J", "Rj", "Nijr", "K", "Vj", "alpha",
                     "theta", "phi", "delta", "dist" ,"obs",
                     "fixedObs", "P", "beta")[1:length(model)]
-#   output$alpha = model$alpha + 1 -1
-#   output$theta = model$theta + 1 -1
-#   output$phi = model$phi + 1 -1
-#   output$delta = model$delta  + 1 -1
-#   if(!is.null(model$fixedObs)){
-#     output$P = model$P + 1 -1
-#     output$beta = model$beta + 1 -1
-#   }
-    
   if(is.null(model$fixedObs)){
     print("<== Beginning Model Fit! ==>")
     ret <- varInfInputC(model, printStatus, printMod, stepType, maxTotalIter, maxEIter, maxAlphaIter,

@@ -33,7 +33,6 @@ Rcpp::List varInfInputExtC(Rcpp::List model_r, int print,
                     double tau, int bMax, double bNaught, double bMult, int vCutoff, SEXP holdConstSEXP) {
 
     mm_modelExt model = mm_modelExt(model_r);
-    Rcout<<model.getBeta()<<endl;
     NumericVector holdConst(holdConstSEXP);
     varInfExtC(model, print , printMod, stepType, maxTotalIter, maxEIter, maxAlphaIter, maxThetaIter, maxLSIter,
                               elboTol, alphaTol, thetaTol, aNaught, tau, bMax, bNaught, bMult, vCutoff, holdConst);
@@ -45,6 +44,6 @@ Rcpp::List varInfInputExtC(Rcpp::List model_r, int print,
 //[[Rcpp::export]]
 double computeElboExtC(Rcpp::List model_r)
 {
-    mm_model model = mm_modelExt(model_r);
-    return compute_ELBO(model);
+    mm_modelExt model = mm_modelExt(model_r);
+    return compute_ELBOExt(model);
 }
