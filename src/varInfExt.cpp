@@ -116,7 +116,7 @@ double compute_ELBOExt(mm_modelExt model)
     double dg_phi_sum;
     double phi_ik, delta_ijrnk;
     int Nijr;
-
+    double fullGomMembers = T - sum(model.getBeta() * model.getNumStayers());
 
     //Calculate first line and second line
     t1 = 0.0;
@@ -124,22 +124,13 @@ double compute_ELBOExt(mm_modelExt model)
     t3 = 0.0;
     t4 = 0.0;
 
-    t1 = (T - model.getNumStayers()*model.getBeta())*(lgamma(sum(model.getAlpha())) - sum(lgamma(model.getAlpha())));
-    t5 = model.getNumStayers() * (model.getBeta() * log(model.getP()) + (1.0 - model.getBeta()) * log(1.0 - model.getP()) );
-        if(!(t5> -INFINITY)) {
-        Rcout <<"Term 1"<<endl;
-    }
+    t1 = fullGomMembers *(lgamma(sum(model.getAlpha())) - sum(lgamma(model.getAlpha())));
 
-    t5 += (T - model.getNumStayers()) * log(1.0 - model.getP());
-        if(!(t5> -INFINITY)) {
-        Rcout <<"Term 2"<<endl;
-    }
+    t5 = sum(model.getNumStayers() * (model.getBeta() * log(model.getP()) + (1.0 - model.getBeta()) * log(model.getP(0))) );
+    t5 += (T - sum(model.getNumStayers())) * log(model.getP(0));
+    t5 += - sum(model.getNumStayers() * ( model.getBeta() * log(model.getBeta()) +  (1.0 - model.getBeta()) * log(1.0 - model.getBeta()) ) ) ;
+    t5 += -(T - sum(model.getNumStayers())) * log(model.getBeta(0));
 
-    t5 += -model.getNumStayers() * (model.getBeta() * log(model.getBeta()) +  (model.getBeta() ? 0 : ((1.0 - model.getBeta())*log(1.0 - model.getBeta())) ) );
-
-    if(!(t5> -INFINITY)) {
-        Rcout <<"Term 3"<<endl;
-    }
     for(i = 0; i < T; i++) {
         phi_sum = 0.0;
         for(k = 0; k < K; k++) {
@@ -151,11 +142,7 @@ double compute_ELBOExt(mm_modelExt model)
         for(k = 0; k < K; k++) {
             phi_ik = model.getPhi(i,k);
             back_term = (boost::math::digamma(phi_ik) - dg_phi_sum);
-            if(model.getStayers(i)) {
-                t1 += (model.getAlpha(k) - 1.0) * back_term  * (1.0 - model.getBeta());
-            } else {
-                 t1 += (model.getAlpha(k) - 1.0) * back_term;
-            }
+            t1 += (model.getAlpha(k) - 1.0) * back_term  * model.getBeta(i, 0);
 
             t4 += -lgamma(phi_ik);
             t4 += (phi_ik - 1.0)*back_term;
@@ -165,7 +152,7 @@ double compute_ELBOExt(mm_modelExt model)
                     Nijr = model.getN(i,j,r);
                     for(n = 0; n < Nijr; n++) {
                         delta_ijrnk = model.getDelta(i,j,r,n,k);
-                        t2 += delta_ijrnk * back_term * (model.getStayers(i) ? (1.0 - model.getBeta()) : 1.0);
+                        t2 += delta_ijrnk * back_term * model.getBeta(i, 0);
                         t4 += delta_ijrnk * log(delta_ijrnk);
                     }
                 }
@@ -204,7 +191,7 @@ double compute_logfExt(mm_modelExt model)
                 for(r = 0; r < model.getR(j); r++) {
                     for(k = 0; k < model.getK(); k++) {
                         logf += ( model.getObs(i,j,r,n) ? model.getDelta(i,j,r,n,k) * log(model.getTheta(j,k,v)) :
-                                  model.getDelta(i,j,r,n,k)*log(1.0 - model.getTheta(j,k,v))) * (model.getStayers(i) ? (1.0 - model.getBeta()) : 1.0) ;
+                                  model.getDelta(i,j,r,n,k)*log(1.0 - model.getTheta(j,k,v))) * model.getBeta(i, 0);
                     }
                 }
             } //end bernoulli
@@ -212,7 +199,7 @@ double compute_logfExt(mm_modelExt model)
                 n = 0;
                 for(r = 0; r < model.getR(j); r++) {
                     for(k = 0; k < model.getK(); k++) {
-                        logf += model.getDelta(i,j,r,n,k)*log(model.getTheta(j,k,model.getObs(i,j,r,n)))  * (model.getStayers(i) ? (1.0 - model.getBeta()) : 1.0);
+                        logf += model.getDelta(i,j,r,n,k)*log(model.getTheta(j,k,model.getObs(i,j,r,n))) * model.getBeta(i, 0);
                     }
                 }
             } //end Multinomial
@@ -222,8 +209,8 @@ double compute_logfExt(mm_modelExt model)
                     for(k = 0; k < model.getK(); k++) {
                         back_term = 0.0;
                         for(n = 0; n < Nijr; n++) {
-                            logf += -model.getDelta(i,j,r,n,k)*log(1.0 - back_term)  * (model.getStayers(i) ? (1.0 - model.getBeta()) : 1.0);
-                            logf += model.getDelta(i,j,r,n,k)*log(model.getTheta(j,k,model.getObs(i,j,r,n)))  * (model.getStayers(i) ? (1.0 - model.getBeta()) : 1.0);
+                            logf += -model.getDelta(i,j,r,n,k)*log(1.0 - back_term) * model.getBeta(i, 0);
+                            logf += model.getDelta(i,j,r,n,k) * log(model.getTheta(j,k,model.getObs(i,j,r,n))) * model.getBeta(i, 0);
                             back_term += model.getTheta(j,k,model.getObs(i,j,r,n));
                         }
                     }
@@ -247,12 +234,13 @@ double alpha_ObjectiveExt(mm_modelExt model, vec alph)
     double phi_sum;
     double dg_phi_sum;
     double sum_lgamma_alpha = 0.0;
+    double fullGomMembers = T - sum(model.getBeta() * model.getNumStayers());
 
     for(k = 0; k < K; k++) {
         sum_lgamma_alpha += lgamma(alph(k));
     }
 
-    objective = T*lgamma(sum(alph)) - T*sum_lgamma_alpha;
+    objective = fullGomMembers * (lgamma(sum(alph)) - sum_lgamma_alpha);
     for(i = 0; i < T; i++) {
         phi_sum = 0.0;
         for(k = 0; k < K; k++) {
@@ -262,7 +250,7 @@ double alpha_ObjectiveExt(mm_modelExt model, vec alph)
 
         for(k = 0; k < K; k++) {
             back_term = (boost::math::digamma(model.getPhi(i,k)) - dg_phi_sum);
-            objective += (alph(k) - 1.0)*back_term;
+            objective += (alph(k) - 1.0) * back_term * model.getBeta(i, 0);
         }
     }
     return objective;
@@ -277,9 +265,10 @@ double alpha_ObjectiveExt(mm_modelExt model)
     double back_term;
     double phi_sum;
     double dg_phi_sum;
+    double fullGomMembers = T - sum(model.getBeta() * model.getNumStayers());
 
     double objective;
-    objective = T*lgamma(sum(model.getAlpha())) - T*sum(lgamma(model.getAlpha()));
+    objective = fullGomMembers * (lgamma(sum(model.getAlpha())) - sum(lgamma(model.getAlpha())));
     for(i = 0; i < T; i++) {
         phi_sum = 0.0;
         for(k = 0; k < K; k++) {
@@ -289,7 +278,7 @@ double alpha_ObjectiveExt(mm_modelExt model)
 
         for(k = 0; k < K; k++) {
             back_term = (boost::math::digamma(model.getPhi(i,k)) - dg_phi_sum);
-            objective += (model.getAlpha(k)-1)*back_term;
+            objective += (model.getAlpha(k)-1) * back_term  * model.getBeta(i, 0);
         }
     }
     return objective;

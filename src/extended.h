@@ -14,7 +14,7 @@ using namespace arma;
 
 void updateP(mm_modelExt model);
 void updateBeta(mm_modelExt model);
-double getStayerProb(mm_modelExt model);
+double getStayersProb(mm_modelExt model, int s);
 double getStayer_logf(mm_modelExt model, int stayerID);
 
 #endif

@@ -17,28 +17,31 @@ public:
     //constructor
     mm_modelExt(List model);
     int getFixedObs(int i, int j, int r, int n);
-    double getP();
-    double getBeta();
+    double getP(int s);
+    NumericVector getP();
+    double getBeta(int i, int s);
+    double getBeta(int s);
+    NumericVector getBeta();
+    int getStayersClass(int i);
+    int getStayersFirstID(int s);
     NumericVector getStayers();
-    int getStayers(int i);
-    int getNumStayers();
-    double getStayerProb();
-    int getStayerID();
+    double getStayersProb(int s);
+    int getS();
+    NumericVector getNumStayers();
 
     //set individual element
-    void setP(double target);
-    void setBeta(double target);
+    void setP(int s, double target);
+    void setBeta(int s, double target);
     Rcpp::List returnModel();
 
 protected:
+    int S;
     NumericVector fixedObs;
     NumericVector stayers;
+    NumericVector stayersFirstID;
+    NumericVector stayerCount;
     NumericVector P;
     NumericVector beta;
-    int numStayers;
-    int stayerID;
-
-
     int checkIndStayer(int i);
 
 private:

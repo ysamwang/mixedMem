@@ -14,7 +14,7 @@ double eStepExt(mm_modelExt model, double elbo_E, int maxEIter, double elboTol, 
     double phi_sum; //helper which will be used to store sum of phi
     double phi_sum_dg;
     double delta_sum;
-    double converged_E=1.0; //flag for convergence
+    double converged_E = 1.0; //flag for convergence
     double placeholder;
 
     while ((converged_E > elboTol) && (nE < maxEIter))
@@ -50,7 +50,7 @@ double eStepExt(mm_modelExt model, double elbo_E, int maxEIter, double elboTol, 
                         //update deltas
                         for(k = 0; k <  K; k++)
                         {
-                            placeholder = exp((model.getStayers(i) ? (1.0 - model.getBeta()) : 1.0) * (digamma(model.getPhi(i,k)) - phi_sum_dg + dl_ddeltaExt(model, i, j,r,n,k)));
+                            placeholder = exp(model.getBeta(i, 0) * (digamma(model.getPhi(i,k)) - phi_sum_dg + dl_ddeltaExt(model, i, j,r,n,k)));
                             model.setDelta(i,j,r,n,k, placeholder);
                             delta_sum += placeholder;
                         }
@@ -67,7 +67,8 @@ double eStepExt(mm_modelExt model, double elbo_E, int maxEIter, double elboTol, 
         {
             for(k = 0; k < K; k++)
             {
-                model.setPhi(i,k, (model.getStayers(i) ? (1.0 - model.getBeta()) : 1.0) * (model.getAlpha(k) - 1.0) + 1.0);
+                //CHECK extra + 1.0 at end
+                model.setPhi(i,k, model.getBeta(i, 0) * (model.getAlpha(k) - 1.0) + 1.0);
             }
         }
 
@@ -82,7 +83,7 @@ double eStepExt(mm_modelExt model, double elbo_E, int maxEIter, double elboTol, 
                     {
                         for(k = 0; k < K; k ++)
                         {
-                            model.incPhi(i,k, (model.getStayers(i) ? (1.0 - model.getBeta()) : 1.0) * model.getDelta(i,j,r,n,k) ) ;
+                            model.incPhi(i,k, model.getBeta(i, 0) * model.getDelta(i,j,r,n,k) ) ;
                         }
                     }
                 }

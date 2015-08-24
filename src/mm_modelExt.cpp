@@ -6,39 +6,82 @@ using namespace arma;
 
 mm_modelExt::mm_modelExt(List model) : mm_model::mm_model(model)
 {
-    fixedObs = Rcpp::clone(as<NumericVector>(model[12]));
+    fixedObs = as<NumericVector>(model[12]);
     P = Rcpp::clone(as<NumericVector>(model[13]));
     beta =  Rcpp::clone(as<NumericVector>(model[14]));
-    NumericVector stayersTemp(T);
-    stayerID = 0;
-    int i, check;
-    check = 1;
+    S = as<NumericVector>(model[15])[0];
+    NumericVector stayers(T);
+    NumericVector stayerFirstID(S);
+    NumericVector stayerCount(S);
+    int s;
+    for(s = 0; s < S; s++)
+    {
+      stayerFirstID[s] = -1;
+      stayerCount[s] = 0;
+    }
+    int i;
     for(i = 0; i < T; i++) {
-        stayersTemp[i] = checkIndStayer(i);
-        if(check && stayers[i]) {
-            stayerID = i;
-            check = 0;
+        stayers[i] = checkIndStayer(i);
+        stayerCount[stayers[i]] = stayerCount[stayers[i]] + 1;
+
+        if(stayerFirstID[stayers[i]] < 0)
+        {
+            stayerFirstID[stayers[i]] = i;
         }
     }
-    stayers = Rcpp::clone(as<NumericVector>(stayersTemp));
-    numStayers = (int) std::accumulate(stayers.begin(), stayers.end(), 0.0);
-
 }
 
 
-int mm_modelExt::getFixedObs(int i, int j, int r, int n)
+int mm_modelExt::getFixedObs(int s, int j, int r, int n)
 {
-    return(fixedObs[i + j + J*r + J*maxR*n]);
+    return(fixedObs[s + j + J*r + J*maxR*n]);
 }
 
-double mm_modelExt::getP()
+double mm_modelExt::getP(int s)
 {
-    return P[0];
+    return P[s];
 }
 
-double mm_modelExt::getBeta()
+NumericVector mm_modelExt::getP()
 {
-    return beta[0];
+    return P;
+}
+
+double mm_modelExt::getBeta(int i, int s)
+{
+    if(s == 0){
+        if(stayers[i] == 0) {
+            return 1.0;
+        } else {
+            return  1.0 - beta[stayers[i]];
+        }
+    } else {
+        if(s == stayers[i] ) {
+            return beta[s];
+        }
+    }
+    return 0.0;
+}
+
+NumericVector mm_modelExt::getBeta()
+{
+    return beta;
+}
+
+double mm_modelExt::getBeta(int s)
+{
+    return beta[s];
+}
+
+NumericVector mm_modelExt::getNumStayers()
+{
+    return stayerCount;
+}
+
+
+int mm_modelExt::getS()
+{
+    return S;
 }
 
 NumericVector mm_modelExt::getStayers()
@@ -46,46 +89,48 @@ NumericVector mm_modelExt::getStayers()
     return stayers;
 }
 
-int mm_modelExt::getNumStayers()
-{
-    return numStayers;
-}
-
 // checks if an individual is a stayer
 int mm_modelExt::checkIndStayer(int i)
 {
-    int j, r, n;
-    int ret = 1;
+    int j, r, n, s;
+    NumericVector possibleClass(S);
+    for(s = 0; s < S; s++)
+    {
+      possibleClass[s] = s;  
+    }
     for(j = 0; j < J; j++) {
         for(r = 0; r < getR(j); r++) {
             for(n = 0; n < getN(i, j, r); n++ ) {
-                if(getObs(i, j, r, n) !=  getFixedObs(0, j, r, n)) {
-                    ret = 0;
+                for(s = 1; s < S; s++){
+                    if(getObs(i, j, r, n) !=  getFixedObs(s, j, r, n)) {
+                        possibleClass[s] = 0;
+                    }
                 }
             }
         }
     }
-    return ret;
+    return Rcpp::max(possibleClass);
 }
 
-int mm_modelExt::getStayerID()
-{
-    return stayerID;
-}
 
-int mm_modelExt::getStayers(int i)
+int mm_modelExt::getStayersClass(int i)
 {
     return (int) stayers[i];
 }
 
-void mm_modelExt::setP(double target)
+int mm_modelExt::getStayersFirstID(int s)
 {
-    P[0] = target;
+    return (int) stayersFirstID[s];
 }
 
-void mm_modelExt::setBeta(double target)
+void mm_modelExt::setP(int s, double target)
 {
-    beta[0] = target;
+    P[s] = target;
+}
+
+void mm_modelExt::setBeta(int s, double target)
+{
+    beta[s] = target;
 }
 
 Rcpp::List mm_modelExt::returnModel()

@@ -3,24 +3,36 @@
 
 //Updates P based on current model estimates
 void updateP(mm_modelExt model){
-    double target;
-    target = (model.getNumStayers() * model.getBeta()) / model.getT();
-    model.setP(target);
+    double target, total;
+    total = 0.0;
+    int s;
+    //calculate p for all stayer classes
+    for(s = 1; s < model.getS(); s++) {
+        target =  sum((model.getStayers() == s)) * model.getBeta(s) / model.getT();
+        total += target;
+        model.setP(s, target);
+    }
+    //calculate p_1 since all p's must sum to 1
+    model.setP(0, 1.0 - total);
 }
 
 
 //Updates Beta based on current model estimates
 void updateBeta(mm_modelExt model) {
     double target;
-    target = model.getP() / ( (1.0 - model.getP()) * exp(getStayerProb(model)) + model.getP());
-    model.setBeta(target);
+    int s;
+    for(s = 1; s < model.getS(); s++) {
+        target = model.getP(s) / (model.getP(0) * getStayersProb(model, s) + model.getP(s));
+        model.setBeta(s, target);
+    }
 }
 
 
 
 //evaluates the ELBO for an individual who is a stayer
-double getStayerProb(mm_modelExt model){
-    int stayerID = model.getStayerID();
+double getStayersProb(mm_modelExt model, int s){
+    //ADD find first stayer
+    int stayerID = model.getStayersFirstID(s);
 
     double t1,t2,t3,t4;
     double phi_sum = 0.0;

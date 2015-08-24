@@ -12,17 +12,18 @@ vec getGradExt(mm_modelExt model)
     int T = model.getT();
     double sum_phi = 0.0;
     vec grad = vec(K);
+    double fullGomMembers = T - sum(model.getBeta() * model.getNumStayers());
 
     double sum_alpha = sum(model.getAlpha());
     double dg_sum_alpha = digamma(sum_alpha);
     for(k = 0; k < K; k++) {
-        grad(k) = (T - model.getBeta() * model.getNumStayers()) * (dg_sum_alpha - digamma(model.getAlpha(k)));
+        grad(k) = fullGomMembers * (dg_sum_alpha - digamma(model.getAlpha(k)));
         for(i = 0; i < T; i++) {
             sum_phi = 0.0;
             for(c = 0; c < K; c++) {
                 sum_phi += model.getPhi(i,c);
             }
-            grad(k) += (model.getStayers(i)) ? ((1.0 - model.getBeta()) * (digamma(model.getPhi(i,k)) - digamma(sum_phi))) : (digamma(model.getPhi(i,k)) - digamma(sum_phi)) ;
+            grad(k) += model.getBeta(i, 0) * (digamma(model.getPhi(i,k)) - digamma(sum_phi));
         }
     }
     return grad;
@@ -30,6 +31,7 @@ vec getGradExt(mm_modelExt model)
 
 mat getHessExt(mm_modelExt model)
 {
+    double fullGomMembers = model.getT() - sum(model.getNumStayers() * model.getBeta());
     int k;
     int K = model.getK();
     double tri_gam_eval;
@@ -37,9 +39,9 @@ mat getHessExt(mm_modelExt model)
     double sum_alpha = sum(model.getAlpha());
     tri_gam_eval = trigamma(sum_alpha);
     hess.ones();
-    hess = hess * tri_gam_eval * (model.getT() - model.getBeta() * model.getNumStayers());
+    hess = hess * tri_gam_eval * fullGomMembers;
     for(k = 0; k < K; k++) {
-        hess(k,k) -= trigamma(model.getAlpha(k)) * (model.getT() - model.getBeta() * model.getNumStayers());
+        hess(k,k) -= trigamma(model.getAlpha(k)) * fullGomMembers;
     }
     return hess;
 }
@@ -153,13 +155,13 @@ void updateThetaExt(mm_modelExt model, int maxThetaIter,
             for(k = 0; k < K; k++) {
                 if(is_true( all(k != holdConst) ) ) {
                     numer = 0.0;
-                    denom =0.0;
+                    denom = 0.0;
                     for(i = 0; i < model.getT(); i++) {
                         for(r = 0; r < model.getR(j); r++) {
                             if(model.getObs(i,j,r,n)) {
-                                numer += model.getDelta(i,j,r,n,k) * (model.getStayers(i) ? 1.0 - model.getBeta() : 1.0);
+                                numer += model.getDelta(i,j,r,n,k) * model.getBeta(i, 0);
                             }
-                            denom += model.getDelta(i,j,r,n,k) * (model.getStayers(i) ? 1.0 - model.getBeta() : 1.0);
+                            denom += model.getDelta(i,j,r,n,k) * model.getBeta(i, 0);
                         }
                     }
 
@@ -187,13 +189,8 @@ void updateThetaExt(mm_modelExt model, int maxThetaIter,
 
                     for(i = 0; i < model.getT(); i++) {
                         for(r = 0; r < model.getR(j); r++) {
-                                if( model.getStayers(i)){
-                                    model.incTheta(j, k, model.getObs(i,j,r,n), model.getDelta(i,j,r,n,k) * (1.0 - model.getBeta()));
-                                    theta_sum += model.getDelta(i,j,r,n,k) * (1.0 - model.getBeta());
-                                } else {
-                                   model.incTheta(j, k, model.getObs(i,j,r,n), model.getDelta(i,j,r,n,k));
-                                   theta_sum += model.getDelta(i,j,r,n,k);
-                                }
+                                    model.incTheta(j, k, model.getObs(i,j,r,n), model.getDelta(i,j,r,n,k) *  model.getBeta(i, 0));
+                                    theta_sum += model.getDelta(i,j,r,n,k) * model.getBeta(i, 0);
                         }
                     }
                     model.normalizeTheta(j, k, theta_sum);
@@ -273,7 +270,7 @@ void update_PL_ThetaExt(mm_modelExt model, int j, int maxThetaIter,
 
                     //if the steps is already too big such that a theta is negative (which leads the objective function to be NAN)
                     //then just set ob_old to the new objective +1
-                    obj_new = (obj_new !=obj_new ? obj_old +1.0: obj_new);
+                    obj_new = (obj_new !=obj_new ? obj_old + 1.0: obj_new);
 
                     nLS = 0;
                     while((obj_old - obj_new <0) && (nLS < maxLSIter)) {
@@ -317,9 +314,9 @@ vec getGradPLExt(mm_modelExt model, int j, int k, double b)
         for(r =0; r < model.getR(j); r++) {
             back_term = 0.0;
             for(n = 0; n < model.getN(i,j,r); n++) {
-                grad(model.getObs(i,j,r,n)) -= model.getDelta(i,j,r,n,k)/model.getTheta(j,k,model.getObs(i,j,r,n)) * (model.getStayers(i) ? 1.0 - model.getBeta() : 1);
+                grad(model.getObs(i,j,r,n)) -= model.getDelta(i,j,r,n,k) / model.getTheta(j,k,model.getObs(i,j,r,n)) * model.getBeta(i, 0);
                 for(eta = 0; eta < n; eta++) {
-                    grad(model.getObs(i,j,r,eta)) -= model.getDelta(i,j,r,n,k)/(1.0-back_term) * (model.getStayers(i) ? 1.0 - model.getBeta() : 1);
+                    grad(model.getObs(i,j,r,eta)) -= model.getDelta(i,j,r,n,k)/(1.0 - back_term) *  model.getBeta(i, 0);
                 }
                 back_term += model.getTheta(j,k,model.getObs(i,j,r,n));
             }
@@ -349,15 +346,15 @@ mat getHessPLExt(mm_modelExt model, int j, int k, double b)
             for(n = 0; n < model.getN(i,j,r); n++) {
                 for(eta1 = 0; eta1 < n; eta1++) {
                     for(eta2 = 0; eta2 < eta1; eta2++) {
-                        hess(model.getObs(i,j,r,eta1),model.getObs(i,j,r,eta2)) -= model.getDelta(i,j,r,n,k)/pow(1.0 - back_term,2) * (model.getStayers(i) ? 1.0 - model.getBeta() : 1);
+                        hess(model.getObs(i,j,r,eta1),model.getObs(i,j,r,eta2)) -= model.getDelta(i,j,r,n,k)/pow(1.0 - back_term,2) * model.getBeta(i, 0);
                         hess(model.getObs(i,j,r,eta2),model.getObs(i,j,r,eta1)) = hess(model.getObs(i,j,r,eta1),model.getObs(i,j,r,eta2));
                         }
 
-                    hess(model.getObs(i,j,r,eta1),model.getObs(i,j,r,eta1)) -= model.getDelta(i,j,r,n,k)/pow(1.0-back_term,2) * (model.getStayers(i) ? 1.0 - model.getBeta() : 1);
+                    hess(model.getObs(i,j,r,eta1),model.getObs(i,j,r,eta1)) -= model.getDelta(i,j,r,n,k)/pow(1.0-back_term,2) * model.getBeta(i, 0);
                 }
 
 
-                hess(model.getObs(i,j,r,n),model.getObs(i,j,r,n)) -= -model.getDelta(i,j,r,n,k)/pow(model.getTheta(j,k,model.getObs(i,j,r,n)),2) * (model.getStayers(i) ? 1.0 - model.getBeta() : 1);
+                hess(model.getObs(i,j,r,n),model.getObs(i,j,r,n)) -= -model.getDelta(i,j,r,n,k)/pow(model.getTheta(j,k,model.getObs(i,j,r,n)),2) * model.getBeta(i, 0);
                 back_term += model.getTheta(j,k,model.getObs(i,j,r,n));
             }
         }
@@ -380,8 +377,8 @@ double rank_ObjectiveExt(mm_modelExt model, vec theta, int j, int k, double b)
             Nijr = model.getN(i,j,r);
             back_term =0.0;
             for(n = 0; n < Nijr; n++) {
-                objective -= -model.getDelta(i,j,r,n,k)*log(1.0-back_term) * (model.getStayers(i) ? 1.0 - model.getBeta() : 1);
-                objective -= model.getDelta(i,j,r,n,k)*log(theta(model.getObs(i,j,r,n))) * (model.getStayers(i) ? 1.0 - model.getBeta() : 1);
+                objective -= -model.getDelta(i,j,r,n,k)*log(1.0-back_term) * model.getBeta(i, 0);
+                objective -= model.getDelta(i,j,r,n,k)*log(theta(model.getObs(i,j,r,n))) * model.getBeta(i, 0);
                 back_term += theta(model.getObs(i,j,r,n));
             }
         }

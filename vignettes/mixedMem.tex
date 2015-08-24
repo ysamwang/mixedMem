@@ -66,7 +66,7 @@
 
 \small
 \begin{abstract}
-This vignette is a tutorial for the \texttt{mixedMem} R package that allows users to fit and visualize results for a broad class of mixed membership models as specified by \cite{erosheva2004mixed}. Relevant data structures include multivariate outcome vectors. Mixed distribution types and replicate measurements are supported. Version 1.0 allows for binary, multinomial or Plackett-Luce rank distribution types. This tutorial provides an outline of functions available in the package and a step-by-step guide for fitting mixed membership models. As an example, we carry out a mixed membership analysis to identify latent ideology blocs using political survey data from the 1983 American National Election Survey Pilot.  
+This vignette is a tutorial for the \texttt{mixedMem} R package that allows users to fit and visualize results for a broad class of mixed membership models as specified by \cite{erosheva2004mixed}. Relevant data structures include multivariate outcome vectors. Mixed distribution types and replicate measurements are supported. Version 1.1.0 allows for binary, multinomial or Plackett-Luce rank distribution types. The extended GoM model from \cite{erosheva2007describing} is also supported. This tutorial provides an outline of functions available in the package and a step-by-step guide for fitting mixed membership models. As an example, we carry out a mixed membership analysis to identify latent ideology blocs using political survey data from the 1983 American National Election Survey Pilot.  
 \end{abstract}
 
 \normalsize
@@ -243,19 +243,15 @@ Now we can fit the model using the \texttt{mmVarFit} function. When we call \tex
 ## Iter: 25 Elbo: -3138.87
 ## E-Step: -3138.28
 ## M-Step: -3137.71
-## 0.064435 5.38687 5.6796 
 ## Iter: 50 Elbo: -3125.55
 ## E-Step: -3125.45
 ## M-Step: -3125.36
-## 0.0390389 3.74899 3.91074 
 ## Iter: 75 Elbo: -3123.26
 ## E-Step: -3123.24
 ## M-Step: -3123.22
-## 0.0319459 3.53492 3.69181 
 ## Iter: 100 Elbo: -3122.9
 ## E-Step: -3122.9
 ## M-Step: -3122.9
-## 0.0293948 3.45254 3.6211 
 ## Fit Complete! Elbo: -3122.89 Iter: 103
 \end{verbatim}
 \begin{alltt}
@@ -271,7 +267,7 @@ Now we can fit the model using the \texttt{mmVarFit} function. When we call \tex
 \end{kframe}
 \end{knitrout}
 
-Notice that the lower bound (our objective function) is \ensuremath{-1.681018\times 10^{4}} at the initialized points and is \ensuremath{-3122.89} at convergence. On a laptop (quad-core 2.4 GHZ with 12 GB of RAM), fitting the entire model took only 10.25 seconds, significantly faster than a full MCMC analysis. 
+Notice that the lower bound (our objective function) is \ensuremath{-1.681018\times 10^{4}} at the initialized points and is \ensuremath{-3122.89} at convergence. On a laptop (quad-core 2.4 GHZ with 12 GB of RAM), fitting the entire model took only 10.84 seconds, significantly faster than a full MCMC analysis. 
 
 We can also view a quick summary of the fit model using the \texttt{summary} function.
 
@@ -362,8 +358,8 @@ we can calculate a $\chi^2$ statistic by comparing the expected responses from o
 \end{kframe}
 \end{knitrout}
 
-% latex table generated in R 3.1.1 by xtable 1.7-4 package
-% Fri Aug 14 15:32:56 2015
+% latex table generated in R 3.1.2 by xtable 1.7-4 package
+% Sun Aug 16 14:52:15 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{rrrrrrr}
@@ -455,7 +451,7 @@ We can now plot our estimated $\hat \theta$ values and compare them to the value
 
 }
 
-\caption[Individuals were asked to indicate their level of agreement with 19 opinion based statements]{Individuals were asked to indicate their level of agreement with 19 opinion based statements. The fitted multinomial response probabilities for each ideology bloc to each of the first 10 statements are displayed. On the horizontal axis, 0 indicates agree, 1 indicates can't decide, and 2 indicates disagree. The estimates from our variational analysis are denoted by the dots, the Gross and Manrique-Vallier results using MCMC are shown by the red X's. Since they do not report estimates for Group 3, the Can't Decide group, those estimates are shown as 0's. The estimates for the first 10 questions are shown.\label{fig:theta}}
+\caption[Individuals were asked to indicate their level of agreement with 19 opinion based statements]{Individuals were asked to indicate their level of agreement with 19 opinion based statements. The fitted multinomial response probabilities for each ideology bloc to each of the first 10 statements are displayed. On the horizontal axis, 0 indicates agree, 1 indicates can't decide, and 2 indicates disagree. The estimates from our variational analysis are denoted by the dots, the Gross and Manrique-Vallier results using MCMC are shown by the red X's. Since they do not report estimates for Group 3, the Can't Decide group, those estimates are shown as 0's. The estimates for the first 10 questions are shown.}\label{fig:theta}
 \end{figure}
 
 
@@ -480,7 +476,7 @@ When examining the estimates of $\hat \theta$, we can see from Figure \ref{fig:c
 
 }
 
-\caption[Propensity to agree with each opinion-based statement for the conservative bloc]{Propensity to agree with each opinion-based statement for the conservative bloc\label{fig:consprop}}
+\caption[Propensity to agree with each opinion-based statement for the conservative bloc]{Propensity to agree with each opinion-based statement for the conservative bloc}\label{fig:consprop}
 \end{figure}
 
 
@@ -507,7 +503,7 @@ We can see from Figure \ref{fig:libprop} that for sub-population 2, the statemen
 
 }
 
-\caption[Propensity to agree with each opinion-based statement for the liberal bloc]{Propensity to agree with each opinion-based statement for the liberal bloc\label{fig:libprop}}
+\caption[Propensity to agree with each opinion-based statement for the liberal bloc]{Propensity to agree with each opinion-based statement for the liberal bloc}\label{fig:libprop}
 \end{figure}
 
 
@@ -548,8 +544,8 @@ When examining the fitted value of $\hat \alpha$, we see that the conservatives 
 \end{kframe}
 \end{knitrout}
 
-% latex table generated in R 3.1.1 by xtable 1.7-4 package
-% Fri Aug 14 15:32:57 2015
+% latex table generated in R 3.1.2 by xtable 1.7-4 package
+% Sun Aug 16 14:52:15 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{rrrr}
@@ -591,7 +587,7 @@ A Hellinger distance close to 1 indicates that two probability distributions are
 
 }
 
-\caption[Using Hellinger distance indicates that the most polarizing statements are IND 5, IND 3, and EQ 7]{Using Hellinger distance indicates that the most polarizing statements are IND 5, IND 3, and EQ 7. These were all issues involving opportunity for advancement\label{fig:polarizing}}
+\caption[Using Hellinger distance indicates that the most polarizing statements are IND 5, IND 3, and EQ 7]{Using Hellinger distance indicates that the most polarizing statements are IND 5, IND 3, and EQ 7. These were all issues involving opportunity for advancement}\label{fig:polarizing}
 \end{figure}
 
 \begin{kframe}\begin{alltt}
@@ -631,7 +627,7 @@ For the groups memberships for individuals, we use the posterior mean, $\frac{\h
 
 }
 
-\caption[Estimated memberships for first 42 individuals]{Estimated memberships for first 42 individuals\label{fig:mems}}
+\caption[Estimated memberships for first 42 individuals]{Estimated memberships for first 42 individuals}\label{fig:mems}
 \end{figure}
 
 
@@ -668,7 +664,7 @@ We can also plot the ``empirical CDF" of estimated membership in conservative bl
 
 }
 
-\caption[We observe a relatively high rate of intra-individual mixing]{We observe a relatively high rate of intra-individual mixing\label{fig:posteriorMem}}
+\caption[We observe a relatively high rate of intra-individual mixing]{We observe a relatively high rate of intra-individual mixing}\label{fig:posteriorMem}
 \end{figure}
 
 

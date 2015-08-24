@@ -18,7 +18,7 @@
 
 \small
 \begin{abstract}
-This vignette is a tutorial for the \texttt{mixedMem} R package that allows users to fit and visualize results for a broad class of mixed membership models as specified by \cite{erosheva2004mixed}. Relevant data structures include multivariate outcome vectors. Mixed distribution types and replicate measurements are supported. Version 1.0 allows for binary, multinomial or Plackett-Luce rank distribution types. This tutorial provides an outline of functions available in the package and a step-by-step guide for fitting mixed membership models. As an example, we carry out a mixed membership analysis to identify latent ideology blocs using political survey data from the 1983 American National Election Survey Pilot.  
+This vignette is a tutorial for the \texttt{mixedMem} R package that allows users to fit and visualize results for a broad class of mixed membership models as specified by \cite{erosheva2004mixed}. Relevant data structures include multivariate outcome vectors. Mixed distribution types and replicate measurements are supported. Version 1.1.0 allows for binary, multinomial or Plackett-Luce rank distribution types. The extended GoM model from \cite{erosheva2007describing} is also supported. This tutorial provides an outline of functions available in the package and a step-by-step guide for fitting mixed membership models. As an example, we carry out a mixed membership analysis to identify latent ideology blocs using political survey data from the 1983 American National Election Survey Pilot.  
 \end{abstract}
 
 \normalsize
