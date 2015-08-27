@@ -6,10 +6,12 @@ using namespace arma;
 
 mm_modelExt::mm_modelExt(List model) : mm_model::mm_model(model)
 {
-    fixedObs = as<NumericVector>(model[12]);
+    fixedObs = Rcpp::clone(as<NumericVector>(model[12]));
     P = Rcpp::clone(as<NumericVector>(model[13]));
     beta =  Rcpp::clone(as<NumericVector>(model[14]));
-    S = as<NumericVector>(model[15])[0];
+    S =  (int) as<NumericVector>(model[15])[0];
+    
+    
     NumericVector stayers(T);
     NumericVector stayerFirstID(S);
     NumericVector stayerCount(S);

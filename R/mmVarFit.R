@@ -121,7 +121,10 @@ mmVarFit = function(model, printStatus = 1,
     
   } else {
     print("<== Beginning Extended Model Fit! ==>")
-    ret <- varInfInputExtC(model, printStatus, printMod, stepType, maxTotalIter, maxEIter, maxAlphaIter,
+    
+    stayerClasses = dim(fixedObs)[1]
+    
+    ret <- varInfInputExtC(c(model, stayerClasses), printStatus, printMod, stepType, maxTotalIter, maxEIter, maxAlphaIter,
                  maxThetaIter, maxLSIter, elboTol, alphaTol, thetaTol, aNaught, tau, bMax, bNaught, 
                  bMult, vCutoff, holdConst) # R wrapper function
     output$alpha <- ret$alpha
@@ -153,9 +156,9 @@ mmVarFit = function(model, printStatus = 1,
 computeELBO = function(model)
 {
   checkModel(model)
-  if(is.null(model$P)){
+  if(is.null(model$fixedObs)){
     return(computeElboC(model))
   } else {
-    return(computeElboExtC(model))
+    return(computeElboExtC(c(model, dim(model$fixedObs)[1])))
   }
 }

@@ -18,14 +18,14 @@
 #'  variables, \code{Nijr}[i,j,r] = 1. For rank variables, \code{Nijr}[i,j,r] indicates the
 #'  number of alternatives ranked.
 #' @param K the number of sub-populations.
-#' @param Vj a vector of length \code{J} specifying the number of possible candidates
+#' @param Vj a vector of length \code{J} specifying the number of possible responses
 #'  for each variable. For a Bernoulli variable \code{Vj}[j] = 1. 
 #' @param alpha a vector of length \code{K} which is the parameter for Dirichlet
 #'  membership distribution.
 #' @param theta an array with dimensions (\code{J},\code{K},\code{max(Vj)}) which governs the variable
 #'  distributions. The parameter \code{theta}[j,k,] governs the distribution of variable J for a complete member of sub-population k. For instance, if variable j is a Bernoulli variable, theta[j,k,1] is the probability of success; if
-#'  variable j is a multinomial variable, \code{theta}[j,k, 1:Vj[j]] is the probability for each of the \code{Vj}[j] categories; if variable j
-#'  is a rank variable, \code{theta}[j,k, 1:Vj[j]] are the support parameters for each of the \code{Vj}[j] alternatives. Since the dimension of the relevant parameters
+#'  variable j is a multinomial variable, \code{theta}[j,k, 1:Vj[j]] is the probability for each of the \code{Vj}[j] response; if variable j
+#'  is a rank variable, \code{theta}[j,k, 1:Vj[j]] are the support parameters for each of the \code{Vj}[j] possible responses. Since the dimension of the relevant parameters
 #'  can differ across variables, any unused elements of the array should be set to 0, while all other elements should be positive.
 #' @param phi an array with dimensions (\code{Total},\code{K}) which specifies the variational
 #'  parameters for the membership vectors, \eqn{\lambda}. The default group membership initialization is uniform across all groups (phi[i,k] = 1/K for all k).
@@ -120,15 +120,15 @@ mixedMemModel = function(Total, J, Rj, Nijr, K, Vj, alpha, theta, phi = NULL, de
   #put objects in a list
   if(is.null(fixedObs)){
     model_obj = list(Total, J, Rj, Nijr, K, Vj,
-                     alpha + 1 -1, theta + 1 -1, phi + 1 -1, delta + 1 -1,
+                     alpha, theta, phi, delta,
                      dist, obs);
     names(model_obj) = c("Total", "J", "Rj", "Nijr", "K", "Vj", "alpha","theta", "phi",
                          "delta", "dist" ,"obs")
   } else {
     model_obj = list(Total, J, Rj, Nijr, K, Vj,
-                     alpha + 1 -1, theta + 1 -1, phi + 1 -1, delta + 1 -1,
+                     alpha, theta , phi , delta,
                      dist, obs, fixedObs,
-                     P+ 1 -1, beta + 1 -1);
+                     P, beta);
     names(model_obj) = c("Total", "J", "Rj", "Nijr", "K", "Vj", "alpha","theta", "phi",
                          "delta", "dist" ,"obs", "fixedObs", "P", "beta")    
   }
@@ -136,7 +136,7 @@ mixedMemModel = function(Total, J, Rj, Nijr, K, Vj, alpha, theta, phi = NULL, de
   
   dimnames(model_obj$theta) <- list(paste("Var", c(1:J)),
                                     paste("Group", c(1:K)),
-                                    paste("Cand", c(0:(max(Vj)-1))))
+                                    paste("Response", c(0:(max(Vj)-1))))
   
   names(model_obj$alpha) <- paste("Group", c(0:(K-1)))
   
