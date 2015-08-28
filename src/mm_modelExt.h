@@ -44,6 +44,7 @@ protected:
     NumericVector P;
     NumericVector beta;
     int checkIndStayer(int i);
+    int checkIndStayerHelp(int i, int s);
 
 private:
 };

@@ -31,11 +31,23 @@ Rcpp::List varInfInputExtC(Rcpp::List model_r, int print,
                     int maxEIter, int maxAlphaIter, int maxThetaIter, int maxLSIter,
                     double elboTol, double alphaTol, double thetaTol, double aNaught,
                     double tau, int bMax, double bNaught, double bMult, int vCutoff, SEXP holdConstSEXP) {
-
+    
+    int s, check;
+    check = 1;
     mm_modelExt model = mm_modelExt(model_r);
+    for(s = 1; s < model.getS(); s++){
+      if(model.getNumStayers(s) == 0)
+      {
+        Rcout <<"Error: No Stayers found for class " <<s <<". Terminating mmVarFit!"<<endl;
+        check = 0;
+      }
+    }
+    if(check)
+    {
     NumericVector holdConst(holdConstSEXP);
     varInfExtC(model, print, printMod, stepType, maxTotalIter, maxEIter, maxAlphaIter, maxThetaIter, maxLSIter,
                               elboTol, alphaTol, thetaTol, aNaught, tau, bMax, bNaught, bMult, vCutoff, holdConst);
+    }
     return model.returnModel();
 }
 
@@ -44,7 +56,20 @@ Rcpp::List varInfInputExtC(Rcpp::List model_r, int print,
 //[[Rcpp::export]]
 double computeElboExtC(Rcpp::List model_r)
 {
+  int s, check;
+  check = 1;
     mm_modelExt model = mm_modelExt(model_r);
-    return compute_ELBOExt(model);
+    for(s = 1; s < model.getS(); s++){
+      if(model.getNumStayers(s) == 0)
+      {
+        Rcout <<"Error: No Stayers found for class " <<s <<". Cannot compute ELBO!"<<endl;
+        check = 0;
+      }
+    }
+    if(check){
+      return compute_ELBOExt(model);
+    } else {
+      return 0.0;
+    }
 }
 

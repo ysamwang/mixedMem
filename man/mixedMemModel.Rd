@@ -22,7 +22,7 @@ number of alternatives ranked.}
 
 \item{K}{the number of sub-populations.}
 
-\item{Vj}{a vector of length \code{J} specifying the number of possible candidates
+\item{Vj}{a vector of length \code{J} specifying the number of possible responses
 for each variable. For a Bernoulli variable \code{Vj}[j] = 1.}
 
 \item{alpha}{a vector of length \code{K} which is the parameter for Dirichlet
@@ -30,8 +30,8 @@ membership distribution.}
 
 \item{theta}{an array with dimensions (\code{J},\code{K},\code{max(Vj)}) which governs the variable
 distributions. The parameter \code{theta}[j,k,] governs the distribution of variable J for a complete member of sub-population k. For instance, if variable j is a Bernoulli variable, theta[j,k,1] is the probability of success; if
-variable j is a multinomial variable, \code{theta}[j,k, 1:Vj[j]] is the probability for each of the \code{Vj}[j] categories; if variable j
-is a rank variable, \code{theta}[j,k, 1:Vj[j]] are the support parameters for each of the \code{Vj}[j] alternatives. Since the dimension of the relevant parameters
+variable j is a multinomial variable, \code{theta}[j,k, 1:Vj[j]] is the probability for each of the \code{Vj}[j] response; if variable j
+is a rank variable, \code{theta}[j,k, 1:Vj[j]] are the support parameters for each of the \code{Vj}[j] possible responses. Since the dimension of the relevant parameters
 can differ across variables, any unused elements of the array should be set to 0, while all other elements should be positive.}
 
 \item{phi}{an array with dimensions (\code{Total},\code{K}) which specifies the variational

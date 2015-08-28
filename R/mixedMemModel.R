@@ -39,7 +39,7 @@
 #' @param obs an array with dimensions (\code{Total},\code{J},\code{max(Rj)}, \code{max(Nijr)}) corresponding to 
 #' the observed data. For Bernoulli random variables, the data consist of 0/1's. 
 #' For multinomial or rank data the data consist of integers 0,1,\ldots,(Vj[j]-1).
-#' @param fixedObs an array with dimensions (1, \code{J}, \code{max(Rj)}, \code{max(Nijr)}) corresonding to the observed
+#' @param fixedObs an array with dimensions (S, \code{J}, \code{max(Rj)}, \code{max(Nijr)}) corresonding to the observed
 #' responses for a fixed group in the extended GoM model from Erosheva et al (2007)
 #' @param P scalar between 0 and 1 corresponding to initial value for the proportion of individuals in the fixed group
 #' @param beta scalar between 0 and 1 corresponding to the initial value of beta, the conditional probability of being in the fixed group

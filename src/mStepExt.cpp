@@ -13,7 +13,6 @@ vec getGradExt(mm_modelExt model)
     double sum_phi = 0.0;
     vec grad = vec(K);
     double fullGomMembers = T - sum(model.getBeta() * model.getNumStayers());
-    Rcout <<"full mem: " << fullGomMembers<<endl;
 
     double sum_alpha = sum(model.getAlpha());
     double dg_sum_alpha = digamma(sum_alpha);

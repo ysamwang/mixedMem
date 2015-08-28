@@ -8,11 +8,9 @@ void updateP(mm_modelExt model){
     int s;
     //calculate p for all stayer classes
     for(s = 1; s < model.getS(); s++) {
-        Rcout << "Stayers: " << model.getNumStayers(s) <<endl;
         target =  model.getNumStayers(s) * model.getBeta(s) / model.getT();
         total += target;
         model.setP(s, target); 
-        Rcout <<"s: " <<s <<" assign: " << target << " beta: "<< model.getBeta(s)  <<endl;
     } 
     //calculate p_1 since all p's must sum to 1
     model.setP(0, 1.0 - total); 
@@ -24,7 +22,10 @@ void updateBeta(mm_modelExt model) {
     double target;
     int s;
     for(s = 1; s < model.getS(); s++) {
-        target = model.getP(s) / (model.getP(0) * getStayersProb(model, s) + model.getP(s));
+        target = model.getP(s) / (model.getP(0) * exp(getStayersProb(model, s)) + model.getP(s));
+      if((1.0 - target) < BUMP){
+        target = 1.0 - BUMP;
+      }
         model.setBeta(s, target);
     }
 }
@@ -33,7 +34,7 @@ void updateBeta(mm_modelExt model) {
 
 //evaluates the ELBO for an individual who is a stayer
 double getStayersProb(mm_modelExt model, int s){
-    //ADD find first stayer
+  
     int stayerID = model.getStayersFirstID(s);
 
     double t1,t2,t3,t4;

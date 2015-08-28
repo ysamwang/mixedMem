@@ -10,22 +10,28 @@ mm_modelExt::mm_modelExt(List model) : mm_model::mm_model(model)
   P = Rcpp::clone(as<NumericVector>(model[13]));
   beta =  Rcpp::clone(as<NumericVector>(model[14]));
   S =  (int) as<NumericVector>(model[15])[0];
-  
+
   stayers = NumericVector(T);
   stayersFirstID = NumericVector(S);
   stayersCount = NumericVector(S);
-  Rcout <<"Testing"<<endl;
-  
+
   int i;
   for(i = 0; i < S; i++){
-    stayersFirstID = -1;
-    stayersCount = 0;
+    if(beta[i] > (1.0 - BUMP)){
+      beta[i] = (1.0 - BUMP);
+    }
+    stayersFirstID[i] = -1;
+    stayersCount[i] = 0;
   }
+  
   int temp;
   for(i = 0; i < T; i++) {
     temp = checkIndStayer(i);
     stayers[i] = temp;
-    stayersCount[temp] = stayersCount[temp] + 1;
+    if(temp > 0 ){
+      stayersCount[temp] = stayersCount[temp] + 1;
+   
+    }
     
     if(stayersFirstID[stayers[i]] < 0)
     {
@@ -37,7 +43,7 @@ mm_modelExt::mm_modelExt(List model) : mm_model::mm_model(model)
 
 int mm_modelExt::getFixedObs(int s, int j, int r, int n)
 {
-  return(fixedObs[s + j + J*r + J*maxR*n]);
+  return(fixedObs[s + (S-1)*j + (S-1)*J*r + (S-1)*J*maxR*n]);
 }
 
 double mm_modelExt::getP(int s)
@@ -52,14 +58,15 @@ NumericVector mm_modelExt::getP()
 
 double mm_modelExt::getBeta(int i, int s)
 {
+  int temp = (int) stayers[i];
   if(s == 0){
-    if(stayers[i] == 0) {
+    if(temp == 0) {
       return 1.0;
     } else {
-      return  1.0 - beta[stayers[i]];
+      return  1.0 - beta[temp];
     }
   } else {
-    if(s == stayers[i] ) {
+    if(s == temp) {
       return beta[s];
     }
   }
@@ -99,26 +106,29 @@ NumericVector mm_modelExt::getStayers()
 // checks if an individual is a stayer
 int mm_modelExt::checkIndStayer(int i)
 {
-  int j, r, n, s;
-  IntegerVector possibleClass(S);
-  for(s = 0; s < S; s++){
-    possibleClass[s] = s;
-  }
   
+  int s, temp;
+  for(s = 1; s < S; s++){
+    temp = checkIndStayerHelp(i, s);
+    if(temp != 0){
+      return temp;
+    }
+  }
+  return 0;
+}
+  
+int mm_modelExt::checkIndStayerHelp(int i, int s) {
+  int j, r, n;
   for(j = 0; j < J; j++) {
     for(r = 0; r < getR(j); r++) {
       for(n = 0; n < getN(i, j, r); n++ ) {
-        for(s = 1; s < S; s++){
-          Rcout <<"fixed: " <<  getFixedObs(s-1, j, r, n) << " obs: " <<getObs(i, j, r, n);
-          if(getObs(i, j, r, n) !=  getFixedObs(s-1, j, r, n)) {
-            possibleClass[s] = 0;
+         if(getObs(i, j, r, n) !=  getFixedObs((s-1), j, r, n)) {
+            return 0;
           }
         }
       }
     }
-  }
-  Rcout <<Rcpp::max(possibleClass) <<endl;
-  return Rcpp::max(possibleClass);
+  return s;
 }
 
 

@@ -22,7 +22,7 @@ checkModel = function(model)
   #Check Total
   if(Total<1 || Total != round(Total))
   {stop("Input must be positive Integer: ", "Total")}
-  if(length(Total)>1)
+  if(length(Total) > 1)
   {stop("Input of incorrect dimensions: ", "Total", " must be of dimension ", "1")}
   
   # Check J
@@ -132,8 +132,8 @@ checkModel = function(model)
   if(length(model) > 12){
   # check fixed obs
   if(!is.null(fixedObs)){
-    if(any(dim(fixedObs) != c(1, J, maxR, maxN))) {
-      stop("fixedObs must be of dimension (J, max(Rj), max(Nijr)")
+    if(any(dim(fixedObs)[-1] != c(J, maxR, maxN))) {
+      stop("fixedObs must be of dimension (S, J, max(Rj), max(Nijr)")
     }
     if(is.null(P))
     {stop("P must be specified if fixedObs is not null")}
