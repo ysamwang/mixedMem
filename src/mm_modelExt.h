@@ -28,6 +28,7 @@ public:
     double getStayersProb(int s);
     int getS();
     NumericVector getNumStayers();
+    double getNumStayers(int s);
 
     //set individual element
     void setP(int s, double target);
@@ -39,7 +40,7 @@ protected:
     NumericVector fixedObs;
     NumericVector stayers;
     NumericVector stayersFirstID;
-    NumericVector stayerCount;
+    NumericVector stayersCount;
     NumericVector P;
     NumericVector beta;
     int checkIndStayer(int i);

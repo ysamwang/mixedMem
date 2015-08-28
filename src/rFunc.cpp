@@ -45,16 +45,6 @@ Rcpp::List varInfInputExtC(Rcpp::List model_r, int print,
 double computeElboExtC(Rcpp::List model_r)
 {
     mm_modelExt model = mm_modelExt(model_r);
-    mm_modelExt model2 = mm_modelExt(model_r);
-    Rcout << compute_ELBOExt(model) <<endl;
-    Rcout << compute_ELBOExt(model2) <<endl;
-    
-    mm_modelExt model1 = mm_modelExt(model_r);
-    Rcout << compute_ELBOExt(model) <<endl;
-    Rcout << compute_ELBOExt(model1) <<endl;
-    mm_modelExt model3 = mm_modelExt(model_r);
-    Rcout << compute_ELBOExt(model) <<endl;
-    Rcout << compute_ELBOExt(model3) <<endl;
-    return 1.0;
+    return compute_ELBOExt(model);
 }
 

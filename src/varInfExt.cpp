@@ -134,13 +134,13 @@ double compute_ELBOExt(mm_modelExt model)
     for(i = 0; i < T; i++) {
         phi_sum = 0.0;
         for(k = 0; k < K; k++) {
-            phi_sum += model.getPhi(i,k);
+            phi_sum += model.getPhi(i, k);
         }
         dg_phi_sum = boost::math::digamma(phi_sum);
 
         t4 += lgamma(phi_sum);
         for(k = 0; k < K; k++) {
-            phi_ik = model.getPhi(i,k);
+            phi_ik = model.getPhi(i, k);
             back_term = (boost::math::digamma(phi_ik) - dg_phi_sum);
             t1 += (model.getAlpha(k) - 1.0) * back_term  * model.getBeta(i, 0);
 
@@ -149,9 +149,9 @@ double compute_ELBOExt(mm_modelExt model)
 
             for(j = 0; j < J; j++) {
                 for(r = 0; r < model.getR(j); r++) {
-                    Nijr = model.getN(i,j,r);
+                    Nijr = model.getN(i, j, r);
                     for(n = 0; n < Nijr; n++) {
-                        delta_ijrnk = model.getDelta(i,j,r,n,k);
+                        delta_ijrnk = model.getDelta(i, j, r, n, k);
                         t2 += delta_ijrnk * back_term * model.getBeta(i, 0);
                         t4 += delta_ijrnk * log(delta_ijrnk);
                     }

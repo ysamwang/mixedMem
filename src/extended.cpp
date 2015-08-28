@@ -8,12 +8,14 @@ void updateP(mm_modelExt model){
     int s;
     //calculate p for all stayer classes
     for(s = 1; s < model.getS(); s++) {
-        target =  sum((model.getStayers() == s)) * model.getBeta(s) / model.getT();
+        Rcout << "Stayers: " << model.getNumStayers(s) <<endl;
+        target =  model.getNumStayers(s) * model.getBeta(s) / model.getT();
         total += target;
-        model.setP(s, target);
-    }
+        model.setP(s, target); 
+        Rcout <<"s: " <<s <<" assign: " << target << " beta: "<< model.getBeta(s)  <<endl;
+    } 
     //calculate p_1 since all p's must sum to 1
-    model.setP(0, 1.0 - total);
+    model.setP(0, 1.0 - total); 
 }
 
 

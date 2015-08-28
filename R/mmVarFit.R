@@ -122,7 +122,7 @@ mmVarFit = function(model, printStatus = 1,
   } else {
     print("<== Beginning Extended Model Fit! ==>")
     
-    stayerClasses = dim(fixedObs)[1]
+    stayerClasses = dim(fixedObs)[1] + 1
     
     ret <- varInfInputExtC(c(model, stayerClasses), printStatus, printMod, stepType, maxTotalIter, maxEIter, maxAlphaIter,
                  maxThetaIter, maxLSIter, elboTol, alphaTol, thetaTol, aNaught, tau, bMax, bNaught, 
