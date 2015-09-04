@@ -10,10 +10,10 @@ void updateP(mm_modelExt model){
     for(s = 1; s < model.getS(); s++) {
         target =  model.getNumStayers(s) * model.getBeta(s) / model.getT();
         total += target;
-        model.setP(s, target); 
-    } 
+        model.setP(s, target);
+    }
     //calculate p_1 since all p's must sum to 1
-    model.setP(0, 1.0 - total); 
+    model.setP(0, 1.0 - total);
 }
 
 
@@ -22,6 +22,7 @@ void updateBeta(mm_modelExt model) {
     double target;
     int s;
     for(s = 1; s < model.getS(); s++) {
+        Rcout <<"S: " << s << " Prob : "<< exp(getStayersProb(model, s));
         target = model.getP(s) / (model.getP(0) * exp(getStayersProb(model, s)) + model.getP(s));
       if((1.0 - target) < BUMP){
         target = 1.0 - BUMP;
@@ -34,7 +35,7 @@ void updateBeta(mm_modelExt model) {
 
 //evaluates the ELBO for an individual who is a stayer
 double getStayersProb(mm_modelExt model, int s){
-  
+
     int stayerID = model.getStayersFirstID(s);
 
     double t1,t2,t3,t4;
@@ -51,7 +52,6 @@ double getStayersProb(mm_modelExt model, int s){
     t1 = 0.0;
     t2 = 0.0;
     t3 = 0.0;
-    t4 = 0.0;
 
 
     t1 = lgamma(sum(model.getAlpha())) - sum(lgamma(model.getAlpha()));
@@ -61,21 +61,17 @@ double getStayersProb(mm_modelExt model, int s){
     }
     dg_phi_sum = boost::math::digamma(phi_sum);
 
-    t4 += lgamma(phi_sum);
     for(k = 0; k < K; k++) {
         phi_ik = model.getPhi(stayerID,k);
         back_term = (boost::math::digamma(phi_ik) - dg_phi_sum);
         t1+= (model.getAlpha(k) - 1.0) * back_term;
 
-        t4 += -lgamma(phi_ik);
-        t4 += (phi_ik - 1.0) * back_term;
 
         for(j = 0; j < J; j++) {
             for(r = 0; r < model.getR(j); r++) {
                 for(n = 0; n < model.getN(stayerID, j, r); n++) {
                     delta_ijrnk = model.getDelta(stayerID, j, r, n, k);
-                    t2 += delta_ijrnk*back_term;
-                    t4 += delta_ijrnk*log(delta_ijrnk);
+                    t2 += delta_ijrnk * back_term;
                 }
             }
         }
@@ -84,7 +80,7 @@ double getStayersProb(mm_modelExt model, int s){
 //compute 3rd line
     t3 = getStayer_logf(model, stayerID);
 
-    elbo = t1 + t2 + t3 - t4;
+    elbo = t1 + t2 + t3;
     return elbo;
 }
 

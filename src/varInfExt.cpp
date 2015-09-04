@@ -75,7 +75,7 @@ double varInfExtC(mm_modelExt model, int print,
             }
 
             //update convergence criteria
-            converged_T = (old_elbo_T - elbo_T)/old_elbo_T;
+            converged_T = fabs((old_elbo_T - elbo_T)/old_elbo_T);
         }
     }
 

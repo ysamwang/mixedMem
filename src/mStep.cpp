@@ -285,7 +285,7 @@ void update_PL_Theta(mm_model model, int j, int maxThetaIter,
                         }
 
                     }
-                    conv_crit = fabs((obj_old - obj_new)/obj_old);
+                    conv_crit = abs((obj_old - obj_new)/obj_old);
                 } //end update at specific level of b
                 if( nTheta == maxThetaIter) {
                     iterReached[2] = 1;

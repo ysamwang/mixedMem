@@ -91,7 +91,7 @@ double eStep_C(mm_model model, double elbo_E, int maxEIter, double elboTol, Nume
 
         //calculate convergence criteria
         elbo_E = compute_ELBO(model);
-        converged_E = (old_elbo_E- elbo_E)/old_elbo_E;
+        converged_E = fabs((old_elbo_E - elbo_E)/old_elbo_E);
     }
     if (nE == maxEIter) {
         Rcout<< "Max E Steps Reached!" <<std::endl;

@@ -50,7 +50,7 @@ the variational parameters for the context vectors Z. The default initialization
 the observed data. For Bernoulli random variables, the data consist of 0/1's.
 For multinomial or rank data the data consist of integers 0,1,\ldots,(Vj[j]-1).}
 
-\item{fixedObs}{an array with dimensions (1, \code{J}, \code{max(Rj)}, \code{max(Nijr)}) corresonding to the observed
+\item{fixedObs}{an array with dimensions (S, \code{J}, \code{max(Rj)}, \code{max(Nijr)}) corresonding to the observed
 responses for a fixed group in the extended GoM model from Erosheva et al (2007)}
 
 \item{P}{scalar between 0 and 1 corresponding to initial value for the proportion of individuals in the fixed group}

@@ -116,7 +116,7 @@ double mStepExt(mm_modelExt model, double elbo_T, int stepType, int maxAlphaIter
             }
 
             //check for convergence
-            conv_crit_m = fabs((old_obj - new_obj)/old_obj);
+            conv_crit_m = abs((old_obj - new_obj)/old_obj);
         }
 
         if( nA == maxAlphaIter ) {
