@@ -16,6 +16,7 @@ void updateP(mm_modelExt model);
 void updateBeta(mm_modelExt model);
 double getStayersProb(mm_modelExt model, int s);
 double getStayer_logf(mm_modelExt model, int stayerID);
+void updateExt(mm_modelExt model);
 
 #endif
 

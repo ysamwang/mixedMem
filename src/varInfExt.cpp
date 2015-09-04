@@ -66,8 +66,8 @@ double varInfExtC(mm_modelExt model, int print,
                 Rcout<<"M-Step: "<<elbo_T<<endl;
             }
 
-            updateP(model);
-            updateBeta(model);
+            
+            updateExt(model);
             elbo_T = compute_ELBOExt(model);
             //print if necessary
             if((nT % printMod == 0) && (print==1)) {
@@ -129,7 +129,6 @@ double compute_ELBOExt(mm_modelExt model)
     t5 = sum( model.getNumStayers() * (model.getBeta() * log(model.getP()) + (1.0 - model.getBeta()) * log(model.getP(0))) );
     t5 += (T - sum(model.getNumStayers())) * log(model.getP(0));
     t5 += - sum(model.getNumStayers() * ( model.getBeta() * log(model.getBeta()) +  (1.0 - model.getBeta()) * log(1.0 - model.getBeta()) ) ) ;
-    t5 += -(T - sum(model.getNumStayers())) * log(model.getBeta(0));
 
     for(i = 0; i < T; i++) {
         phi_sum = 0.0;
@@ -138,14 +137,14 @@ double compute_ELBOExt(mm_modelExt model)
         }
         dg_phi_sum = boost::math::digamma(phi_sum);
 
-        t4 += lgamma(phi_sum);
+        t4 += lgamma(phi_sum) * model.getBeta(i, 0);
         for(k = 0; k < K; k++) {
             phi_ik = model.getPhi(i, k);
             back_term = (boost::math::digamma(phi_ik) - dg_phi_sum);
             t1 += (model.getAlpha(k) - 1.0) * back_term  * model.getBeta(i, 0);
 
-            t4 += -lgamma(phi_ik);
-            t4 += (phi_ik - 1.0)*back_term;
+            t4 += -lgamma(phi_ik) * model.getBeta(i, 0);
+            t4 += (phi_ik - 1.0)*back_term * model.getBeta(i, 0);
 
             for(j = 0; j < J; j++) {
                 for(r = 0; r < model.getR(j); r++) {
@@ -153,7 +152,7 @@ double compute_ELBOExt(mm_modelExt model)
                     for(n = 0; n < Nijr; n++) {
                         delta_ijrnk = model.getDelta(i, j, r, n, k);
                         t2 += delta_ijrnk * back_term * model.getBeta(i, 0);
-                        t4 += delta_ijrnk * log(delta_ijrnk);
+                        t4 += delta_ijrnk * log(delta_ijrnk) * model.getBeta(i, 0);
                     }
                 }
             }
