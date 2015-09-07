@@ -43,7 +43,7 @@ mm_modelExt::mm_modelExt(List model) : mm_model::mm_model(model)
 
 int mm_modelExt::getFixedObs(int s, int j, int r, int n)
 {
-  return(fixedObs[s + (S-1)*j + (S-1)*J*r + (S-1)*J*maxR*n]);
+  return(fixedObs[(s-1) + (S-1)*j + (S-1)*J*r + (S-1)*J*maxR*n]);
 }
 
 double mm_modelExt::getP(int s)
@@ -122,7 +122,7 @@ int mm_modelExt::checkIndStayerHelp(int i, int s) {
   for(j = 0; j < J; j++) {
     for(r = 0; r < getR(j); r++) {
       for(n = 0; n < getN(i, j, r); n++ ) {
-         if(getObs(i, j, r, n) !=  getFixedObs((s-1), j, r, n)) {
+         if(getObs(i, j, r, n) !=  getFixedObs(s, j, r, n)) {
             return 0;
           }
         }
