@@ -117,23 +117,22 @@ double compute_ELBOExt(mm_modelExt model)
     double phi_ik, delta_ijrnk;
     int Nijr;
     double fullGomMembers = T - sum(model.getBeta() * model.getNumStayers());
-    
+      
     //Calculate first line and second line
     t1 = 0.0;
     t2 = 0.0;
     t3 = 0.0;
     t4 = 0.0;
-
+  
     t1 = fullGomMembers *(lgamma(sum(model.getAlpha())) - sum(lgamma(model.getAlpha())));
 
     t5 = sum( model.getNumStayers() * (model.getBeta() * log(model.getP()) + (1.0 - model.getBeta()) * log(model.getP(0))) );
-      Rcout << "Term 1: " << t5 <<endl;
     t5 += (T - sum(model.getNumStayers())) * log(model.getP(0));
-    Rcout << "Term 2: " << t5 <<endl;
     for(s = 1; s < model.getS(); s++){
-      t5 += -model.getNumStayers(s) * ( model.getBeta(s) * log(model.getBeta(s)) +  (1.0 - model.getBeta(s)) * log(1.0 - model.getBeta(s)) );
+      //Check at end prevents log(0) computation
+      t5 += -model.getNumStayers(s) * ( model.getBeta(s) * log(model.getBeta(s)) +  (model.getBeta(s) == 1.0 ? 0.0 : ((1.0 - model.getBeta(s)) * log(1.0 - model.getBeta(s))) ) );
     }
-      Rcout << "Term 3: " << t5 <<endl;
+    
     for(i = 0; i < T; i++) {
         phi_sum = 0.0;
         for(k = 0; k < K; k++) {
@@ -141,14 +140,14 @@ double compute_ELBOExt(mm_modelExt model)
         }
         dg_phi_sum = boost::math::digamma(phi_sum);
 
-        t4 += lgamma(phi_sum) * model.getBeta(i, 0);
+        t4 += lgamma(phi_sum);
         for(k = 0; k < K; k++) {
             phi_ik = model.getPhi(i, k);
             back_term = (boost::math::digamma(phi_ik) - dg_phi_sum);
             t1 += (model.getAlpha(k) - 1.0) * back_term  * model.getBeta(i, 0);
 
-            t4 += -lgamma(phi_ik); //* model.getBeta(i, 0);
-            t4 += (phi_ik - 1.0)*back_term;// * model.getBeta(i, 0);
+            t4 += -lgamma(phi_ik); 
+            t4 += (phi_ik - 1.0) * back_term;
 
             for(j = 0; j < J; j++) {
                 for(r = 0; r < model.getR(j); r++) {
@@ -156,7 +155,7 @@ double compute_ELBOExt(mm_modelExt model)
                     for(n = 0; n < Nijr; n++) {
                         delta_ijrnk = model.getDelta(i, j, r, n, k);
                         t2 += delta_ijrnk * back_term * model.getBeta(i, 0);
-                        t4 += delta_ijrnk * log(delta_ijrnk);// * model.getBeta(i, 0);
+                        t4 += delta_ijrnk * log(delta_ijrnk);
                     }
                 }
             }
@@ -169,8 +168,7 @@ double compute_ELBOExt(mm_modelExt model)
     elbo = t1 + t2 + t3 - t4 + t5;
 
     //debug!
-    // if(!(elbo > -INFINITY)) {
-      if(1) {
+    if(!(elbo > -INFINITY)) {
         Rcout<< t1 <<" "<<t2 <<" "<<t3 <<" "<<t4 <<" " << t5 <<endl<<"Alpha: "<<endl;
         for(k = 0; k < K; k++) {
             Rcout<<model.getAlpha(k)<<" ";

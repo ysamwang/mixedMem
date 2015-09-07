@@ -2,22 +2,21 @@
 
 //Updates P based on current model estimates
 void updateExt(mm_modelExt model){
-//   double old_Elbo, new_Elbo;
-//   double tol = 10e-6;
-//   double conv_Crit = 1.0;
-//   new_Elbo = compute_ELBOExt(model);
-//   int count = 0;  
-//   while(conv_Crit > tol) 
-//   {
-    // old_Elbo = new_Elbo;
+  double old_Elbo, new_Elbo;
+  double tol = 10e-6;
+  double conv_Crit = 1.0;
+  new_Elbo = compute_ELBOExt(model);
+  int count = 0;  
+  while(conv_Crit > tol) 
+  {
+    old_Elbo = new_Elbo;
 
     updateP(model);
     updateBeta(model);
-//     new_Elbo = compute_ELBOExt(model);
-//     conv_Crit = fabs((new_Elbo - old_Elbo)/old_Elbo);
-//     count++;
-//   }
-//   Rcout <<"Extended Step: " << count <<endl;
+    new_Elbo = compute_ELBOExt(model);
+    conv_Crit = fabs((new_Elbo - old_Elbo)/old_Elbo);
+    count++;
+  }
 }
 
 
@@ -42,8 +41,7 @@ void updateBeta(mm_modelExt model) {
   double target;
   int s;
   for(s = 1; s < model.getS(); s++) {
-    Rcout <<"P0: " <<model.getP(0) <<endl;
-    
+
     target = model.getP(s) / (model.getP(0) * exp(getStayersProb(model, s)) + model.getP(s));
     if((1.0 - target) < BUMP){
       target = 1.0 - BUMP;

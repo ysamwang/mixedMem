@@ -9,14 +9,16 @@ mm_modelExt::mm_modelExt(List model) : mm_model::mm_model(model)
   fixedObs = Rcpp::clone(as<NumericVector>(model[12]));
   P = Rcpp::clone(as<NumericVector>(model[13]));
   beta =  Rcpp::clone(as<NumericVector>(model[14]));
+  
   S =  (int) as<NumericVector>(model[15])[0];
-
+  
   stayers = NumericVector(T);
   stayersFirstID = NumericVector(S);
   stayersCount = NumericVector(S);
 
   int i;
   for(i = 0; i < S; i++){
+    
     if(beta[i] > (1.0 - BUMP)){
       beta[i] = (1.0 - BUMP);
     }

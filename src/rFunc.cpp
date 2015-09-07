@@ -66,6 +66,7 @@ double computeElboExtC(Rcpp::List model_r)
         check = 0;
       }
     }
+    Rcout <<"Beta: " << model.getBeta(0) <<" "<<model.getBeta(1)<<endl;
     if(check){
       return compute_ELBOExt(model);
     } else {
