@@ -17,6 +17,9 @@ void updateBeta(mm_modelExt model);
 double getStayersProb(mm_modelExt model, int s);
 double getStayer_logf(mm_modelExt model, int stayerID);
 void updateExt(mm_modelExt model);
+//evaluates the ELBO for an individual who is a stayer
+double getStayersProbI(mm_modelExt model, int i);
+  
 
 #endif
 

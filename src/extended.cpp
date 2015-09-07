@@ -3,7 +3,7 @@
 //Updates P based on current model estimates
 void updateExt(mm_modelExt model){
   double old_Elbo, new_Elbo;
-  double tol = 10e-12;
+  double tol = 10e-6;
   double conv_Crit = 1.0;
   new_Elbo = compute_ELBOExt(model);
   int count = 0;  
@@ -41,7 +41,6 @@ void updateBeta(mm_modelExt model) {
   double target;
   int s;
   for(s = 1; s < model.getS(); s++) {
-    Rcout <<"S: " << s << " Prob : "<< exp(getStayersProb(model, s)) <<endl;
     target = model.getP(s) / (model.getP(0) * exp(getStayersProb(model, s)) + model.getP(s));
     if((1.0 - target) < BUMP){
       target = 1.0 - BUMP;
@@ -150,3 +149,57 @@ double getStayer_logf(mm_modelExt model, int stayerID)
   return logf;
 }
 
+
+//evaluates the ELBO for an individual who is a stayer
+double getStayersProbI(mm_modelExt model, int i){
+  
+  int stayerID = i;
+  
+  double t1, t2, t3, t4;
+  double phi_sum = 0.0;
+  double elbo;
+  int j,k,r,n;
+  int K = model.getK();
+  int J = model.getJ();
+  double back_term;
+  double dg_phi_sum;
+  
+  //Calculate first line and second line
+  t1 = 0.0;
+  t2 = 0.0;
+  t3 = 0.0;
+  t4 = 0.0;
+  
+  t1 = lgamma(sum(model.getAlpha())) - sum(lgamma(model.getAlpha()));
+  
+  for(k = 0; k < K; k++) {
+    phi_sum += model.getPhi(stayerID,k);
+  }
+  dg_phi_sum = boost::math::digamma(phi_sum);
+  
+  t4 += lgamma(phi_sum);
+  for(k = 0; k < K; k++) {
+    back_term = (boost::math::digamma(model.getPhi(stayerID, k)) - dg_phi_sum);
+    t1 += (model.getAlpha(k) - 1.0) * back_term;
+    
+    t4 += -lgamma(model.getPhi(stayerID, k));
+    t4 += (model.getPhi(stayerID, k) - 1.0)*back_term;
+    
+    for(j = 0; j < J; j++) {
+      for(r = 0; r < model.getR(j); r++) {
+        for(n = 0; n < model.getN(stayerID, j, r); n++) {
+          t2 += model.getDelta(stayerID, j, r, n, k) * back_term;
+          t4 += model.getDelta(stayerID, j, r, n, k) * log(model.getDelta(stayerID, j, r, n, k));
+        }
+      }
+    }
+  }
+  
+  //compute 3rd line
+  t3 = getStayer_logf(model, stayerID);
+  
+  elbo = t1 + t2 + t3 - t4;
+  Rcout <<"New!" <<endl;
+  Rcout << t1 <<" " << t2 <<" "<< t3 <<" "<< t4 <<endl;
+  return elbo;
+}
