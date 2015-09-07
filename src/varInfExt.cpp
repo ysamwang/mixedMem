@@ -127,9 +127,13 @@ double compute_ELBOExt(mm_modelExt model)
     t1 = fullGomMembers *(lgamma(sum(model.getAlpha())) - sum(lgamma(model.getAlpha())));
 
     t5 = sum( model.getNumStayers() * (model.getBeta() * log(model.getP()) + (1.0 - model.getBeta()) * log(model.getP(0))) );
+      Rcout << "Term 1: " << t5 <<endl;
     t5 += (T - sum(model.getNumStayers())) * log(model.getP(0));
-    t5 += - sum(model.getNumStayers() * ( model.getBeta() * log(model.getBeta()) +  (1.0 - model.getBeta()) * log(1.0 - model.getBeta()) ) ) ;
-
+    Rcout << "Term 2: " << t5 <<endl;
+    for(s = 1; s < model.getS(); s++){
+      t5 += -model.getNumStayers(s) * ( model.getBeta(s) * log(model.getBeta(s)) +  (1.0 - model.getBeta(s)) * log(1.0 - model.getBeta(s)) );
+    }
+      Rcout << "Term 3: " << t5 <<endl;
     for(i = 0; i < T; i++) {
         phi_sum = 0.0;
         for(k = 0; k < K; k++) {
