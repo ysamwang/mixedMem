@@ -41,7 +41,7 @@ void updateBeta(mm_modelExt model) {
   double target;
   int s;
   for(s = 1; s < model.getS(); s++) {
-
+    // Rcout <<"s: " <<s <<" "<< getStayersProb(model, s)<<endl;
     target = model.getP(s) / (model.getP(0) * exp(getStayersProb(model, s)) + model.getP(s));
     if((1.0 - target) < BUMP){
       target = 1.0 - BUMP;
@@ -85,7 +85,7 @@ double getStayersProb(mm_modelExt model, int s){
   for(k = 0; k < K; k++) {
     phi_ik = model.getPhi(stayerID,k);
     back_term = (boost::math::digamma(phi_ik) - dg_phi_sum);
-    t1+= (model.getAlpha(k) - 1.0) * back_term;
+    t1 += (model.getAlpha(k) - 1.0) * back_term;
     
     t4 += -lgamma(phi_ik);
     t4 += (phi_ik - 1.0) * back_term;
@@ -104,7 +104,8 @@ double getStayersProb(mm_modelExt model, int s){
   //compute 3rd line
   t3 = getStayer_logf(model, stayerID);
   
-  elbo = t1 + t2 + t3 - t4;
+  elbo = t1 + t2 + t3;// - t4;
+  // Rcout <<"Elbo: " <<elbo << " t4: " <<t4 <<endl;
   return elbo;
 }
 

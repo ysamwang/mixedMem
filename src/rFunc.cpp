@@ -31,7 +31,7 @@ Rcpp::List varInfInputExtC(Rcpp::List model_r, int print,
                     int maxEIter, int maxAlphaIter, int maxThetaIter, int maxLSIter,
                     double elboTol, double alphaTol, double thetaTol, double aNaught,
                     double tau, int bMax, double bNaught, double bMult, int vCutoff, SEXP holdConstSEXP) {
-    
+
     int s, check;
     check = 1;
     mm_modelExt model = mm_modelExt(model_r);
@@ -74,3 +74,32 @@ double computeElboExtC(Rcpp::List model_r)
     }
 }
 
+//[[Rcpp::export]]
+SEXP rDirichlet_sw(SEXP alpha_r){
+  int i;
+  NumericVector alpha = as<NumericVector>(alpha_r);
+  double sum = 0.0;
+  int v = alpha.size();
+  NumericVector ret(v);
+  for(i = 0 ; i < v; i ++){
+    ret[i] = R::rgamma(alpha[i], 1.0);
+    sum += ret[i];
+  }
+
+  //calculated on log scale for numerical reasons
+  for(i = 0 ; i < v; i ++){
+    ret[i] = exp(log(ret[i]) - log(sum));
+  }
+  return Rcpp::wrap(ret);
+}
+
+#include <RcppArmadilloExtensions/sample.h>
+using namespace Rcpp;
+//[[Rcpp::depends(RcppArmadillo)]]
+//[[Rcpp::export]]
+int rsampler_sw(SEXP prob_r, SEXP sample_r){
+  NumericVector prob = as<NumericVector>(prob_r);
+  NumericVector s = as<NumericVector>(sample_r);
+  NumericVector ret = RcppArmadillo::sample(s, 1, true, prob);
+  return ret[0];
+}

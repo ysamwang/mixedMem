@@ -136,7 +136,7 @@ mixedMemModel = function(Total, J, Rj, Nijr, K, Vj, alpha, theta, phi = NULL, de
   
   dimnames(model_obj$theta) <- list(paste("Var", c(1:J)),
                                     paste("Group", c(1:K)),
-                                    paste("Response", c(0:(max(Vj)-1))))
+                                    paste("Cat", c(0:(max(Vj)-1))))
   
   names(model_obj$alpha) <- paste("Group", c(0:(K-1)))
   
@@ -227,5 +227,82 @@ plot.mixedMemModel = function(x, type = "theta" , compare = NULL,
     }
     vizMem(x,compare = compare, main = main, nrow = nrow, ncol = ncol,
            indices = indices, fitNames = fitNames, groupNames = groupNames)
+  }
+}
+
+
+#' Print the theta estimates for each sub-population
+#' 
+#' Print the theta estimates for each sub-population to the R console in a more
+#' aesthetically pleasing manner
+#' 
+#' @param model the \code{mixedMemModel} object to be plotted.
+#' @seealso mixedMemModel, vizTheta
+#' @export
+theta.table <- function(model, digits = 3, top.level = "group"){
+  if(top.level == "group"){
+    for(k in 1:model$K){
+      cat(paste("=====", "Group", k, "=====", sep = " "))
+      cat("\n")
+      for(j in 1:model$J)
+      {
+        cat(paste("> Var", j,":", model$dist[j], "\n\t"))
+        if(model$dist[j] == "bernoulli"){
+          for(v in 0:1)
+          {
+            cat(paste("Cat", v,"\t"))
+          }
+          cat("\n\t")
+          cat(paste(round(1-model$theta[j,k,1],digits),"\t"))
+          cat(paste(round(model$theta[j,k,1],digits),"\t"))
+        } else{
+          for(v in 1:model$Vj[j])
+          {
+            cat(paste("Cat", (v-1),"\t"))
+          }
+          cat("\n\t")
+          for(v in 1:model$Vj[j])
+          {
+            cat(paste(round(model$theta[j,k,v],digits),"\t"))
+          }
+        }
+        cat("\n")
+      }
+    }
+  } else {
+      for(j in 1:model$J) {
+        cat(paste("===== Var", j,":", model$dist[j], "=====", "\n\t"))
+        if(model$dist[j] == "bernoulli"){
+          cat("\t\t")
+          for(v in 0:1)
+          {
+            cat(paste("Cat", v,"\t"))
+          }
+          cat("\n")
+          for(k in 1:model$K){
+            cat(paste("\tGroup", k, "\t"))
+            cat(paste(round(1-model$theta[j,k,1],digits),"\t"))
+            cat(paste(round(model$theta[j,k,1],digits),"\t"))
+            cat("\n")
+          }
+          cat("\n")
+        } else{
+          cat("\t\t")
+          for(v in 1:model$Vj[j])
+          {
+            cat(paste("Cat", (v-1),"\t"))
+          }
+          cat("\n")
+          for(k in 1:model$K){
+            cat(paste("\tGroup", k, "\t"))
+            for(v in 1:model$Vj[j])
+            {
+              cat(paste(round(model$theta[j,k,v],digits),"\t"))
+            }
+            cat("\n")
+          }
+        }
+        cat("\n")
+      }
   }
 }
