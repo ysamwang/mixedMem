@@ -12,7 +12,7 @@
 #include "mm_modelExt.h"
 #include "settings.h"
 #include "varInfExt.h"
-#include "utils.h"
+
 
 
 using namespace Rcpp ;

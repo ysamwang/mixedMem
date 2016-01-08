@@ -14,7 +14,7 @@
 #'  variables, \code{Nijr}[i,j,r] = 1. For rank variables, \code{Nijr}[i,j,r] indicates the
 #'  number of items ranked for each individual.
 #' @param K the number of latent sub-populations.
-#' @param Vj a vector of length \code{J} specifying the number of possible candidates
+#' @param Vj a vector of length \code{J} specifying the number of possible categories
 #'  for each variable. For a Bernoulli variable \code{Vj}[j] = 1. For a multinomial
 #'   or rank variable, \code{Vj}[j] is the number of possible categories/items.
 #' @param dist a vector of strings of length \code{J} specifying variable types. Options are

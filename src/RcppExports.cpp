@@ -86,26 +86,3 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
-// rDirichlet_sw
-SEXP rDirichlet_sw(SEXP alpha_r);
-RcppExport SEXP mixedMem_rDirichlet_sw(SEXP alpha_rSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< SEXP >::type alpha_r(alpha_rSEXP);
-    __result = Rcpp::wrap(rDirichlet_sw(alpha_r));
-    return __result;
-END_RCPP
-}
-// rsampler_sw
-int rsampler_sw(SEXP prob_r, SEXP sample_r);
-RcppExport SEXP mixedMem_rsampler_sw(SEXP prob_rSEXP, SEXP sample_rSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< SEXP >::type prob_r(prob_rSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type sample_r(sample_rSEXP);
-    __result = Rcpp::wrap(rsampler_sw(prob_r, sample_r));
-    return __result;
-END_RCPP
-}

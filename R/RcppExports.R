@@ -17,11 +17,3 @@ computeElboExtC <- function(model_r) {
     .Call('mixedMem_computeElboExtC', PACKAGE = 'mixedMem', model_r)
 }
 
-rDirichlet_sw <- function(alpha_r) {
-    .Call('mixedMem_rDirichlet_sw', PACKAGE = 'mixedMem', alpha_r)
-}
-
-rsampler_sw <- function(prob_r, sample_r) {
-    .Call('mixedMem_rsampler_sw', PACKAGE = 'mixedMem', prob_r, sample_r)
-}
-

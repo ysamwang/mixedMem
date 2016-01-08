@@ -3,163 +3,193 @@
 using namespace Rcpp ;
 using namespace arma;
 
-
+// Constructor
 mm_modelExt::mm_modelExt(List model) : mm_model::mm_model(model)
 {
-  fixedObs = Rcpp::clone(as<NumericVector>(model[12]));
-  P = Rcpp::clone(as<NumericVector>(model[13]));
-  beta =  Rcpp::clone(as<NumericVector>(model[14]));
-  
-  S =  (int) as<NumericVector>(model[15])[0];
-  
-  stayers = NumericVector(T);
-  stayersFirstID = NumericVector(S);
-  stayersCount = NumericVector(S);
+    fixedObs = Rcpp::clone(as<NumericVector>(model[12]));
+    P = Rcpp::clone(as<NumericVector>(model[13]));
+    beta =  Rcpp::clone(as<NumericVector>(model[14]));
 
-  int i;
-  for(i = 0; i < S; i++){
-    
-    if(beta[i] > (1.0 - BUMP)){
-      beta[i] = (1.0 - BUMP);
-    }
-    stayersFirstID[i] = -1;
-    stayersCount[i] = 0;
-  }
-  
-  int temp;
-  for(i = 0; i < T; i++) {
-    temp = checkIndStayer(i);
-    stayers[i] = temp;
-    if(temp > 0 ){
-      stayersCount[temp] = stayersCount[temp] + 1;
-   
-    }
-    
-    if(stayersFirstID[stayers[i]] < 0)
+    S =  (int) as<NumericVector>(model[15])[0];
+    NStayers = as<IntegerVector>(model[16]);
+
+    stayers = NumericVector(T);
+    stayersFirstID = NumericVector(S);
+    stayersCount = NumericVector(S);
+
+    int i;
+    for(i = 0; i < S; i++)
     {
-      stayersFirstID[stayers[i]] = i;
+
+        if(beta[i] > (1.0 - BUMP))
+        {
+            beta[i] = (1.0 - BUMP);
+        }
+        stayersFirstID[i] = -1;
+        stayersCount[i] = 0;
     }
-  }
+
+    int temp;
+    for(i = 0; i < T; i++)
+    {
+        temp = checkIndStayer(i);
+        stayers[i] = temp;
+        if(temp > 0 )
+        {
+            stayersCount[temp] = stayersCount[temp] + 1;
+
+        }
+
+        if(stayersFirstID[stayers[i]] < 0)
+        {
+            stayersFirstID[stayers[i]] = i;
+        }
+    }
 }
 
 
+// get signiature of fixed stayer classes
 int mm_modelExt::getFixedObs(int s, int j, int r, int n)
 {
-  return(fixedObs[(s-1) + (S-1)*j + (S-1)*J*r + (S-1)*J*maxR*n]);
+    return(fixedObs[(s-1) + (S-1)*j + (S-1)*J*r + (S-1)*J*maxR*n]);
+}
+
+int mm_modelExt::getNStayer(int s, int j, int r)
+{
+    return(NStayers[(s-1) + (S-1)*j + (S-1)*J*r]);
 }
 
 double mm_modelExt::getP(int s)
 {
-  return P[s];
+    return P[s];
 }
 
 NumericVector mm_modelExt::getP()
 {
-  return P;
+    return P;
 }
 
 double mm_modelExt::getBeta(int i, int s)
 {
-  int temp = (int) stayers[i];
-  if(s == 0){
-    if(temp == 0) {
-      return 1.0;
-    } else {
-      return  1.0 - beta[temp];
+    int temp = (int) stayers[i];
+    if(s == 0)
+    {
+        if(temp == 0)
+        {
+            return 1.0;
+        }
+        else
+        {
+            return  1.0 - beta[temp];
+        }
     }
-  } else {
-    if(s == temp) {
-      return beta[s];
+    else
+    {
+        if(s == temp)
+        {
+            return beta[s];
+        }
     }
-  }
-  return 0.0;
+    return 0.0;
 }
 
 NumericVector mm_modelExt::getBeta()
 {
-  return beta;
+    return beta;
 }
 
 double mm_modelExt::getBeta(int s)
 {
-  return beta[s];
+    return beta[s];
 }
 
 NumericVector mm_modelExt::getNumStayers()
 {
-  return stayersCount;
+    return stayersCount;
 }
 
 double mm_modelExt::getNumStayers(int s)
 {
-  return stayersCount[s];
+    return stayersCount[s];
 }
 
 int mm_modelExt::getS()
 {
-  return S;
+    return S;
 }
 
 NumericVector mm_modelExt::getStayers()
 {
-  return stayers;
+    return stayers;
 }
 
 // checks if an individual is a stayer
 int mm_modelExt::checkIndStayer(int i)
 {
-  
-  int s, temp;
-  for(s = 1; s < S; s++){
-    temp = checkIndStayerHelp(i, s);
-    if(temp != 0){
-      return temp;
-    }
-  }
-  return 0;
-}
-  
-int mm_modelExt::checkIndStayerHelp(int i, int s) {
-  int j, r, n;
-  for(j = 0; j < J; j++) {
-    for(r = 0; r < getR(j); r++) {
-      for(n = 0; n < getN(i, j, r); n++ ) {
-         if(getObs(i, j, r, n) !=  getFixedObs(s, j, r, n)) {
-            return 0;
-          }
+
+    int s, temp;
+    for(s = 1; s < S; s++)
+    {
+        temp = checkIndStayerHelp(i, s);
+        if(temp != 0)
+        {
+            return temp;
         }
-      }
     }
-  return s;
+    return 0;
+}
+
+int mm_modelExt::checkIndStayerHelp(int i, int s)
+{
+    int j, r, n;
+    for(j = 0; j < J; j++) {
+        for(r = 0; r < getR(j); r++) {
+            if(getN(i,j,r) != getNStayer(s, j, r))
+            {
+                return 0;
+            }
+            else
+            {
+                for(n = 0; n < getN(i, j, r); n++ )
+                {
+                    if(getObs(i, j, r, n) !=  getFixedObs(s, j, r, n))
+                    {
+                        return 0;
+                    }
+                }
+            }
+        }
+    }
+    return s;
 }
 
 
 int mm_modelExt::getStayersClass(int i)
 {
-  return (int) stayers[i];
+    return (int) stayers[i];
 }
 
 int mm_modelExt::getStayersFirstID(int s)
 {
-  return (int) stayersFirstID[s];
+    return (int) stayersFirstID[s];
 }
 
 void mm_modelExt::setP(int s, double target)
 {
-  P[s] = target;
+    P[s] = target;
 }
 
 void mm_modelExt::setBeta(int s, double target)
 {
-  beta[s] = target;
+    beta[s] = target;
 }
 
 Rcpp::List mm_modelExt::returnModel()
 {
-  return Rcpp::List::create(Rcpp::Named("alpha", alpha),
-                            Rcpp::Named("theta", theta),
-                            Rcpp::Named("phi", phi),
-                            Rcpp::Named("delta", delta),
-                            Rcpp::Named("P", P),
-                            Rcpp::Named("beta", beta));
+    return Rcpp::List::create(Rcpp::Named("alpha", alpha),
+                              Rcpp::Named("theta", theta),
+                              Rcpp::Named("phi", phi),
+                              Rcpp::Named("delta", delta),
+                              Rcpp::Named("P", P),
+                              Rcpp::Named("beta", beta));
 }

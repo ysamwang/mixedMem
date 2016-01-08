@@ -34,15 +34,33 @@ public:
     void setP(int s, double target);
     void setBeta(int s, double target);
     Rcpp::List returnModel();
+    int getNStayer(int s, int j, int r);
 
 protected:
+    // Number of s-classes (including GoM class)
     int S;
+
+    // Signiature of stayer classes
     NumericVector fixedObs;
+
+    // vector that contains the s-class of each individual; 0 indicates GoM
     NumericVector stayers;
+
+    // vector of length S - 1; contains the first occuring possible stayer for each s-class
     NumericVector stayersFirstID;
+
+    //vector of length S; contains the number of individuals in each s-class; does not count GoM classes
     NumericVector stayersCount;
+
+    //vector of length S; estimates for P
     NumericVector P;
+
+    //vector of length S; posterior estimates for each stayer class
     NumericVector beta;
+
+    // N(i,j,r) for each stayer signiature
+    IntegerVector NStayers;
+
     int checkIndStayer(int i);
     int checkIndStayerHelp(int i, int s);
 

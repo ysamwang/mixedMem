@@ -24,8 +24,8 @@
 #'  membership distribution.
 #' @param theta an array with dimensions (\code{J},\code{K},\code{max(Vj)}) which governs the variable
 #'  distributions. The parameter \code{theta}[j,k,] governs the distribution of variable J for a complete member of sub-population k. For instance, if variable j is a Bernoulli variable, theta[j,k,1] is the probability of success; if
-#'  variable j is a multinomial variable, \code{theta}[j,k, 1:Vj[j]] is the probability for each of the \code{Vj}[j] response; if variable j
-#'  is a rank variable, \code{theta}[j,k, 1:Vj[j]] are the support parameters for each of the \code{Vj}[j] possible responses. Since the dimension of the relevant parameters
+#'  variable j is a multinomial variable, \code{theta}[j,k, 1:Vj[j]] is the probability for each of the \code{Vj}[j] categories; if variable j
+#'  is a rank variable, \code{theta}[j,k, 1:Vj[j]] are the support parameters for each of the \code{Vj}[j] possible categories. Since the dimension of the relevant parameters
 #'  can differ across variables, any unused elements of the array should be set to 0, while all other elements should be positive.
 #' @param phi an array with dimensions (\code{Total},\code{K}) which specifies the variational
 #'  parameters for the membership vectors, \eqn{\lambda}. The default group membership initialization is uniform across all groups (phi[i,k] = 1/K for all k).
@@ -65,7 +65,7 @@
 #' theta <- array(0, dim = c(J, K, max(Vj)))
 #' # Parameters governing multinomial
 #' theta[1,,] <- gtools::rdirichlet(K, rep(.3, Vj[1]))
-#' #parameters governing Bernoulli
+#' # parameters governing Bernoulli
 #' theta[2,,] <- cbind(rbeta(K, 1,1), matrix(0, nrow = K, ncol = Vj[1]-1))
 #' theta[3,,] <- cbind(gtools::rdirichlet(K, rep(.3, Vj[3])),
 #'  matrix(0, nrow = K, ncol = Vj[1]-Vj[3]))
@@ -134,33 +134,33 @@ mixedMemModel = function(Total, J, Rj, Nijr, K, Vj, alpha, theta, phi = NULL, de
   }
   class(model_obj) = "mixedMemModel"
   
-  dimnames(model_obj$theta) <- list(paste("Var", c(1:J)),
-                                    paste("Group", c(1:K)),
-                                    paste("Cat", c(0:(max(Vj)-1))))
+  dimnames(model_obj$theta) <- list(paste("Var", c(1:J), sep = ""),
+                                    paste("Group", c(1:K), sep = ""),
+                                    paste("Cat", c(0:(max(Vj)-1)), sep = ""))
   
   names(model_obj$alpha) <- paste("Group", c(0:(K-1)))
   
-  names(model_obj$Vj) <- paste("Var", c(1:J))
-  names(model_obj$Rj) <- paste("Var", c(1:J))
-  names(model_obj$dist) <- paste("Var", c(1:J))
+  names(model_obj$Vj) <- paste("Var", c(1:J), sep = "")
+  names(model_obj$Rj) <- paste("Var", c(1:J), sep = "")
+  names(model_obj$dist) <- paste("Var", c(1:J), sep = "")
   
-  dimnames(model_obj$phi) <- list(paste("Ind", c(1:Total)),
-                                  paste("Group", c(0:(K-1))))
+  dimnames(model_obj$phi) <- list(paste("Ind", c(1:Total), sep = ""),
+                                  paste("Group", c(1:K), sep = ""))
   
-  dimnames(model_obj$delta) <- list(paste("Ind", c(1:Total)),
-                                    paste("Var", c(1:J)),
-                                    paste("Rep", c(1:max(Rj))),
-                                    paste("Rank", c(1:max(Nijr))),
-                                    paste("Group", c(0:(K-1))))
+  dimnames(model_obj$delta) <- list(paste("Ind", c(1:Total), sep = ""),
+                                    paste("Var", c(1:J), sep = ""),
+                                    paste("Rep", c(1:max(Rj)), sep = ""),
+                                    paste("Rank", c(1:max(Nijr)), sep = ""),
+                                    paste("Group", c(1:K), sep = ""))
   
-  dimnames(model_obj$Nijr) <- list(paste("Ind", c(1:Total)),
-                                   paste("Var", c(1:J)),
-                                   paste("Rep", c(1:max(Rj))))
+  dimnames(model_obj$Nijr) <- list(paste("Ind", c(1:Total), sep = ""),
+                                   paste("Var", c(1:J), sep = ""),
+                                   paste("Rep", c(1:max(Rj)), sep = ""))
   
-  dimnames(model_obj$obs) <- list(paste("Ind", c(1:Total)),
-                                  paste("Var", c(1:J)),
-                                  paste("Rep", c(1:max(Rj))),
-                                  paste("Rank", c(1:max(Nijr))))
+  dimnames(model_obj$obs) <- list(paste("Ind", c(1:Total), sep = ""),
+                                  paste("Var", c(1:J), sep = ""),
+                                  paste("Rep", c(1:max(Rj)), sep = ""),
+                                  paste("Rank", c(1:max(Nijr)), sep = ""))
   #check for valid model parameters
   checkModel(model_obj)
   return(model_obj)
@@ -236,7 +236,7 @@ plot.mixedMemModel = function(x, type = "theta" , compare = NULL,
 #' Print the theta estimates for each sub-population to the R console in a more
 #' aesthetically pleasing manner
 #' 
-#' @param model the \code{mixedMemModel} object to be plotted.
+#' @param model the \code{mixedMemModel} who's theta will be printed.
 #' @seealso mixedMemModel, vizTheta
 #' @export
 theta.table <- function(model, digits = 3, top.level = "group"){

@@ -30,8 +30,8 @@ membership distribution.}
 
 \item{theta}{an array with dimensions (\code{J},\code{K},\code{max(Vj)}) which governs the variable
 distributions. The parameter \code{theta}[j,k,] governs the distribution of variable J for a complete member of sub-population k. For instance, if variable j is a Bernoulli variable, theta[j,k,1] is the probability of success; if
-variable j is a multinomial variable, \code{theta}[j,k, 1:Vj[j]] is the probability for each of the \code{Vj}[j] response; if variable j
-is a rank variable, \code{theta}[j,k, 1:Vj[j]] are the support parameters for each of the \code{Vj}[j] possible responses. Since the dimension of the relevant parameters
+variable j is a multinomial variable, \code{theta}[j,k, 1:Vj[j]] is the probability for each of the \code{Vj}[j] categories; if variable j
+is a rank variable, \code{theta}[j,k, 1:Vj[j]] are the support parameters for each of the \code{Vj}[j] possible categories. Since the dimension of the relevant parameters
 can differ across variables, any unused elements of the array should be set to 0, while all other elements should be positive.}
 
 \item{phi}{an array with dimensions (\code{Total},\code{K}) which specifies the variational
@@ -92,7 +92,7 @@ Vj <- c(10, 1, 4)
 theta <- array(0, dim = c(J, K, max(Vj)))
 # Parameters governing multinomial
 theta[1,,] <- gtools::rdirichlet(K, rep(.3, Vj[1]))
-#parameters governing Bernoulli
+# parameters governing Bernoulli
 theta[2,,] <- cbind(rbeta(K, 1,1), matrix(0, nrow = K, ncol = Vj[1]-1))
 theta[3,,] <- cbind(gtools::rdirichlet(K, rep(.3, Vj[3])),
  matrix(0, nrow = K, ncol = Vj[1]-Vj[3]))

@@ -21,7 +21,7 @@ number of items ranked for each individual.}
 
 \item{K}{the number of latent sub-populations.}
 
-\item{Vj}{a vector of length \code{J} specifying the number of possible candidates
+\item{Vj}{a vector of length \code{J} specifying the number of possible categories
 for each variable. For a Bernoulli variable \code{Vj}[j] = 1. For a multinomial
  or rank variable, \code{Vj}[j] is the number of possible categories/items.}
 
