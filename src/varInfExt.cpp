@@ -6,7 +6,7 @@ double varInfExtC(mm_modelExt model, int print,
                int printMod, int stepType, int maxTotalIter,
                int maxEIter, int maxAlphaIter, int maxThetaIter, int maxLSIter,
                double elboTol, double alphaTol, double thetaTol, double aNaught,
-               double tau, int bMax, double bNaught, double bMult, int vCutoff, NumericVector holdConst)
+               double tau, int bMax, double bNaught, double bMult, int vCutoff, NumericVector holdConst, int method)
 {
 
 
@@ -23,7 +23,8 @@ double varInfExtC(mm_modelExt model, int print,
 
     //only run an E-step
     if (stepType == 0) {
-        updateBeta(model);
+        NumericVector sampledStayerProbs = estimateGoMProb(model, 1000);
+        updateBeta(model, sampledStayerProbs);
         elbo_T = eStepExt(model, elbo_T, maxEIter, elboTol, iterReached);
         if((nT % printMod == 0) && (print==1)) {
             Rcout<<"E-Step + Beta Update: "<<elbo_T<<endl;
@@ -66,8 +67,8 @@ double varInfExtC(mm_modelExt model, int print,
                 Rcout<<"M-Step: "<<elbo_T<<endl;
             }
 
-            
-            updateExt(model);
+
+            updateExt(model, method);
             elbo_T = compute_ELBOExt(model);
             //print if necessary
             if((nT % printMod == 0) && (print==1)) {
@@ -117,13 +118,13 @@ double compute_ELBOExt(mm_modelExt model)
     double phi_ik, delta_ijrnk;
     int Nijr;
     double fullGomMembers = T - sum(model.getBeta() * model.getNumStayers());
-      
+
     //Calculate first line and second line
     t1 = 0.0;
     t2 = 0.0;
     t3 = 0.0;
     t4 = 0.0;
-  
+
     t1 = fullGomMembers *(lgamma(sum(model.getAlpha())) - sum(lgamma(model.getAlpha())));
 
     t5 = sum( model.getNumStayers() * (model.getBeta() * log(model.getP()) + (1.0 - model.getBeta()) * log(model.getP(0))) );
@@ -132,7 +133,7 @@ double compute_ELBOExt(mm_modelExt model)
       //Check at end prevents log(0) computation
       t5 += -model.getNumStayers(s) * ( model.getBeta(s) * log(model.getBeta(s)) +  (model.getBeta(s) == 1.0 ? 0.0 : ((1.0 - model.getBeta(s)) * log(1.0 - model.getBeta(s))) ) );
     }
-    
+
     for(i = 0; i < T; i++) {
         phi_sum = 0.0;
         for(k = 0; k < K; k++) {
@@ -146,7 +147,7 @@ double compute_ELBOExt(mm_modelExt model)
             back_term = (boost::math::digamma(phi_ik) - dg_phi_sum);
             t1 += (model.getAlpha(k) - 1.0) * back_term  * model.getBeta(i, 0);
 
-            t4 += -lgamma(phi_ik); 
+            t4 += -lgamma(phi_ik);
             t4 += (phi_ik - 1.0) * back_term;
 
             for(j = 0; j < J; j++) {

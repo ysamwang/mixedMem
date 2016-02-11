@@ -1,6 +1,7 @@
 S3method(plot,mixedMemModel)
 S3method(summary,mixedMemModel)
 export(computeBIC)
+export(computeAIC)
 export(computeELBO)
 export(findLabels)
 export(permuteLabels)

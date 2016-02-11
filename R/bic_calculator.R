@@ -35,3 +35,37 @@ computeBIC= function(model)
   }
   return(-2*elbo+num_param*log(model$Total))
 }
+
+
+#' Compute the approximate AIC
+#' 
+#' \code{computeAIC} computes the approximate AIC of a given \code{mixedMemModel}, where the lower bound on the log-likelihood
+#' (also called ELBO) is used instead of the intractable true log-likelihood. 
+#' 
+#' \eqn{AIC = -2 ELBO + 2 * p}
+#' 
+#' where p is the number of estimated parameters. 
+#'
+#'  
+#' @param model the \code{mixedMemModel} object for which the AIC will be calculated.
+#' @return \code{computeBIC} returns the approximate AIC value, a real number.
+#' @export
+computeAIC <-  function(model)
+{
+  elbo = computeELBO(model)
+  num_param = model$K
+  for(j in 1:model$J)
+  {
+    if(model$dist[j] =="binomial")
+    {
+      num_param = num_param + model$K
+    } else if(model$dist[j] == "multinomial")
+    {
+      num_param = num_param + model$K*(model$Vj[j]-1)
+    } else if(model$dist[j] == "rank")
+    {
+      num_param = num_param + model$K*(model$Vj[j]-1)
+    }
+  }
+  return(-2 * elbo + 2 * num_param)
+}

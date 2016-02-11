@@ -24,13 +24,15 @@ double computeElboC(Rcpp::List model_r)
     return compute_ELBO(model);
 }
 
+
+
 //[[Rcpp::depends(RcppArmadillo)]]
 //[[Rcpp::export]]
 Rcpp::List varInfInputExtC(Rcpp::List model_r, int print,
                     int printMod, int stepType, int maxTotalIter,
                     int maxEIter, int maxAlphaIter, int maxThetaIter, int maxLSIter,
                     double elboTol, double alphaTol, double thetaTol, double aNaught,
-                    double tau, int bMax, double bNaught, double bMult, int vCutoff, SEXP holdConstSEXP) {
+                    double tau, int bMax, double bNaught, double bMult, int vCutoff, SEXP holdConstSEXP, int method) {
 
     int s, check;
     check = 1;
@@ -46,7 +48,7 @@ Rcpp::List varInfInputExtC(Rcpp::List model_r, int print,
     {
     NumericVector holdConst(holdConstSEXP);
     varInfExtC(model, print, printMod, stepType, maxTotalIter, maxEIter, maxAlphaIter, maxThetaIter, maxLSIter,
-                              elboTol, alphaTol, thetaTol, aNaught, tau, bMax, bNaught, bMult, vCutoff, holdConst);
+                              elboTol, alphaTol, thetaTol, aNaught, tau, bMax, bNaught, bMult, vCutoff, holdConst, method);
     }
     return model.returnModel();
 }

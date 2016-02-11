@@ -22,7 +22,7 @@ double varInfExtC(mm_modelExt model_old, int print,
                     int printMod, int stepType, int maxTotalIter,
                     int maxEIter, int maxAlphaIter, int maxThetaIter, int maxLSIter,
                     double elboTol, double alphaTol, double thetaTol, double aNaught,
-                    double tau, int bMax, double bNaught, double bMult, int vCutoff, NumericVector holdConst);
+                    double tau, int bMax, double bNaught, double bMult, int vCutoff, NumericVector holdConst, int method);
 double compute_logfExt(mm_modelExt model);
 double compute_ELBOExt(mm_modelExt model);
 double alpha_ObjectiveExt(mm_modelExt model, vec alph);

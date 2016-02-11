@@ -9,7 +9,7 @@ mmVarFit(model, printStatus = 1, printMod = 1, stepType = 3,
   maxThetaIter = 1000, maxLSIter = 400, elboTol = 1e-06,
   alphaTol = 1e-06, thetaTol = 1e-10, aNaught = 1, tau = 0.899,
   bMax = 3, bNaught = 1000, bMult = 1000, vCutoff = 13,
-  holdConst = c(-1))
+  holdConst = c(-1), ext_method = 0)
 }
 \arguments{
 \item{model}{a \code{mixedMemModel} object created by the \code{mixedMemModel} constructor.}

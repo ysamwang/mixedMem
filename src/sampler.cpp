@@ -9,7 +9,7 @@ NumericVector rDirichlet(NumericVector alpha)
     NumericVector ret(v);
     for(i = 0 ; i < v; i ++)
     {
-        ret[i] = R::rgamma(alpha[i], 1.0);
+        ret[i] = R::rgamma( alpha[i], 1.0);
         sum += ret[i];
     }
 
@@ -34,17 +34,22 @@ NumericVector estimateGoMProb(mm_modelExt& model, int numSamples){
     {
         for(i = 0; i < model.getT(); i++)
         {
-            obsCounts[estimateGoMProbIndividual(model, i)]++;
+            int temp = estimateGoMProbIndividual(model, i);
+            obsCounts[temp]++;
+//            Rcout << "Class: " << temp <<std::endl;
         }
     }
 
     int s;
-    int total = sum(obsCounts);
+    double total = sum(obsCounts);
 
     for(s = 0; s < model.getS(); s++)
     {
-        ret[s] = obsCounts[s] / total;
+        Rcout << obsCounts[s] <<" ";
+        ret[s] = (double) obsCounts[s] / total;
+
     }
+    Rcout <<std::endl;
     return ret;
 }
 
@@ -53,6 +58,7 @@ int estimateGoMProbIndividual(mm_modelExt& model, int i)
 
     //Sample membership from Alpha
     NumericVector lambda = rDirichlet(model.getAlpha());
+
     int j, r, n, v, s;
     int X, Z;
     int S = model.getS();
@@ -72,12 +78,12 @@ int estimateGoMProbIndividual(mm_modelExt& model, int i)
             if(model.getDist(j) == BERNOULLI)
             {
                 Z = sample_cat(lambda);
-
                 //Sample observation
-                X = (int) runif(1)[0] < model.getTheta(j, Z, 0);
+                double temp = runif(1)[0];
+                X = (temp < model.getTheta(j, Z, 0));
 
                 //check if observation matches groups
-                for(s = 1; s  < model.getS(); s++)
+                for(s = 1; s  < S; s++)
                 {
                     if(X != model.getFixedObs(s, j, r, 0))
                     {

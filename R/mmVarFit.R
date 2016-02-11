@@ -101,7 +101,8 @@ mmVarFit = function(model, printStatus = 1,
                     maxAlphaIter = 200, maxThetaIter = 1000,
                     maxLSIter = 400, elboTol = 1e-6, alphaTol = 1e-6,
                     thetaTol = 1e-10, aNaught = 1.0, tau = .899,
-                    bMax = 3, bNaught = 1000.0, bMult = 1000.0, vCutoff = 13, holdConst = c(-1)) {
+                    bMax = 3, bNaught = 1000.0, bMult = 1000.0, vCutoff = 13, holdConst = c(-1),
+                    ext_method = 0) {
   
   checkModel(model) # R function which checks inputs
   print("Model Check: Ok!")
@@ -121,11 +122,28 @@ mmVarFit = function(model, printStatus = 1,
     
   } else {
     print("<== Beginning Extended Model Fit! ==>")
-    stayerClasses = dim(fixedObs)[1] + 1
+    stayerClasses = dim(model$fixedObs)[1] + 1
     
-    ret <- varInfInputExtC(c(model, stayerClasses), printStatus, printMod, stepType, maxTotalIter, maxEIter, maxAlphaIter,
+    stayerN <- array(0, dim = c(dim(model$fixedObs))[-length(dim(model$fixedObs))])
+    
+    for(s in 1:dim(model$fixedObs)[1]){
+      for(j in 1:dim(model$fixedObs)[2]){
+        for(r in 1:dim(model$fixedObs)[3])
+        {
+          if(model$dist[j] != "rank"){
+            stayerN[s, j, r] <- 1
+          } else {
+            stayerN[s, j, r] <- min(which(model$fixedObs[s, j, r, ] == -1), model$Vj[j])
+          }
+        }
+      }
+    }
+    print(stayerN)
+    passIn <- c(model, dim(model$fixedObs)[1] + 1)
+    passIn[[17]]<- stayerN
+    ret <- varInfInputExtC(passIn, printStatus, printMod, stepType, maxTotalIter, maxEIter, maxAlphaIter,
                  maxThetaIter, maxLSIter, elboTol, alphaTol, thetaTol, aNaught, tau, bMax, bNaught, 
-                 bMult, vCutoff, holdConst) # R wrapper function
+                 bMult, vCutoff, holdConst, ext_method) # R wrapper function
     output$alpha <- ret$alpha
     output$theta <- ret$theta
     output$phi <- ret$phi
@@ -158,6 +176,23 @@ computeELBO = function(model)
   if(is.null(model$fixedObs)){
     return(computeElboC(model))
   } else {
-    return(computeElboExtC(c(model, dim(model$fixedObs)[1] + 1)))
+    stayerN <- array(0, dim = c(dim(model$fixedObs))[-length(dim(model$fixedObs))])
+    
+    for(s in 1:dim(model$fixedObs)[1]){
+      for(j in 1:dim(model$fixedObs)[2]){
+        for(r in 1:dim(model$fixedObs)[3])
+        {
+          if(model$dist[j] != "rank"){
+            stayerN[s, j, r] <- 1
+          } else {
+            stayerN[s, j, r] <- min(which(model$fixedObs[s, j, r, ] == -1), model$Vj[j])
+          }
+        }
+      }
+    }
+    print(stayerN)
+    passIn <- c(model, dim(model$fixedObs)[1] + 1)
+    passIn[[17]]<- stayerN
+    return(computeElboExtC(passIn))
   }
 }

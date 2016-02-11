@@ -28,7 +28,7 @@ public:
     double getStayersProb(int s);
     int getS();
     NumericVector getNumStayers();
-    double getNumStayers(int s);
+    int getNumStayers(int s);
 
     //set individual element
     void setP(int s, double target);
@@ -59,7 +59,7 @@ protected:
     NumericVector beta;
 
     // N(i,j,r) for each stayer signiature
-    IntegerVector NStayers;
+    NumericVector NStayers;
 
     int checkIndStayer(int i);
     int checkIndStayerHelp(int i, int s);

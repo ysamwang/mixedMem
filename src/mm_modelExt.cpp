@@ -11,26 +11,16 @@ mm_modelExt::mm_modelExt(List model) : mm_model::mm_model(model)
     beta =  Rcpp::clone(as<NumericVector>(model[14]));
 
     S =  (int) as<NumericVector>(model[15])[0];
-    NStayers = as<IntegerVector>(model[16]);
+    NStayers = as<NumericVector>(model[16]);
 
     stayers = NumericVector(T);
-    stayersFirstID = NumericVector(S);
-    stayersCount = NumericVector(S);
+    stayersFirstID = NumericVector(S, -1.0);
+    stayersCount = NumericVector(S, 0.0);
 
     int i;
-    for(i = 0; i < S; i++)
-    {
-
-        if(beta[i] > (1.0 - BUMP))
-        {
-            beta[i] = (1.0 - BUMP);
-        }
-        stayersFirstID[i] = -1;
-        stayersCount[i] = 0;
-    }
 
     int temp;
-    for(i = 0; i < T; i++)
+    for(i = 0 ; i < T; i++)
     {
         temp = checkIndStayer(i);
         stayers[i] = temp;
@@ -108,9 +98,9 @@ NumericVector mm_modelExt::getNumStayers()
     return stayersCount;
 }
 
-double mm_modelExt::getNumStayers(int s)
+int mm_modelExt::getNumStayers(int s)
 {
-    return stayersCount[s];
+    return (int) stayersCount[s];
 }
 
 int mm_modelExt::getS()
@@ -147,9 +137,7 @@ int mm_modelExt::checkIndStayerHelp(int i, int s)
             if(getN(i,j,r) != getNStayer(s, j, r))
             {
                 return 0;
-            }
-            else
-            {
+            } else {
                 for(n = 0; n < getN(i, j, r); n++ )
                 {
                     if(getObs(i, j, r, n) !=  getFixedObs(s, j, r, n))
