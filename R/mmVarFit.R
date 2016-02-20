@@ -172,10 +172,18 @@ mmVarFit = function(model, printStatus = 1,
 #' @export
 computeELBO = function(model)
 {
+  # check model for internal consistency
   checkModel(model)
+  
+  # if no fixedObs is fed in, use normal mixedMem procedure
   if(is.null(model$fixedObs)){
     return(computeElboC(model))
-  } else {
+    
+  } else { 
+    # if there is a fixedObs, then do some preprocessing then fit 
+    # extended model
+    
+    # get the the number of rankings for each fixed obs
     stayerN <- array(0, dim = c(dim(model$fixedObs))[-length(dim(model$fixedObs))])
     
     for(s in 1:dim(model$fixedObs)[1]){
@@ -190,9 +198,12 @@ computeELBO = function(model)
         }
       }
     }
-    print(stayerN)
+    
+    # Augment list passed into extended method
     passIn <- c(model, dim(model$fixedObs)[1] + 1)
     passIn[[17]]<- stayerN
+    
+    # fit extended model
     return(computeElboExtC(passIn))
   }
 }

@@ -46,6 +46,12 @@ double varInfExtC(mm_modelExt model, int print,
             old_elbo_T = elbo_T;
 
 
+            updateExt(model, method);
+            elbo_T = compute_ELBOExt(model);
+            //print if necessary
+            if((nT % printMod == 0) && (print==1)) {
+                Rcout<<"X-Step: "<<elbo_T<<endl;
+            }
 
 
 
@@ -68,12 +74,6 @@ double varInfExtC(mm_modelExt model, int print,
             }
 
 
-            updateExt(model, method);
-            elbo_T = compute_ELBOExt(model);
-            //print if necessary
-            if((nT % printMod == 0) && (print==1)) {
-                Rcout<<"X-Step: "<<elbo_T<<endl;
-            }
 
             //update convergence criteria
             converged_T = fabs((old_elbo_T - elbo_T)/old_elbo_T);
