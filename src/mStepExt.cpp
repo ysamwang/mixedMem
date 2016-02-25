@@ -83,7 +83,7 @@ double mStepExt(mm_modelExt model, double elbo_T, int stepType, int maxAlphaIter
             //create hessian
             hess = getHessExt(model);
 
-            update = solve(hess,-grad);
+            update = solve(hess, -grad);
 
             for(k = 0; k < K; k++) {
                 new_alpha(k) = model.getAlpha(k);

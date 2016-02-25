@@ -13,7 +13,7 @@
 using namespace Rcpp;
 using namespace arma;
 
-void updateP(mm_modelExt model);
+void updateP(mm_modelExt model, NumericVector sampledStayerProbs);
 void updateBeta(mm_modelExt model, NumericVector sampledStayerProbs);
 double getStayersProb(mm_modelExt model, int s);
 double getStayer_logf(mm_modelExt model, int stayerID);

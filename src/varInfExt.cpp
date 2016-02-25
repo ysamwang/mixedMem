@@ -202,7 +202,7 @@ double compute_logfExt(mm_modelExt model)
                 n = 0;
                 for(r = 0; r < model.getR(j); r++) {
                     for(k = 0; k < model.getK(); k++) {
-                        logf += model.getDelta(i,j,r,n,k)*log(model.getTheta(j,k,model.getObs(i,j,r,n))) * model.getBeta(i, 0);
+                        logf += model.getDelta(i,j,r,n,k) * log(model.getTheta(j,k,model.getObs(i,j,r,n))) * model.getBeta(i, 0);
                     }
                 }
             } //end Multinomial

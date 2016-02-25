@@ -104,17 +104,21 @@ mmVarFit = function(model, printStatus = 1,
                     bMax = 3, bNaught = 1000.0, bMult = 1000.0, vCutoff = 13, holdConst = c(-1),
                     ext_method = 0) {
   
-  checkModel(model) # R function which checks inputs
-  print("Model Check: Ok!")
+  checkModel(model) # R function which checks inputs for internal consistency
+
+  # copy of input
   output <- model
   names(output) = c("Total", "J", "Rj", "Nijr", "K", "Vj", "alpha",
                     "theta", "phi", "delta", "dist" ,"obs",
                     "fixedObs", "P", "beta")[1:length(model)]
+  
+  # if there is no fixed obs, then use normal fit procedure
   if(is.null(model$fixedObs)){
     print("<== Beginning Model Fit! ==>")
     ret <- varInfInputC(model, printStatus, printMod, stepType, maxTotalIter, maxEIter, maxAlphaIter,
                  maxThetaIter, maxLSIter, elboTol, alphaTol, thetaTol, aNaught, tau, bMax, bNaught, 
                  bMult, vCutoff, holdConst) # R wrapper function
+    
     output$alpha <- ret$alpha
     output$theta <- ret$theta
     output$phi <- ret$phi
@@ -138,12 +142,18 @@ mmVarFit = function(model, printStatus = 1,
         }
       }
     }
-    print(stayerN)
+
+    # Augment with ancillary data about number of fixed classes 
+    # and the number of observed rankings for each fixe class 
     passIn <- c(model, dim(model$fixedObs)[1] + 1)
     passIn[[17]]<- stayerN
+
+    # Fit model
     ret <- varInfInputExtC(passIn, printStatus, printMod, stepType, maxTotalIter, maxEIter, maxAlphaIter,
                  maxThetaIter, maxLSIter, elboTol, alphaTol, thetaTol, aNaught, tau, bMax, bNaught, 
                  bMult, vCutoff, holdConst, ext_method) # R wrapper function
+    
+    # put back into output (to maintaim naming)
     output$alpha <- ret$alpha
     output$theta <- ret$theta
     output$phi <- ret$phi

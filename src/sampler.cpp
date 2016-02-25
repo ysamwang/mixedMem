@@ -3,37 +3,31 @@
 
 NumericVector rDirichlet(NumericVector alpha)
 {
-    int i;
-    double sum = 0.0;
-    int v = alpha.size();
-    NumericVector ret(v);
-    for(i = 0 ; i < v; i ++)
-    {
-        ret[i] = R::rgamma( alpha[i], 1.0);
-        sum += ret[i];
+    int k;
+    int K = alpha.size();
+    double ret_sum = 0.0;
+    NumericVector ret(K);
+    for(k = 0; k < K; k++) {
+        ret(k) = R::rgamma(alpha(k), 1.0);
+        ret_sum += ret(k);
     }
-
-    //calculated on log scale for numerical reasons
-    for(i = 0 ; i < v; i ++)
-    {
-        ret[i] = exp(log(ret[i]) - log(sum));
+    for(k = 0; k < K; k++) {
+        ret(k) = ret(k) / ret_sum;
     }
     return ret;
 }
 
 
-
-NumericVector estimateGoMProb(mm_modelExt& model, int numSamples){
+NumericVector estimateGoMProb(mm_modelExt& model, int numSamples)
+{
     // counts of each stayer class; 0 represents stayer class
     // obsCounts(0) is the number of GoM observations
     IntegerVector obsCounts(model.getS(), 0);
     NumericVector ret(model.getS());
     int i,k;
 
-    for(k = 0; k < numSamples; k ++)
-    {
-        for(i = 0; i < model.getT(); i++)
-        {
+    for(k = 0; k < numSamples; k ++) {
+        for(i = 0; i < model.getT(); i++) {
             int temp = estimateGoMProbIndividual(model, i);
             obsCounts[temp]++;
 //            Rcout << "Class: " << temp <<std::endl;
@@ -43,13 +37,10 @@ NumericVector estimateGoMProb(mm_modelExt& model, int numSamples){
     int s;
     double total = sum(obsCounts);
 
-    for(s = 0; s < model.getS(); s++)
-    {
-        Rcout << obsCounts[s] <<" ";
+    for(s = 0; s < model.getS(); s++) {
         ret[s] = (double) obsCounts[s] / total;
 
     }
-    Rcout <<std::endl;
     return ret;
 }
 
@@ -68,45 +59,36 @@ int estimateGoMProbIndividual(mm_modelExt& model, int i)
     IntegerVector possibleClasses = seq_len(model.getS()) - 1;
 
 
-    for(j = 0; j < model.getJ(); j++)
-    {
+    for(j = 0; j < model.getJ(); j++) {
 
 
-        for(r = 0; r < model.getR(j); r++)
-        {
+        for(r = 0; r < model.getR(j); r++) {
 
-            if(model.getDist(j) == BERNOULLI)
-            {
+            if(model.getDist(j) == BERNOULLI) {
                 Z = sample_cat(lambda);
                 //Sample observation
                 double temp = runif(1)[0];
                 X = (temp < model.getTheta(j, Z, 0));
 
                 //check if observation matches groups
-                for(s = 1; s  < S; s++)
-                {
-                    if(X != model.getFixedObs(s, j, r, 0))
-                    {
+                for(s = 1; s  < S; s++) {
+                    if(X != model.getFixedObs(s, j, r, 0)) {
                         possibleClasses[s] = 0;
                     }
                 }
 
                 //Check if there are any remaining stayer groups left
-                if(max(possibleClasses) == 0)
-                {
+                if(max(possibleClasses) == 0) {
                     return 0;
                 }
 
-            }
-            else if(model.getDist(j) == MULTINOMIAL)
-            {
+            } else if(model.getDist(j) == MULTINOMIAL) {
 
                 Z = sample_cat(lambda);
 
                 //extract relevant probability vector
                 NumericVector prob(model.getV(j));
-                for(v = 0; v < model.getV(j); v++)
-                {
+                for(v = 0; v < model.getV(j); v++) {
                     prob[v] = model.getTheta(j, Z, v);
                 }
 
@@ -114,49 +96,39 @@ int estimateGoMProbIndividual(mm_modelExt& model, int i)
                 X = sample_cat(prob);
 
                 //check if observation matches groups
-                for(s = 1; s  < model.getS(); s++)
-                {
-                    if(X != model.getFixedObs(s, j, r, 0))
-                    {
+                for(s = 1; s  < model.getS(); s++) {
+                    if(X != model.getFixedObs(s, j, r, 0)) {
                         possibleClasses[s] = 0;
                     }
                 }
 
-                if(max(possibleClasses) == 0)
-                {
+                if(max(possibleClasses) == 0) {
                     return 0;
                 }
-            }
-            else if(model.getDist(j) == RANK)
-            {
+            } else if(model.getDist(j) == RANK) {
 
-            //possible items to select
-             IntegerVector rankResponse(model.getV(j), 1);
+                //possible items to select
+                IntegerVector rankResponse(model.getV(j), 1);
 
 
-                for(s = 0; s < S; s++)
-                {
-                    if(model.getN(i,j,r) != model.getNStayer(s,j,r))
-                    {
+                for(s = 0; s < S; s++) {
+                    if(model.getN(i,j,r) != model.getNStayer(s,j,r)) {
                         possibleClasses[s] = 0;
                     }
                 }
 
-                if(max(possibleClasses) == 0)
-                {
+                if(max(possibleClasses) == 0) {
                     return 0;
                 }
 
 
-                for(n = 0 ; n < model.getN(i,j,r); n++)
-                {
+                for(n = 0 ; n < model.getN(i,j,r); n++) {
                     //extract relevant probabilities
                     Z = sample_cat(lambda);
                     int V = model.getV(j);
                     NumericVector prob(V, 0.0);
-                    for(v = 0; v < V; v++)
-                    {
-                        if(rankResponse[v]){
+                    for(v = 0; v < V; v++) {
+                        if(rankResponse[v]) {
                             prob[v] = model.getTheta(j,Z, v);
                         }
                     }
@@ -165,16 +137,13 @@ int estimateGoMProbIndividual(mm_modelExt& model, int i)
                     //X cannot be selected again later
                     rankResponse[X] = 0;
 
-                    for(s = 0; s < S; s++)
-                    {
-                        if(X != model.getFixedObs(s,j,r,n))
-                        {
+                    for(s = 0; s < S; s++) {
+                        if(X != model.getFixedObs(s,j,r,n)) {
                             possibleClasses[s] = 0;
                         }
                     }
 
-                    if(max(possibleClasses) == 0)
-                    {
+                    if(max(possibleClasses) == 0) {
                         return 0;
                     }
                 }
@@ -187,15 +156,13 @@ int estimateGoMProbIndividual(mm_modelExt& model, int i)
 
 int sample_cat(NumericVector prob)
 {
-    NumericVector p = prob / sum(prob);
-    double temp = runif(1)[0];
-    int ret = 0;
-    while(temp > 0)
-    {
-        temp -= p[ret];
-        ret ++;
+    double u = runif(1)[0];
+    int s = 0;
+    u -= prob[s];
+    while(u >= 0) {
+        u -= prob[++s];
     }
-    return ret - 1;
+    return s;
 }
 
 

@@ -51,7 +51,7 @@ double eStepExt(mm_modelExt model, double elbo_E, int maxEIter, double elboTol, 
                         for(k = 0; k <  K; k++)
                         {
                             placeholder = exp(model.getBeta(i, 0) * (digamma(model.getPhi(i,k)) - phi_sum_dg + dl_ddeltaExt(model, i, j,r,n,k)) - 1.0);
-                            model.setDelta(i,j,r,n,k, placeholder);
+                            model.setDelta(i, j, r, n, k, placeholder);
                             delta_sum += placeholder;
                         }
                         model.normalizeDelta(i,j,r,n, delta_sum);

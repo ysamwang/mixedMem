@@ -26,7 +26,7 @@ void updateExt(mm_modelExt model, int method)
         old_Elbo = new_Elbo;
 
         updateBeta(model, sampledStayerProbs);
-        updateP(model);
+        updateP(model, sampledStayerProbs);
         new_Elbo = compute_ELBOExt(model);
         conv_Crit = fabs((new_Elbo - old_Elbo)/old_Elbo);
         count++;
@@ -35,19 +35,34 @@ void updateExt(mm_modelExt model, int method)
 
 
 //Updates P based on current model estimates
-void updateP(mm_modelExt model)
+void updateP(mm_modelExt model, NumericVector sampledStayerProbs)
 {
     double target, total;
     total = 0.0;
     int s;
-    //calculate p for all stayer classes
-    for(s = 1; s < model.getS(); s++) {
-        target =  model.getNumStayers(s) * model.getBeta(s) / model.getT();
-        total += target;
-        model.setP(s, target);
+
+    int method = 1;
+
+    Rcout << "Update P" << endl;
+    if(method == 1){
+      double fullGomMembers = model.getT() - sum(model.getBeta() * model.getNumStayers());
+      for(s = 1; s < model.getS(); s++){
+            target = (double) std::max(model.getNumStayers(s) - fullGomMembers * sampledStayerProbs[s], 0.0) / model.getT();
+            model.setP(s, target);
+            total += target;
+      }
+      model.setP(0, 1.0 - total);
+
+    } else {
+      //calculate p for all stayer classes
+      for(s = 1; s < model.getS(); s++) {
+          target =  model.getNumStayers(s) * model.getBeta(s) / model.getT();
+          total += target;
+          model.setP(s, target);
+      }
+      //calculate p_1 since all p's must sum to 1
+      model.setP(0, 1.0 - total);
     }
-    //calculate p_1 since all p's must sum to 1
-    model.setP(0, 1.0 - total);
 }
 
 
