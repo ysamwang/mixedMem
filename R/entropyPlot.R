@@ -10,8 +10,14 @@
 #' @param xlab the label for the x-axis
 #' @export
 entropyPlot = function(model, col = "white", main = "Exponentiated Entropy",
-                       xlab = "Effective Profiles") {
-  mem <- model$phi / rowSums(model$phi)
+                       xlab = "Effective Profiles", ...) {
+  if(class(model) == "mixeMemModelVI"){
+    mem <- model$phi / rowSums(model$phi)
+  } else if (class(model) == "mixedMemModelMCMC"){
+    mem <- model$lambda
+  }
+  
   entropy <- apply(mem, MAR = 1, function(x){return( exp(-sum(log(x) * x) )) } )
-  hist(entropy, main = main, col = col, xlab = xlab)
+  
+  hist(entropy, main = main, col = col, xlab = xlab, ...)
 }

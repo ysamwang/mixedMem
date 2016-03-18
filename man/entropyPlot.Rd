@@ -5,7 +5,7 @@
 \title{Mixed Membership Visualization}
 \usage{
 entropyPlot(model, col = "white", main = "Exponentiated Entropy",
-  xlab = "Effective Profiles")
+  xlab = "Effective Profiles", ...)
 }
 \arguments{
 \item{model}{the \code{mixedMemModel} the model to be plotted}

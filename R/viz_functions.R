@@ -8,7 +8,7 @@
 #' 
 #' This is the function called by the plot generic function for \code{mixedMemModel} objects.  
 #'  
-#' @param model the \code{mixedMemModel} object that will be plotted.
+#' @param model the \code{mixedMemModelMCMC} or \code{mixedMemModelVI} object that will be plotted.
 #' @param compare an array of the same dimensions as model$theta which contains values to compare against the fitted value. 
 #' @param main the main figure title.
 #' @param varNames a vector of strings specifying labels for each variable.
@@ -126,14 +126,14 @@ vizTheta = function(model, compare = NULL, main = "Estimated Theta",
 #' \code{vizMem} plots estimates for the group membership scores of each individual. This is the function called by the \code{mixedMemModel} class
 #' generic plot function. 
 #' 
-#' The estimates plotted are the normalized \eqn{\phi}, which are the posterior means from the variational distribution. The
-#' estimated group membership scores are  shown in black, and the estimates from a comparison model (if available) are shown in red. Each plot
+#' For a \code{mixedMemModelVI} object, the estimates plotted are the normalized \eqn{\phi}, which are the posterior means from the variational distribution.
+#' For a \code{mixedMemModelMCMC} object, the estimates plotted are the point estimates for \eqn{\lambda_i}.
+#' The estimated group membership scores are  shown in black, and the estimates from a comparison model (if available) are shown in red. Each plot
 #' represents an individual. 
 #' 
-#' This is the function called by the plot generic function for mixedMemModel objects.
 #' 
-#' @param model the \code{mixedMemModel} object that will be plotted.
-#' @param compare a matrix of the same dimensions as \code{model$phi} which contains parameters to compare
+#' @param model the \code{mixedMemModelVI} or \code{mixedMemModelMCMC} object that will be plotted.
+#' @param compare a matrix of dimension (Total, K) which contains parameters to compare
 #'  against the fitted model. 
 #' @param main the main figure title.
 #' @param groupNames a vector specifying labels for each sub-population.

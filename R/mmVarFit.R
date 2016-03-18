@@ -1,13 +1,13 @@
-#' Fit  Mixed Membership models using variational EM
+#' Fit Mixed Membership models using variational EM
 #' 
-#' \code{mmVarFit} is the primary function of the \code{mixedMem} package. The function fits parameters \eqn{\phi} and \eqn{\delta} for the variational
+#' \code{mmVIFit} is the primary function of the \code{mixedMem} package. The function fits parameters \eqn{\phi} and \eqn{\delta} for the variational
 #'  distribution of latent variables as well as psuedo-MLE estimates for 
 #'  the population parameters \eqn{\alpha} and \eqn{\theta}. See documentation for
 #'  \code{mixedMemModel} or the package vignette, "Fitting Mixed Membership Models Using \code{mixedMem}" for a more detailed description of 
 #'  the variables and notation in a mixed membership model. 
 #' 
 #'  
-#' \code{mmVarFit} selects psuedo-MLE estimates for \eqn{\alpha} and \eqn{\theta} and approximates
+#' \code{mmVIFit} selects psuedo-MLE estimates for \eqn{\alpha} and \eqn{\theta} and approximates
 #' the posterior distribution for the latent variables through a mean field variational approach.
 #' The variational lower bound on the log-likelihood at the data given model parameters is given by Jensen's inequality:
 #' 
@@ -95,74 +95,31 @@
 #' ## Fit the mixed membership model
 #' out <-mmVarFit(test_model)
 #' @export
-mmVarFit = function(model, printStatus = 1,
+mmVIFit <- function(model, printStatus = 1,
                     printMod = 1, stepType = 3,
                     maxTotalIter = 500, maxEIter = 1000,
                     maxAlphaIter = 200, maxThetaIter = 1000,
                     maxLSIter = 400, elboTol = 1e-6, alphaTol = 1e-6,
                     thetaTol = 1e-10, aNaught = 1.0, tau = .899,
-                    bMax = 3, bNaught = 1000.0, bMult = 1000.0, vCutoff = 13, holdConst = c(-1),
-                    ext_method = 0) {
+                    bMax = 3, bNaught = 1000.0, bMult = 1000.0, vCutoff = 13, holdConst = c(-1)) {
   
-  checkModel(model) # R function which checks inputs for internal consistency
+  if(class(model) != "mixedMemModelVI"){
+    stop("Input model must be of class mixedMemModelVI")
+  }
+  
+  checkModelVI(model) # R function which checks inputs for internal consistency
 
-  # copy of input
-  output <- model
-  names(output) = c("Total", "J", "Rj", "Nijr", "K", "Vj", "alpha",
-                    "theta", "phi", "delta", "dist" ,"obs",
-                    "fixedObs", "P", "beta")[1:length(model)]
-  
-  # if there is no fixed obs, then use normal fit procedure
-  if(is.null(model$fixedObs)){
-    print("<== Beginning Model Fit! ==>")
-    ret <- varInfInputC(model, printStatus, printMod, stepType, maxTotalIter, maxEIter, maxAlphaIter,
+  ret <- varInfInputC(model, printStatus, printMod, stepType, maxTotalIter, maxEIter, maxAlphaIter,
                  maxThetaIter, maxLSIter, elboTol, alphaTol, thetaTol, aNaught, tau, bMax, bNaught, 
                  bMult, vCutoff, holdConst) # R wrapper function
-    
-    output$alpha <- ret$alpha
-    output$theta <- ret$theta
-    output$phi <- ret$phi
-    output$delta <- ret$delta
-    
-  } else {
-    print("<== Beginning Extended Model Fit! ==>")
-    stayerClasses = dim(model$fixedObs)[1] + 1
-    
-    stayerN <- array(0, dim = c(dim(model$fixedObs))[-length(dim(model$fixedObs))])
-    
-    for(s in 1:dim(model$fixedObs)[1]){
-      for(j in 1:dim(model$fixedObs)[2]){
-        for(r in 1:dim(model$fixedObs)[3])
-        {
-          if(model$dist[j] != "rank"){
-            stayerN[s, j, r] <- 1
-          } else {
-            stayerN[s, j, r] <- min(which(model$fixedObs[s, j, r, ] == -1), model$Vj[j])
-          }
-        }
-      }
-    }
 
-    # Augment with ancillary data about number of fixed classes 
-    # and the number of observed rankings for each fixe class 
-    passIn <- c(model, dim(model$fixedObs)[1] + 1)
-    passIn[[17]]<- stayerN
-
-    # Fit model
-    ret <- varInfInputExtC(passIn, printStatus, printMod, stepType, maxTotalIter, maxEIter, maxAlphaIter,
-                 maxThetaIter, maxLSIter, elboTol, alphaTol, thetaTol, aNaught, tau, bMax, bNaught, 
-                 bMult, vCutoff, holdConst, ext_method) # R wrapper function
-    
-    # put back into output (to maintaim naming)
-    output$alpha <- ret$alpha
-    output$theta <- ret$theta
-    output$phi <- ret$phi
-    output$delta <- ret$delta
-    output$P <- ret$P
-    output$beta <- ret$beta
-  }
-
-  return(output)
+  out <- model
+  out$alpha <- ret$alpha
+  out$theta <- ret$theta
+  out$phi <- ret$phi
+  out$delta <- ret$delta
+  
+  return(out)
 }
 
 
@@ -180,40 +137,13 @@ mmVarFit = function(model, printStatus = 1,
 #' @param model a \code{mixedMemModel} object created by the \code{mixedMemModel} constructor.
 #' @return \code{computeELBO} returns the lower bound on the log-likelihood, a real number.
 #' @export
-computeELBO = function(model)
-{
-  # check model for internal consistency
-  checkModel(model)
+computeELBO = function(model) {
   
-  # if no fixedObs is fed in, use normal mixedMem procedure
-  if(is.null(model$fixedObs)){
-    return(computeElboC(model))
-    
-  } else { 
-    # if there is a fixedObs, then do some preprocessing then fit 
-    # extended model
-    
-    # get the the number of rankings for each fixed obs
-    stayerN <- array(0, dim = c(dim(model$fixedObs))[-length(dim(model$fixedObs))])
-    
-    for(s in 1:dim(model$fixedObs)[1]){
-      for(j in 1:dim(model$fixedObs)[2]){
-        for(r in 1:dim(model$fixedObs)[3])
-        {
-          if(model$dist[j] != "rank"){
-            stayerN[s, j, r] <- 1
-          } else {
-            stayerN[s, j, r] <- min(which(model$fixedObs[s, j, r, ] == -1), model$Vj[j])
-          }
-        }
-      }
-    }
-    
-    # Augment list passed into extended method
-    passIn <- c(model, dim(model$fixedObs)[1] + 1)
-    passIn[[17]]<- stayerN
-    
-    # fit extended model
-    return(computeElboExtC(passIn))
+  if(class(model) != "mixedMemModelVI"){
+    stop("Input model must be of class mixedMemModelVI")
   }
+  # check model for internal consistency
+  checkModelVI(model)
+  return(computeElboInputC(model))
+
 }

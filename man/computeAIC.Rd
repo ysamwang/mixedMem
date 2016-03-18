@@ -7,13 +7,13 @@
 computeAIC(model)
 }
 \arguments{
-\item{model}{the \code{mixedMemModel} object for which the AIC will be calculated.}
+\item{model}{the \code{mixedMemModelVI} object for which the AIC will be calculated.}
 }
 \value{
-\code{computeBIC} returns the approximate AIC value, a real number.
+\code{computeAIC} returns the approximate AIC value, a real number.
 }
 \description{
-\code{computeAIC} computes the approximate AIC of a given \code{mixedMemModel}, where the lower bound on the log-likelihood
+\code{computeAIC} computes the approximate AIC of a given \code{mixedMemModelVI}, where the lower bound on the log-likelihood
 (also called ELBO) is used instead of the intractable true log-likelihood.
 }
 \details{

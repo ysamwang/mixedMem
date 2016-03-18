@@ -98,7 +98,7 @@ double mStep_C(mm_model model, double elbo_T, int stepType, int maxAlphaIter, in
                 a *= tau; //scale back a
 
                 //if in a feasible space, then check objective function
-                if(all((new_alpha + a * update)>0)) {
+                if(all((new_alpha + a * update) > BUMP)) {
                     new_obj = alpha_Objective(model, (new_alpha + a * update));
                 }
             }
@@ -154,7 +154,7 @@ void updateTheta(mm_model model, int maxThetaIter,
                     numer = 0.0;
                     denom =0.0;
                     for(i = 0; i < model.getT(); i++) {
-                        for(r = 0; r<model.getR(j); r++) {
+                        for(r = 0; r< model.getR(j); r++) {
                             if(model.getObs(i,j,r,n)) {
                                 numer += model.getDelta(i,j,r,n,k);
                             }
@@ -164,10 +164,10 @@ void updateTheta(mm_model model, int maxThetaIter,
 
                     //Check updates too close to numerical 1 or 0
                     //bump defined in settings.h
-                    if((numer/denom)>(1.0 - BUMP)) {
-                        model.setTheta(j,k,v,1.0 - BUMP);
-                    } else if((numer / denom) < BUMP) {
-                        model.setTheta(j,k,v, BUMP);
+                    if((numer / denom) > (1.0 - BUMP)) {
+                        model.setTheta(j, k, v, 1.0 - BUMP);
+                    } else if( (numer / denom) < BUMP) {
+                        model.setTheta(j, k, v, BUMP);
                     } else {
                         model.setTheta(j,k,v, numer / denom);
                     }
@@ -185,18 +185,24 @@ void updateTheta(mm_model model, int maxThetaIter,
                     }
 
                     for(i = 0; i < model.getT(); i++) {
-                        for(r = 0; r<model.getR(j); r++) {
-                            model.incTheta(j,k,model.getObs(i,j,r,n), model.getDelta(i,j,r,n,k));
-                            theta_sum +=model.getDelta(i,j,r,n,k);
+                        for(r = 0; r< model.getR(j); r++) {
+                            model.incTheta(j, k, model.getObs(i, j, r, n), model.getDelta(i, j, r, n, k));
+                            theta_sum += model.getDelta(i, j, r, n, k);
                         }
                     }
-                    model.normalizeTheta(j,k,theta_sum);
+                    model.normalizeTheta(j, k, theta_sum);
+//                    Rcout << "Estimates " << j << " " << k << ": ";
+//                    for(v = 0; v < model.getV(j); v++){
+//                        Rcout << model.getTheta(j, k, v) << " ";
+//                    }
+//                    Rcout << std::endl;
                 }
             }
         } else if(model.getDist(j) == RANK) {
             update_PL_Theta(model, j, maxThetaIter, maxLSIter, thetaTol, aNaught,
                             tau, bMax, bNaught, bMult, vCutoff, holdConst, iterReached);
         }
+
     }
 }
 

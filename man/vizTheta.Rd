@@ -8,7 +8,7 @@ vizTheta(model, compare = NULL, main = "Estimated Theta", varNames = NULL,
   groupNames = NULL, nrow = NULL, fitNames = NULL, indices = NULL)
 }
 \arguments{
-\item{model}{the \code{mixedMemModel} object that will be plotted.}
+\item{model}{the \code{mixedMemModelMCMC} or \code{mixedMemModelVI} object that will be plotted.}
 
 \item{compare}{an array of the same dimensions as model$theta which contains values to compare against the fitted value.}
 

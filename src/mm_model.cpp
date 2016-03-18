@@ -7,6 +7,8 @@ using namespace arma;
 
 mm_model::mm_model(List model)
 {
+
+    // Read in parameters
     T = (int) as<NumericVector>(model[0])[0];
     J = (int) as<NumericVector>(model[1])[0];
     Rj = as<NumericVector>(model[2]);
@@ -182,19 +184,18 @@ void mm_model::normalizeTheta(int j, int k, double theta_sum)
 {
     int v;
     int check = 0;
+
     for(v = 0; v < Vj[j]; v++)
     {
         theta[indTheta(j,k,v)] /= theta_sum;
         //Check for 0 or 1
-        if(theta[indTheta(j,k,v)]==1)
+        if(theta[indTheta(j,k,v)] > (1.0 - BUMP))
         {
-            theta[indTheta(j,k,v)] = 1.0-BUMP;
-            check--;
-        }
-        else if(theta[indTheta(j,k,v)] == 0)
-        {
-            theta[indTheta(j,k,v)] = BUMP;
-            check++;
+            theta[indTheta(j, k, v)] = 1.0 - BUMP;
+            check-- ;
+        } else if(theta[indTheta(j, k, v)] < BUMP) {
+            theta[indTheta(j, k, v)] = BUMP;
+            check++ ;
         }
     }
 
@@ -202,7 +203,7 @@ void mm_model::normalizeTheta(int j, int k, double theta_sum)
     {
         for(v = 0; v < Vj[j]; v++)
         {
-            theta[indTheta(j,k,v)] /= (1.0 + check*BUMP);
+            theta[indTheta(j,k,v)] /= (1.0 + check * BUMP);
         }
     }
 

@@ -1,9 +1,10 @@
-#' Simulate Mixed Membership Data
+#' Simulate Data from a discrete mixed membership model
 #' 
-#' Simulate data from a mixed membership model.
+#' Simulate Data from a discrete mixed membership model
 #' 
-#' \code{rmixedMem} simulates data from a mixed membership model given the specified parameters and dimensions. The function
-#' returns a random sample of observations \code{obs}, context indicators \code{Z}, and group membership scores \code{lambda}.
+#' \code{rmixedMem} simulates data from a mixed membership model given the specified parameters and dimensions.
+#'  The function returns a random sample of observations \code{obs}, context indicators \code{Z}, 
+#'  and group membership scores \code{lambda}.
 #'    
 #' @param Total the number of individuals in the sample.
 #' @param J the number of variables observed on each individual.
@@ -32,17 +33,17 @@
 #' an array of context indicators \code{Z} and an array of observations \code{obs}.
 rmixedMem <- function(Total, J, Rj, Nijr, K, Vj, dist, theta, alpha, lambda = NULL)
 {
+  # Sample lambda if not provided
   if(is.null(lambda)){
     lambda <- gtools::rdirichlet(Total, alpha)
   }
+  
   Z <-array(-1, dim = c(Total, J, max(Rj), max(Nijr)))
   obs <- array(-1, dim = c(Total, J, max(Rj), max(Nijr)))
-  for(i in 1:Total)
-  {
-    for(j in 1:J)
-    {
-      for(r in 1:Rj[j])
-      {
+  for(i in 1:Total) {
+    for(j in 1:J) {
+      for(r in 1:Rj[j]) {
+        
         if(dist[j] =="multinomial") {
           sub.pop <- sample.int(K, size = 1, prob = lambda[i,]) # sub-population which governs the response
           obs[i,j,r,1] <- sample.int(Vj[j], size = 1, prob = theta[j,sub.pop,c(1:Vj[j])])-1 # must be in 0:(Vj[j]-1)
@@ -69,6 +70,6 @@ rmixedMem <- function(Total, J, Rj, Nijr, K, Vj, dist, theta, alpha, lambda = NU
     }
   }
   
-  out <- list(lambda = lambda, Z = Z, obs = obs)
-  return(out)
+  ret <- list(lambda = lambda, Z = Z, obs = obs)
+  return(ret)
 }

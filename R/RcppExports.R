@@ -5,15 +5,11 @@ varInfInputC <- function(model_r, print, printMod, stepType, maxTotalIter, maxEI
     .Call('mixedMem_varInfInputC', PACKAGE = 'mixedMem', model_r, print, printMod, stepType, maxTotalIter, maxEIter, maxAlphaIter, maxThetaIter, maxLSIter, elboTol, alphaTol, thetaTol, aNaught, tau, bMax, bNaught, bMult, vCutoff, holdConstSEXP)
 }
 
-computeElboC <- function(model_r) {
-    .Call('mixedMem_computeElboC', PACKAGE = 'mixedMem', model_r)
+computeElboInputC <- function(model_r) {
+    .Call('mixedMem_computeElboInputC', PACKAGE = 'mixedMem', model_r)
 }
 
-varInfInputExtC <- function(model_r, print, printMod, stepType, maxTotalIter, maxEIter, maxAlphaIter, maxThetaIter, maxLSIter, elboTol, alphaTol, thetaTol, aNaught, tau, bMax, bNaught, bMult, vCutoff, holdConstSEXP, method) {
-    .Call('mixedMem_varInfInputExtC', PACKAGE = 'mixedMem', model_r, print, printMod, stepType, maxTotalIter, maxEIter, maxAlphaIter, maxThetaIter, maxLSIter, elboTol, alphaTol, thetaTol, aNaught, tau, bMax, bNaught, bMult, vCutoff, holdConstSEXP, method)
-}
-
-computeElboExtC <- function(model_r) {
-    .Call('mixedMem_computeElboExtC', PACKAGE = 'mixedMem', model_r)
+mcmcInputC <- function(model_r, burnIn, samples, thin, print, fileNames, newFiles, omega, eta, whichWrite) {
+    invisible(.Call('mixedMem_mcmcInputC', PACKAGE = 'mixedMem', model_r, burnIn, samples, thin, print, fileNames, newFiles, omega, eta, whichWrite))
 }
 

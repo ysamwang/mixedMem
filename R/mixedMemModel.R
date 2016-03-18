@@ -1,13 +1,22 @@
-#' Constructor for a Mixed Membership Model Object
+#' Constructor for a Mixed Membership Model object which can be fit using 
+#' variational inference
 #' 
-#' Constructor for a \code{mixedMemModel} object which can be used for analysis 
-#' in the \code{mixedMem} package.
+#' Constructor for a \code{mixedMemModelVI} object which can be used be fit using
+#' variational inference in the \code{mixedMem} package.
 #' 
-#' The function returns an object of \code{mixedMemModel} class. This object contains dimensions of the model,
-#' the observed data, and the model parameters. Once a \code{mixedMemModel} object is created,
-#' the specified model can be fit for the data using the \code{mmVarFit} function. If the inputs are inconsistent (ie if dimensions do not match,
-#' or if observations and distribution types are not compatible,\code{mixedMemModel} will throw an error. For additional details on usage, and model
-#' assumptions, see the corresponding vignette "Fitting Mixed Membership Models Using \code{mixedMem}".
+#' The function returns an object of \code{mixedMemModelVI} class. This object
+#' contains dimensions of the model, the observed data, and the model
+#' parameters. Once a \code{mixedMemModelVI} object is created, the specified 
+#' model can be fit for the data using the \code{mmVarFit} function. If the
+#' inputs are inconsistent (ie if dimensions do not match,
+#' or if observations and distribution types are not compatible, 
+#' \code{mixedMemModelVI} will throw an error. 
+#' For additional details on usage, and model assumptions, see the 
+#' corresponding vignette "Fitting Mixed Membership Models 
+#' Using \code{mixedMem}". Supported data types include Bernoulli, Multinomial,
+#' and Rank (Plackett-Luce). Note that the variational methods of \code{mixeMem}
+#' do not support the "Extended GoM" model which can be fit through the provided
+#' MCMC methods.
 #' 
 #' @param Total the number of individuals in the sample.
 #' @param J the number of variables observed on each individual.
@@ -39,12 +48,7 @@
 #' @param obs an array with dimensions (\code{Total},\code{J},\code{max(Rj)}, \code{max(Nijr)}) corresponding to 
 #' the observed data. For Bernoulli random variables, the data consist of 0/1's. 
 #' For multinomial or rank data the data consist of integers 0,1,\ldots,(Vj[j]-1).
-#' @param fixedObs an array with dimensions (S, \code{J}, \code{max(Rj)}, \code{max(Nijr)}) corresonding to the observed
-#' responses for a fixed group in the extended GoM model from Erosheva et al (2007)
-#' @param P scalar between 0 and 1 corresponding to initial value for the proportion of individuals in the fixed group
-#' @param beta scalar between 0 and 1 corresponding to the initial value of beta, the conditional probability of being in the fixed group
-#' for an individual who's observed responses match the fixed group.   
-#' @return returns an object of class \code{mixedMemModel}
+#' @return returns an object of class \code{mixedMemModelVI}
 #' @examples
 #' set.seed(123)
 #' Total <- 50 # 50 Individuals
@@ -90,55 +94,47 @@
 #' # Plot the current values for theta
 #' plot(test_model) 
 #' @export
-
-mixedMemModel = function(Total, J, Rj, Nijr, K, Vj, alpha, theta, phi = NULL, delta = NULL, dist, obs,
-                         fixedObs = NULL, P = NULL, beta = NULL)
-{
+mixedMemModelVI = function(Total, J, Rj, Nijr, K, Vj, alpha, theta,
+                         phi = NULL, delta = NULL, dist, obs) {
+  
   # Checks if model defaults are used and fills in defaults
   if(is.null(delta))
   {
     delta = array(0, dim = c(Total,J, max(Rj), max(Nijr), K))
-    for(i in 1:Total)
-    {
-      for(j in 1:J)
-      {
-        for(r in 1:Rj[j])
-        {
-          for(n in 1:Nijr[i,j,r])
-          {
-            delta[i,j,r,n,] = rep(1/K,K)
+    for (i in 1:Total) {
+      for (j in 1:J) {
+        for (r in 1:Rj[j]) {
+          for (n in 1:Nijr[i,j,r]) {
+            delta[i, j, r, n, ] = rep(1/K,K)
           }
         }
       }
     }
   }
   
-  if(is.null(phi))
-  {
-    phi = array(1/K, dim = c(Total,K))
+  if (is.null(phi)) {
+    phi <- array(1/K, dim = c(Total,K))
   }
-  #put objects in a list
-  if(is.null(fixedObs)){
-    model_obj = list(Total, J, Rj, Nijr, K, Vj,
-                     alpha, theta, phi, delta,
-                     dist, obs);
-    names(model_obj) = c("Total", "J", "Rj", "Nijr", "K", "Vj", "alpha","theta", "phi",
-                         "delta", "dist" ,"obs")
-  } else {
-    model_obj = list(Total, J, Rj, Nijr, K, Vj,
-                     alpha, theta , phi , delta,
-                     dist, obs, fixedObs,
-                     P, beta);
-    names(model_obj) = c("Total", "J", "Rj", "Nijr", "K", "Vj", "alpha","theta", "phi",
-                         "delta", "dist" ,"obs", "fixedObs", "P", "beta")    
-  }
-  class(model_obj) = "mixedMemModel"
   
+  #put objects in a list
+  model_obj <- list(Total, J, Rj, Nijr, K, Vj,
+                     alpha, theta , phi , delta,
+                     dist, obs)
+  
+  names(model_obj) = c("Total", "J", "Rj", "Nijr", "K", "Vj", "alpha","theta", "phi",
+                         "delta", "dist" ,"obs")    
+    
+  class(model_obj) <- "mixedMemModelVI" 
+  #check for valid model parameters
+  checkModelVI(model_obj)
+  
+  
+  # relabel all attributes
   dimnames(model_obj$theta) <- list(paste("Var", c(1:J), sep = ""),
                                     paste("Group", c(1:K), sep = ""),
-                                    paste("Cat", c(0:(max(Vj)-1)), sep = ""))
+                                    paste("Cat", c(1:(max(Vj))), sep = ""))
   
-  names(model_obj$alpha) <- paste("Group", c(0:(K-1)))
+  names(model_obj$alpha) <- paste("Group", c(1:K))
   
   names(model_obj$Vj) <- paste("Var", c(1:J), sep = "")
   names(model_obj$Rj) <- paste("Var", c(1:J), sep = "")
@@ -161,24 +157,133 @@ mixedMemModel = function(Total, J, Rj, Nijr, K, Vj, alpha, theta, phi = NULL, de
                                   paste("Var", c(1:J), sep = ""),
                                   paste("Rep", c(1:max(Rj)), sep = ""),
                                   paste("Rank", c(1:max(Nijr)), sep = ""))
-  #check for valid model parameters
-  checkModel(model_obj)
+  
   return(model_obj)
 }
 
 
+#' Constructor for a Mixed Membership Model object which can be fit through MCMC
+#' 
+#' Constructor for a \code{mixedMemModelMCMC} object which can be fit using MCMC 
+#' in the \code{mixedMem} package.
+#' 
+#' The function returns an object of \code{mixedMemModelMCMC} class. This object contains dimensions of the model,
+#' the observed data, and the model parameters. Once a \code{mixedMemModel} object is created,
+#' the specified model can be fit for the data using the \code{mmMCMCFit}
+#' function. If the inputs are inconsistent (ie if dimensions do not match,
+#' or if observations and distribution types are not compatible,
+#' \code{mixedMemModelMCMC} will throw an error. Supported data types 
+#' include Bernoulli and Multinomial (Note that rank data is not supported 
+#' in the MCMC method). The MCMC method is capable of also estimating the 
+#' extended GoM model which allows for a fixed number of "stayers". See 
+#' Erosheva et al (2007) for a detailed description of the extended GoM Model.
+#' For additional details on usage, and model
+#' assumptions, see the corresponding vignette "Fitting Mixed 
+#' Membership Models Using \code{mixedMem}".
+#' 
+#' @param Total the number of individuals in the sample.
+#' @param J the number of variables observed on each individual.
+#' @param dist a vector of length \code{J} specifying variable types. Options are
+#' "bernoulli" or "multinomial" corresponing to the distributions
+#'  of the observed variables.
+#' @param Rj a vector of length J specifying the number of repeated measurements
+#'  for each variable.
+#' @param Vj a vector of length \code{J} specifying the number of possible responses
+#'  for each variable. For a Bernoulli variable \code{Vj}[j] = 1. 
+#' @param obs an array with dimensions (\code{Total},\code{J},\code{max(Rj)}) corresponding to 
+#' the observed data. For Bernoulli random variables, the data consist of 0/1's. 
+#' For multinomial the data consist of integers 0,1,\ldots,(Vj[j]-1).
+#' @param K the number of sub-populations.
+#' @param theta an array with dimensions (\code{J},\code{K},\code{max(Vj)}) which governs the variable
+#'  distributions. The parameter \code{theta}[j,k,] governs the distribution of variable J for a complete member of sub-population k. For instance, if variable j is a Bernoulli variable, theta[j,k,1] is the probability of success; if
+#'  variable j is a multinomial variable, \code{theta}[j,k, 1:Vj[j]] is the probability for each of the \code{Vj}[j] categories. Since the dimension of the relevant parameters
+#'  can differ across variables, any unused elements of the array should be set to 0, while all other elements should be positive.
+#' @param alpha a scalar representing the sum of the dirichlet membership parameters
+#' @param ksi a vector which lies in the K-1 simplex which represents the relative frequency of each sub-population
+#' @param lambda a matrix with dimensions (\code{Total}, \code{K}) which represent the partial membership for individual i in group k
+#' @param Z an array with dimensions (\code{Total},\code{J},\code{max(Rj)}) which represents the sub-population according to which
+#' individual i responded to the r repitition of variable j
+#' @param tau an array of dimension (\code{J}, \code{K}, max(2, \code{max(Vj)})) which holds the prior parameters for each of the
+#' theta parameters. Note that for Bernoulli variables, even though Vj = 1, both parameters of the beta must be specified so we still require
+#' 2 values
+#' @param beta shape parameter for prior for alpha 
+#' @param gamma scale parameter for prior for alpha
+#' @param extended 1 indicates the extended GoM model is being used; 0 indicates the
+#' normal mixed membership model without fixed stayers
+#' @param P vector of length S + 1 which lies in S dimensional simplex indicating the proportion of individuals in the fixed groups and GoM compartment.
+#' The first S elements correspond to the stayer classes, while the S + 1 element indicates the proportion of individuals in GoM compartment
+#' @param S integer indicating the number of fixed stayer classes if extended GoM is used.
+#' @param fixedObs an array with dimensions (S, \code{J}, \code{max(Rj)}) corresonding to the observed
+#' responses for a fixed group in the extended GoM model from Erosheva et al (2007).
+#' @return returns an object of class \code{mixedMemModelMCMC}.
+#' @export
+mixedMemModelMCMC <- function(Total, J, dist, Rj, Vj, obs, K, theta, alpha,
+                              ksi, lambda, Z, tau, beta, gamma,
+                              extended = 0, P = NULL, S = NULL, fixedObs = NULL){
+  
+  model <- list(Total = Total, J = J, dist = dist, Rj = Rj, Vj = Vj, obs = obs,
+                  K = K,  theta = theta, alpha = c(alpha), ksi = ksi,
+                  lambda = lambda, Z = Z, tau = tau, beta = beta, gamma  = gamma, 
+                  extended = extended, P = P, S = S, fixedObs = fixedObs)
+  
+  checkModelMCMC(model)
+  
+  
+  names(model$Vj) <- names(model$Rj) <- names(model$dist) <-
+    paste("Var", c(1:J))
+  
+  dimnames(model$obs) <- list(paste("Ind", c(1:Total)),
+                              paste("Var", c(1:J)),
+                              paste("Rep", c(1:max(Rj))))
+  
+  
+  dimnames(model$theta) <- list(paste("Var", c(1:J)),
+                                paste("Group", c(1:K)),
+                                paste("Cat", c(0:(max(Vj)-1))))
+  
+  names(model$ksi) <- paste("Group", c(1:K))
+  
+  dimnames(model$lambda) <- list(paste("Ind", c(1:Total)),
+                                 paste("Group", c(1:K)))
+  
+  dimnames(model$Z) <- list(paste("Ind", c(1:Total)),
+                            paste("Var", c(1:J)),
+                            paste("Rep", c(1:max(Rj))))
+  
+  
+  dimnames(model$tau) <- list(paste("Var", c(1:J)),
+                              paste("Group", c(1:K)),
+                              paste("Cat", c(0:(max(c(Vj, 2) -1)))))
+  
+  if (extended) {
+    names(model$P) <- c(paste("Stayer", c(1:S)), "GoM")
+  }
+  
+  class(model) <- "mixedMemModelMCMC"
+  
+  return(model)
+  
+}
+
+
+
+
+
+
+
+
 #' Summary of a Mixed Membership Model
 #' 
-#' Generic S3 summary function for \code{mixedMemModel} class. 
+#' Generic S3 summary function for \code{mixedMemModelVI} class. 
 #' 
-#' \code{summary} provides a summary of the given \code{mixedMemModel} object. The function 
+#' \code{summary} provides a summary of the given \code{mixedMemModelVI} object. The function 
 #' prints the ELBO, the dimensions of the model and each variable type.
 #'  
-#' @param object the mixedMemModel object to be summarized
+#' @param object the \code{mixedMemModelVI} object to be summarized
 #' @param ... additional parameters
-#' @seealso mixedMemModel
+#' @seealso mixedMemModelVI
 #' @export
-summary.mixedMemModel = function(object,...)
+summary.mixedMemModelVI = function(object,...)
 {
   cat("== Summary for Mixed Membership Model ==\n")
   cat(paste("Total: ", object$Total, "\t\t K: ",object$K, "\t\t ELBO: ",round(computeELBO(object),2),"\n\n" ,sep = ""))
@@ -188,9 +293,32 @@ summary.mixedMemModel = function(object,...)
   print(df, row.names = FALSE, right = FALSE)
 }
 
+
+#' Summary of a Mixed Membership Model
+#' 
+#' Generic S3 summary function for \code{mixedMemModelMCMC} class. 
+#' 
+#' \code{summary} provides a summary of the given \code{mixedMemModelMCMC} object. The function 
+#' prints the ELBO, the dimensions of the model and each variable type.
+#'  
+#' @param object the \code{mixedMemModelMCMC} object to be summarized
+#' @param ... additional parameters
+#' @seealso mixedMemModelMCMC
+#' @export
+summary.mixedMemModelMCMC = function(object,...)
+{
+  cat("== Summary for Mixed Membership Model ==\n")
+  cat(paste("Total: ", object$Total, "\t\t K: ",object$K, "\n\n" ,sep = ""))
+  df <- data.frame(paste("  ",c(1:object$J),sep = ""), object$dist, object$Rj,
+                  object$Vj)
+  colnames(df) <- c("Variable  ", "Variable Type    ", "Replicates    ", "Categories  ")
+  print(df, row.names = FALSE, right = FALSE)
+}
+
+
 #' Plot a Mixed Membership Model
 #' 
-#' Generic S3 function to produce visual representation of a \code{mixedMemModel} object. This function calls either the \code{vizTheta} or
+#' Generic S3 function to produce visual representation of a \code{mixedMemModelVI} object. This function calls either the \code{vizTheta} or
 #' the \code{vizMem} function. 
 #' 
 #' @param x the \code{mixedMemModel} object to be plotted.
@@ -208,9 +336,9 @@ summary.mixedMemModel = function(object,...)
 #' When plot type is  "theta", this indicates which variables to plot. 
 #' @param fitNames a vector of strings corresponding to labels for each fit.
 #' @param ... additional parameters to be passed.
-#' @seealso mixedMemModel, vizTheta, vizMem
+#' @seealso mixedMemModelVI, vizTheta, vizMem
 #' @export
-plot.mixedMemModel = function(x, type = "theta" , compare = NULL,
+plot.mixedMemModelVI = function(x, type = "theta" , compare = NULL,
                               main = NULL,
                               varNames = NULL,
                               groupNames = NULL,
@@ -229,6 +357,49 @@ plot.mixedMemModel = function(x, type = "theta" , compare = NULL,
            indices = indices, fitNames = fitNames, groupNames = groupNames)
   }
 }
+
+#' Plot a Mixed Membership Model
+#' 
+#' Generic S3 function to produce visual representation of a \code{mixedMemModelMCMC} object. This function calls either the \code{vizTheta} or
+#' the \code{vizMem} function. 
+#' 
+#' @param x the \code{mixedMemModel} object to be plotted.
+#' @param type a string which indicates which estimated parameters to plot; valid options are "theta" or "membership".
+#'  \code{vizTheta} is called when the type is "theta" and \code{vizMem} is called when the type is "membership". 
+#' @param compare an array or matrix for comparison. When type = "theta", \code{compare} should be an array the same size as x$theta.
+#' When type = "membership", \code{compare} should be a matrix the same size as x$phi.
+#' @param main the main figure title.
+#' @param varNames a vector of strings corresponding to names for each variable if plot type is theta.
+#' @param groupNames a vector of strings corresponding to labels for each sub-population.
+#' @param nrow the number of rows for the grid of plots.
+#' @param ncol the number of columns for the grid of plots. If plot type is "theta", this
+#' must be K, if plot type is  "membership", this must be a positive integer.
+#' @param indices a vector of integers. If the plot type is  "membership", this indicates which individuals to plot.
+#' When plot type is  "theta", this indicates which variables to plot. 
+#' @param fitNames a vector of strings corresponding to labels for each fit.
+#' @param ... additional parameters to be passed.
+#' @seealso mixedMemModelMCMC, vizTheta, vizMem
+#' @export
+plot.mixedMemModelMCMC = function(x, type = "theta" , compare = NULL,
+                                main = NULL,
+                                varNames = NULL,
+                                groupNames = NULL,
+                                nrow = NULL, ncol = NULL, indices = NULL, fitNames = NULL,...){
+  if(type =="theta") {
+    if(is.null(main)){
+      main = "Estimated Theta"
+    }
+    vizTheta(x, compare = compare, main = main, varNames = varNames,
+             groupNames = groupNames, nrow = nrow, fitNames = fitNames, indices = indices)
+  } else if (type == "membership") {
+    if(is.null(main)){
+      main = "Estimated Memberships"
+    }
+    vizMem(x,compare = compare, main = main, nrow = nrow, ncol = ncol,
+           indices = indices, fitNames = fitNames, groupNames = groupNames)
+  }
+}
+
 
 
 #' Print the theta estimates for each sub-population
@@ -253,12 +424,12 @@ theta.table <- function(model, digits = 3, top.level = "group"){
             cat(paste("Cat", v,"\t"))
           }
           cat("\n\t")
-          cat(paste(round(1-model$theta[j,k,1],digits),"\t"))
-          cat(paste(round(model$theta[j,k,1],digits),"\t"))
+          cat(paste(round(1 - model$theta[j,k,1], digits),"\t"))
+          cat(paste(round(model$theta[j,k,1], digits),"\t"))
         } else{
           for(v in 1:model$Vj[j])
           {
-            cat(paste("Cat", (v-1),"\t"))
+            cat(paste("Cat", v,"\t"))
           }
           cat("\n\t")
           for(v in 1:model$Vj[j])
@@ -290,7 +461,7 @@ theta.table <- function(model, digits = 3, top.level = "group"){
           cat("\t\t")
           for(v in 1:model$Vj[j])
           {
-            cat(paste("Cat", (v-1),"\t"))
+            cat(paste("Cat", v,"\t"))
           }
           cat("\n")
           for(k in 1:model$K){

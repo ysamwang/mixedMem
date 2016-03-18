@@ -13,7 +13,7 @@ computeBIC(model)
 \code{computeBIC} returns the approximate BIC value, a real number.
 }
 \description{
-\code{computeBIC} computes the approximate BIC of a given \code{mixedMemModel}, where the lower bound on the log-likelihood
+\code{computeBIC} computes the approximate BIC of a given \code{mixedMemModelVI}, where the lower bound on the log-likelihood
 (also called ELBO) is used instead of the intractable true log-likelihood.
 }
 \details{

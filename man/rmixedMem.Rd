@@ -2,7 +2,7 @@
 % Please edit documentation in R/rmixedMem.R
 \name{rmixedMem}
 \alias{rmixedMem}
-\title{Simulate Mixed Membership Data}
+\title{Simulate Data from a discrete mixed membership model}
 \usage{
 rmixedMem(Total, J, Rj, Nijr, K, Vj, dist, theta, alpha, lambda = NULL)
 }
@@ -44,10 +44,11 @@ distribution of membership scores.}
 an array of context indicators \code{Z} and an array of observations \code{obs}.
 }
 \description{
-Simulate data from a mixed membership model.
+Simulate Data from a discrete mixed membership model
 }
 \details{
-\code{rmixedMem} simulates data from a mixed membership model given the specified parameters and dimensions. The function
-returns a random sample of observations \code{obs}, context indicators \code{Z}, and group membership scores \code{lambda}.
+\code{rmixedMem} simulates data from a mixed membership model given the specified parameters and dimensions.
+ The function returns a random sample of observations \code{obs}, context indicators \code{Z}, 
+ and group membership scores \code{lambda}.
 }
 

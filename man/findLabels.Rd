@@ -8,10 +8,10 @@
 the weighted squared difference between the arrays of subpopulation parameters from a fitted mixed membership
 model, \eqn{\theta} and a given comparison model.}
 \usage{
-findLabels(model, comparison, exhaustive = TRUE)
+findLabels(model, comparison, exhaustive = FALSE)
 }
 \arguments{
-\item{model}{the fitted \code{mixedMemModel} object.}
+\item{model}{the fitted \code{mixedMemModelMCMC} or \code{mixedMemModelVI} object.}
 
 \item{comparison}{an array of the same dimensions as model$theta which contains the subpopulation parameters from another model.
 \code{findLabels} will return a permutation of the labels of \code{model} which match to \code{comparison} most closely.}
@@ -24,13 +24,12 @@ findLabels(model, comparison, exhaustive = TRUE)
 }
 \description{
 Mixed Membership models are invariant to permutations of the sub-population labels; swapping the names of each sub-population yields an equivalent model. 
-The ordering of the labels in a fitted model is dependent on the initialization points of the variational EM algorithim. The function \code{findLabels} selects a
-permutation of the sub-population labels that best matches a given comparison model by minimizing the weighted squared difference between the 
-\eqn{\theta} arrays. The weights are determined by the relative frequencies of each group.
+The ordering of the labels in a fitted model is often dependent on the initialization points.
+The function \code{findLabels} selects a permutation of the sub-population labels that best matches a given comparison model 
+by minimizing squared differences between the \eqn{\theta} arrays.
 }
 \details{
-\eqn{Loss = \sum_j \sum_k \alpha_k/\alpha_0 [\sum_v (\hat\theta_{k,v} - \theta_{k,v})^2]}
-where \eqn{\alpha_0 = \sum_k \alpha_k}
+\eqn{Loss = \sum_j \sum_k [\sum_v (\hat\theta_{k,v} - \theta_{k,v})^2]}
 
 If K, number of sub-populations, is small, the method searches through all K! permutations of the sub-population labels and 
 select the permutation which minimizes the loss. If K is large, a greedy algorithim can be used instead. This
@@ -40,21 +39,21 @@ relative frequency.
 \examples{
 
 \dontrun{
-# See mixedMemModel documentation for how to generate data and instantiate a mixedMemModel object
+# See mixedMemModelMCMC or mixedMemModelVI documentation for how to generate data and instantiate objects
 # After the data as been generated, we initialize the array of sub-population parameters (theta) 
 # according to a permutation of the true labeling
 set.seed(123)
-perm = sample.int(K, size = K, replace = FALSE)
-theta1 = theta_truth[,perm,]
-test_model <- mixedMemModel(Total = Total, J = J,Rj = Rj, Nijr= Nijr, K = K, Vj = Vj,dist = dist,
- obs = obs, alpha = alpha, theta = theta1)
-out <- mmVarFit(test_model)
+perm <- sample.int(K, size = K, replace = FALSE)
+theta.perm <- theta_truth[,perm,]
+test_model <- mixedMemModelVI(Total = Total, J = J,Rj = Rj, Nijr= Nijr,
+ K = K, Vj = Vj,dist = dist, obs = obs, alpha = alpha, theta = theta.perm)
+out <- mmVIFit(test_model)
 opt.perm <- findLabels(out, theta_truth)
 opt.perm
 
 # produce mixedMemModel object with sub-population labels permuted to best match
 # the comparison model
-out = permuteLabels(out, opt.perm$perm)
+out <- permuteLabels(out, opt.perm$perm)
 }
 }
 \seealso{

@@ -35,55 +35,33 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
-// computeElboC
-double computeElboC(Rcpp::List model_r);
-RcppExport SEXP mixedMem_computeElboC(SEXP model_rSEXP) {
+// computeElboInputC
+double computeElboInputC(Rcpp::List model_r);
+RcppExport SEXP mixedMem_computeElboInputC(SEXP model_rSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< Rcpp::List >::type model_r(model_rSEXP);
-    __result = Rcpp::wrap(computeElboC(model_r));
+    __result = Rcpp::wrap(computeElboInputC(model_r));
     return __result;
 END_RCPP
 }
-// varInfInputExtC
-Rcpp::List varInfInputExtC(Rcpp::List model_r, int print, int printMod, int stepType, int maxTotalIter, int maxEIter, int maxAlphaIter, int maxThetaIter, int maxLSIter, double elboTol, double alphaTol, double thetaTol, double aNaught, double tau, int bMax, double bNaught, double bMult, int vCutoff, SEXP holdConstSEXP, int method);
-RcppExport SEXP mixedMem_varInfInputExtC(SEXP model_rSEXP, SEXP printSEXP, SEXP printModSEXP, SEXP stepTypeSEXP, SEXP maxTotalIterSEXP, SEXP maxEIterSEXP, SEXP maxAlphaIterSEXP, SEXP maxThetaIterSEXP, SEXP maxLSIterSEXP, SEXP elboTolSEXP, SEXP alphaTolSEXP, SEXP thetaTolSEXP, SEXP aNaughtSEXP, SEXP tauSEXP, SEXP bMaxSEXP, SEXP bNaughtSEXP, SEXP bMultSEXP, SEXP vCutoffSEXP, SEXP holdConstSEXPSEXP, SEXP methodSEXP) {
+// mcmcInputC
+void mcmcInputC(Rcpp::List model_r, int burnIn, int samples, int thin, int print, Rcpp::List fileNames, int newFiles, double omega, double eta, NumericVector whichWrite);
+RcppExport SEXP mixedMem_mcmcInputC(SEXP model_rSEXP, SEXP burnInSEXP, SEXP samplesSEXP, SEXP thinSEXP, SEXP printSEXP, SEXP fileNamesSEXP, SEXP newFilesSEXP, SEXP omegaSEXP, SEXP etaSEXP, SEXP whichWriteSEXP) {
 BEGIN_RCPP
-    Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< Rcpp::List >::type model_r(model_rSEXP);
+    Rcpp::traits::input_parameter< int >::type burnIn(burnInSEXP);
+    Rcpp::traits::input_parameter< int >::type samples(samplesSEXP);
+    Rcpp::traits::input_parameter< int >::type thin(thinSEXP);
     Rcpp::traits::input_parameter< int >::type print(printSEXP);
-    Rcpp::traits::input_parameter< int >::type printMod(printModSEXP);
-    Rcpp::traits::input_parameter< int >::type stepType(stepTypeSEXP);
-    Rcpp::traits::input_parameter< int >::type maxTotalIter(maxTotalIterSEXP);
-    Rcpp::traits::input_parameter< int >::type maxEIter(maxEIterSEXP);
-    Rcpp::traits::input_parameter< int >::type maxAlphaIter(maxAlphaIterSEXP);
-    Rcpp::traits::input_parameter< int >::type maxThetaIter(maxThetaIterSEXP);
-    Rcpp::traits::input_parameter< int >::type maxLSIter(maxLSIterSEXP);
-    Rcpp::traits::input_parameter< double >::type elboTol(elboTolSEXP);
-    Rcpp::traits::input_parameter< double >::type alphaTol(alphaTolSEXP);
-    Rcpp::traits::input_parameter< double >::type thetaTol(thetaTolSEXP);
-    Rcpp::traits::input_parameter< double >::type aNaught(aNaughtSEXP);
-    Rcpp::traits::input_parameter< double >::type tau(tauSEXP);
-    Rcpp::traits::input_parameter< int >::type bMax(bMaxSEXP);
-    Rcpp::traits::input_parameter< double >::type bNaught(bNaughtSEXP);
-    Rcpp::traits::input_parameter< double >::type bMult(bMultSEXP);
-    Rcpp::traits::input_parameter< int >::type vCutoff(vCutoffSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type holdConstSEXP(holdConstSEXPSEXP);
-    Rcpp::traits::input_parameter< int >::type method(methodSEXP);
-    __result = Rcpp::wrap(varInfInputExtC(model_r, print, printMod, stepType, maxTotalIter, maxEIter, maxAlphaIter, maxThetaIter, maxLSIter, elboTol, alphaTol, thetaTol, aNaught, tau, bMax, bNaught, bMult, vCutoff, holdConstSEXP, method));
-    return __result;
-END_RCPP
-}
-// computeElboExtC
-double computeElboExtC(Rcpp::List model_r);
-RcppExport SEXP mixedMem_computeElboExtC(SEXP model_rSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< Rcpp::List >::type model_r(model_rSEXP);
-    __result = Rcpp::wrap(computeElboExtC(model_r));
-    return __result;
+    Rcpp::traits::input_parameter< Rcpp::List >::type fileNames(fileNamesSEXP);
+    Rcpp::traits::input_parameter< int >::type newFiles(newFilesSEXP);
+    Rcpp::traits::input_parameter< double >::type omega(omegaSEXP);
+    Rcpp::traits::input_parameter< double >::type eta(etaSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type whichWrite(whichWriteSEXP);
+    mcmcInputC(model_r, burnIn, samples, thin, print, fileNames, newFiles, omega, eta, whichWrite);
+    return R_NilValue;
 END_RCPP
 }

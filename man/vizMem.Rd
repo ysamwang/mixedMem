@@ -8,9 +8,9 @@ vizMem(model, compare = NULL, main = "Estimated Membership", nrow = NULL,
   ncol = NULL, indices = NULL, groupNames = NULL, fitNames = NULL)
 }
 \arguments{
-\item{model}{the \code{mixedMemModel} object that will be plotted.}
+\item{model}{the \code{mixedMemModelVI} or \code{mixedMemModelMCMC} object that will be plotted.}
 
-\item{compare}{a matrix of the same dimensions as \code{model$phi} which contains parameters to compare
+\item{compare}{a matrix of dimension (Total, K) which contains parameters to compare
 against the fitted model.}
 
 \item{main}{the main figure title.}
@@ -31,10 +31,9 @@ If the number of individuals to be plotted is larger than \code{nrow * ncol} the
 generic plot function.
 }
 \details{
-The estimates plotted are the normalized \eqn{\phi}, which are the posterior means from the variational distribution. The
-estimated group membership scores are  shown in black, and the estimates from a comparison model (if available) are shown in red. Each plot
+For a \code{mixedMemModelVI} object, the estimates plotted are the normalized \eqn{\phi}, which are the posterior means from the variational distribution.
+For a \code{mixedMemModelMCMC} object, the estimates plotted are the point estimates for \eqn{\lambda_i}.
+The estimated group membership scores are  shown in black, and the estimates from a comparison model (if available) are shown in red. Each plot
 represents an individual.
-
-This is the function called by the plot generic function for mixedMemModel objects.
 }
 
