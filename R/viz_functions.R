@@ -169,9 +169,9 @@ vizMem <- function(model, compare = NULL, main = "Estimated Membership",
   
   if(is.null(fitNames)) {
     if(is.null(compare)) { 
-      fitNames <- paste("Model", 1)
+      fitNames <- ""
     } else {
-      fitNames <- paste("Model", c(1:2))
+      fitNames <- paste("Model", c(1:2), "")
     }
   }
   
@@ -203,7 +203,7 @@ vizMem <- function(model, compare = NULL, main = "Estimated Membership",
       
       graphics::plot(0, 0, type = "n", bty = "n", xaxt ="n", yaxt = "n")
       if(is.null(compare)){
-        graphics::legend("bottom", legend = paste(fitNames[1], groupNames), pch = pch.list[1:model$K],
+        graphics::legend("bottom", legend = paste(fitNames[1], groupNames, sep =""), pch = pch.list[1:model$K],
                col = rep("black", model$K), cex = .8, ncol = model$K)
         
       } else {
@@ -222,7 +222,7 @@ vizMem <- function(model, compare = NULL, main = "Estimated Membership",
   graphics::plot(0, 0, type = "n", bty = "n", xaxt ="n", yaxt = "n")
   
   if(is.null(compare)){
-    graphics::legend("bottom", legend = paste(fitNames[1], groupNames), pch = pch.list[1:model$K],
+    graphics::legend("bottom", legend = paste(fitNames[1], groupNames, sep =""), pch = pch.list[1:model$K],
            col = rep("black", model$K), cex = .8, ncol = model$K)
     
   } else {

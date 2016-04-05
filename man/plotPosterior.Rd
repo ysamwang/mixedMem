@@ -6,8 +6,8 @@
    
 \code{plotPosterior}}
 \usage{
-plotPosterior(model, fileName, parameter, new = T, type = "trace", j = 1,
-  k = 1, v = 1, s = 1, ...)
+plotPosterior(model, fileName, parameter, addToExisting = F,
+  plotType = "trace", j = 1, k = 1, v = 1, s = 1, ...)
 }
 \arguments{
 \item{model}{the fitted \code{mixedMemModelMCMC} object.}
@@ -16,11 +16,19 @@ plotPosterior(model, fileName, parameter, new = T, type = "trace", j = 1,
 
 \item{parameter}{which parameter to plot}
 
-\item{new}{whether to plot on existing plot or new plot}
+\item{addToExisting}{whether to plot on existing plot or new plot}
 
-\item{type}{histogram or trace plot}
+\item{j}{the jth element to plot}
+
+\item{k}{the kth element to plot}
+
+\item{v}{the vth element to plot}
+
+\item{s}{the sth element to plot}
 
 \item{...}{additional commands passed to plotting function}
+
+\item{type}{histogram or trace plot}
 }
 \description{
 Mixed Membership Post-Processing for MCMC method

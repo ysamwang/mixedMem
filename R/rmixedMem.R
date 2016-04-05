@@ -31,10 +31,12 @@
 #'  argument is not specified, the group membership scores will be automatically sampled from a Dirichlet(\code{alpha})
 #' @return \code{rmixedMem} returns a list containing a three items: A matrix of group memberships scores \code{lambda}, 
 #' an array of context indicators \code{Z} and an array of observations \code{obs}.
-rmixedMem <- function(Total, J, Rj, Nijr, K, Vj, dist, theta, alpha, lambda = NULL)
+rmixedMem <- function(Total, J, Rj = rep(1, J),
+                      Nijr = array(1, dim = c(Total, J, max(Rj)))
+                      , K, Vj, dist, theta, alpha, lambda = NULL)
 {
   # Sample lambda if not provided
-  if(is.null(lambda)){
+  if (is.null(lambda)) {
     lambda <- gtools::rdirichlet(Total, alpha)
   }
   

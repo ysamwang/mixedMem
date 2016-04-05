@@ -13,7 +13,8 @@
 #' @param samples positive integer indicating the number of samples to record
 #' @param thin positive integer indicating how to thin the samples
 #' @param print positive integer indicating how often to print an update to the R console
-#' @param fileNames list of files names to write samples
+#' @param fileNames list of files locations to write samples. Should be vector of strings with length 5 
+#' (7 if using the extended mixed membership model) corresponding to: Theta, Alpha_0, Ksi, Lambda, Z, (P, rho).
 #' @param newFiles 0 if samples should be appended to existing files; 1 if samples should overwrite any existing files 
 #' @param omega tuning parameter for MH step for alpha.
 #' @param eta tuning parameter for MH step for ksi
@@ -22,21 +23,28 @@
 #' @param extended boolean whether to estimate the extended model or not
 #' @seealso mixedMemModelMCMC
 #' @export
-mmMCMCFit <- function(model, burnIn = 20000, samples = 1000, thin = 10, print = 100, fileNames, newFiles = 1,
-                      omega = 100, eta = 1, whichWrite = c(1, 1, 1, 0, 0, 1, 0)) {
+mmMCMCFit <- function(model, burnIn = 20000, samples = 1000, thin = 10, print = 100,
+                      fileNames = c("theta.csv", "alpha.csv", "ksi.csv", "lambda.csv", "z.csv", "p.csv", "rho.csv"),
+                      newFiles = 1, omega = 100, eta = 1, whichWrite = c(1, 1, 1, 0, 0, 1, 0)) {
   
   # check to make sure the model is of the right class
-  if(class(model) != "mixedMemModelMCMC"){
+  if (class(model) != "mixedMemModelMCMC"){
     stop("Input model must be of class mixedMemModelMCMC")
   }
+  
+  completeFiles <- R.utils::getAbsolutePath(fileNames)
   
   # checks inputs for internal consistency
   checkModelMCMC(model) 
   
   # In C code, Z must be 0:(K-1), but in R it is it 1:K so we modify it before inputting to the c++ function
-  model$Z <- model$Z -1
-  mcmcInputC(model = model, burnIn = burnIn, samples = samples, thin = thin, print = print, fileNames = fileNames,
+  model$Z <- model$Z - 1
+  mcmcInputC(model = model, burnIn = burnIn, samples = samples, thin = thin, print = print, fileNames = completeFiles,
                       newFiles = newFiles, omega = omega, eta = eta, whichWrite = whichWrite)
+  if (print > 0){
+    print("Sampling Complete: Files written to: ")
+    print(completeFiles)
+  }
   
   
 }

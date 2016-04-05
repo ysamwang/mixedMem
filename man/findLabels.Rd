@@ -11,7 +11,7 @@ model, \eqn{\theta} and a given comparison model.}
 findLabels(model, comparison, exhaustive = FALSE)
 }
 \arguments{
-\item{model}{the fitted \code{mixedMemModelMCMC} or \code{mixedMemModelVI} object.}
+\item{model}{the fitted \code{mixedMemModelMCMC} or \code{mixedMemModelVarInf} object.}
 
 \item{comparison}{an array of the same dimensions as model$theta which contains the subpopulation parameters from another model.
 \code{findLabels} will return a permutation of the labels of \code{model} which match to \code{comparison} most closely.}
@@ -39,13 +39,13 @@ relative frequency.
 \examples{
 
 \dontrun{
-# See mixedMemModelMCMC or mixedMemModelVI documentation for how to generate data and instantiate objects
+# See mixedMemModelMCMC or mixedMemModelVarInf documentation for how to generate data and instantiate objects
 # After the data as been generated, we initialize the array of sub-population parameters (theta) 
 # according to a permutation of the true labeling
 set.seed(123)
 perm <- sample.int(K, size = K, replace = FALSE)
 theta.perm <- theta_truth[,perm,]
-test_model <- mixedMemModelVI(Total = Total, J = J,Rj = Rj, Nijr= Nijr,
+test_model <- mixedMemModelVarInf(Total = Total, J = J,Rj = Rj, Nijr= Nijr,
  K = K, Vj = Vj,dist = dist, obs = obs, alpha = alpha, theta = theta.perm)
 out <- mmVIFit(test_model)
 opt.perm <- findLabels(out, theta_truth)

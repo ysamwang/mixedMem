@@ -17,7 +17,7 @@
 #' algorithm selects the best match for each fitted sub-population starting with the group with the largest fitted 
 #' relative frequency.
 #'  
-#' @param model the fitted \code{mixedMemModelMCMC} or \code{mixedMemModelVI} object.
+#' @param model the fitted \code{mixedMemModelMCMC} or \code{mixedMemModelVarInf} object.
 #' @param comparison an array of the same dimensions as model$theta which contains the subpopulation parameters from another model.
 #'  \code{findLabels} will return a permutation of the labels of \code{model} which match to \code{comparison} most closely.
 #' @param exhaustive a boolean for whether an exhaustive search should be performed. If false, a greedy algorithim is used instead.
@@ -27,13 +27,13 @@
 #' @examples
 #' 
 #' \dontrun{
-#' # See mixedMemModelMCMC or mixedMemModelVI documentation for how to generate data and instantiate objects
+#' # See mixedMemModelMCMC or mixedMemModelVarInf documentation for how to generate data and instantiate objects
 #' # After the data as been generated, we initialize the array of sub-population parameters (theta) 
 #' # according to a permutation of the true labeling
 #' set.seed(123)
 #' perm <- sample.int(K, size = K, replace = FALSE)
 #' theta.perm <- theta_truth[,perm,]
-#' test_model <- mixedMemModelVI(Total = Total, J = J,Rj = Rj, Nijr= Nijr,
+#' test_model <- mixedMemModelVarInf(Total = Total, J = J,Rj = Rj, Nijr= Nijr,
 #'  K = K, Vj = Vj,dist = dist, obs = obs, alpha = alpha, theta = theta.perm)
 #' out <- mmVIFit(test_model)
 #' opt.perm <- findLabels(out, theta_truth)
@@ -53,7 +53,7 @@ findLabels <- function(model, comparison,  exhaustive = FALSE) {
     
     
     loss <- 0
-    if(exhaustive) {
+    if (exhaustive) {
       # list all permutations of K
       perms <- gtools::permutations(K, K)
       # get loss of 1st permutation
@@ -78,7 +78,7 @@ findLabels <- function(model, comparison,  exhaustive = FALSE) {
       # get search ordering
       if(class(model) == "mixedMemModelMCMC"){
         search.order <- order(model$ksi, decreasing = T)
-      } else if (class(model) == "mixedMemModelVI") {
+      } else if (class(model) == "mixedMemModelVarInf") {
         search.order <- order(model$alpha, decreasing = T)
       }
 
@@ -118,24 +118,24 @@ findLabels <- function(model, comparison,  exhaustive = FALSE) {
 #' @export
 permuteLabels <- function(model, perm) {
   
-  if(length(perm)!= model$K) {
+  if (length(perm) != model$K) {
     stop("Error: perm  must be of length model$K")
   }
   
   
-  if(class(model) == "mixedMemModelVI"){
-    # Permute relevant quantities for mixedMemModelVI
+  if(class(model) == "mixedMemModelVarInf"){
+    # Permute relevant quantities for mixedMemModelVarInf
     theta <- model$theta[, perm, , drop = F]
     alpha <- model$alpha[perm]
     
     phi <- model$phi[, perm, drop = F]
     delta <- model$delta[, , , , perm, drop = F]
     
-    out <- mixedMemModelVI(Total = model$Total, J = model$J, Rj = model$Rj, Nijr = model$Nijr,
+    out <- mixedMemModelVarInf(Total = model$Total, J = model$J, Rj = model$Rj, Nijr = model$Nijr,
                            K = model$K, Vj = model$Vj, alpha = alpha, theta = theta,
                            phi = phi, delta = delta, dist = model$dist, obs = model$obs)
 
-  } else if (class(model) == "mixedMemModelMCMC"){
+  } else if (class(model) == "mixedMemModelMCMC") {
     # Permute relevant quantities for mixedMemModelMCMC
     
     theta <- model$theta[, perm, , drop = F]
@@ -150,10 +150,12 @@ permuteLabels <- function(model, perm) {
     }
     
      out <- mixedMemModelMCMC(Total = model$Total, J = model$J, Rj = model$Rj, 
-                              K = model$K, Vj = model$Vj, dist = model$dist, obs = model$obs,
-                              theta = theta, lambda = lambda, Z = Z, alpha = model$alpha,
-                              ksi = ksi, phi = model$phi, delta = model$delta, 
-                              phi = model$phi, tau = tau, P = model$P, fixedObs = model$fixedObs, extended = !is.null(model$P))
+                              K = model$K, Vj = model$Vj, dist = model$dist,
+                              obs = model$obs, theta = theta, lambda = lambda,
+                              Z = Z, alpha = model$alpha, ksi = ksi,
+                              beta = model$beta, gamma = model$gamma,
+                              tau = tau, P = model$P, fixedObs = model$fixedObs,
+                              extended = !is.null(model$P))
     
   }
 

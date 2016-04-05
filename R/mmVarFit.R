@@ -1,13 +1,12 @@
 #' Fit Mixed Membership models using variational EM
 #' 
-#' \code{mmVIFit} is the primary function of the \code{mixedMem} package. The function fits parameters \eqn{\phi} and \eqn{\delta} for the variational
+#' \code{mmVarInfFit} is one of two primary computational function of the \code{mixedMem} package. The function fits parameters \eqn{\phi} and \eqn{\delta} for the variational
 #'  distribution of latent variables as well as psuedo-MLE estimates for 
-#'  the population parameters \eqn{\alpha} and \eqn{\theta}. See documentation for
-#'  \code{mixedMemModel} or the package vignette, "Fitting Mixed Membership Models Using \code{mixedMem}" for a more detailed description of 
+#'  the population parameters \eqn{\alpha} and \eqn{\theta}. See documentation in the package vignette, "Fitting Mixed Membership Models Using \code{mixedMem}" for a more detailed description of 
 #'  the variables and notation in a mixed membership model. 
 #' 
 #'  
-#' \code{mmVIFit} selects psuedo-MLE estimates for \eqn{\alpha} and \eqn{\theta} and approximates
+#' \code{mmVarInfFit} selects psuedo-MLE estimates for \eqn{\alpha} and \eqn{\theta} and approximates
 #' the posterior distribution for the latent variables through a mean field variational approach.
 #' The variational lower bound on the log-likelihood at the data given model parameters is given by Jensen's inequality:
 #' 
@@ -29,9 +28,9 @@
 #' @references
 #' Beal, Matthew James. Variational algorithms for approximate Bayesian inference. Diss. University of London, 2003.
 #'
-#' @param model a \code{mixedMemModel} object created by the \code{mixedMemModel} constructor.
-#' @param printStatus an integer 0 or 1. When \code{printStatus} is 1 \code{mmVarFit} will print status updates, when
-#' \code{printStatus} is 0 \code{mmVarFit} will not print status updates.
+#' @param model a \code{mixedMemModelVarInf} object created by the \code{mixedMemModelVarInf} constructor.
+#' @param printStatus an integer 0 or 1. When \code{printStatus} is 1 \code{mmVarInfFit} will print status updates, when
+#' \code{printStatus} is 0 \code{mmVarInfFit} will not print status updates.
 #' @param printMod a positive integer which specifies how often to print status updates. The 
 #' status will be printed at each step which is a multiple of \code{printMod}. The default value is 1.
 #' @param stepType an integer from 0-3 which specifies what steps to carry out in estimation. 0 performs a single E-Step; this can be used
@@ -65,7 +64,7 @@
 #' a large matrix. The default is 13.
 #' @param holdConst a vector of integers specifying groups to be held fixed during the estimation procedure. The estimation algorithim will hold the
 #'  theta parameters of these specific groups constant, but update all other parameters. The group numbers range from 0 to K - 1. To estimate all groups, use the default value of c(-1). 
-#' @return \code{mmVarFit} returns a \code{mixedMemModel} object containing updated variational parameters and global parameters.
+#' @return \code{mmVarInfFit} returns a \code{mixedMemModelVarInf} object containing updated variational parameters and global parameters.
 #' @seealso mixedMemModel
 #' @examples
 #' ## The following example generates multivariate observations (both variables are multinomial)
@@ -93,9 +92,9 @@
 #'   alpha = alpha, theta = theta+0)
 #' 
 #' ## Fit the mixed membership model
-#' out <-mmVarFit(test_model)
+#' out <-mmVarInfFit(test_model)
 #' @export
-mmVIFit <- function(model, printStatus = 1,
+mmVarInfFit <- function(model, printStatus = 1,
                     printMod = 1, stepType = 3,
                     maxTotalIter = 500, maxEIter = 1000,
                     maxAlphaIter = 200, maxThetaIter = 1000,
@@ -103,11 +102,11 @@ mmVIFit <- function(model, printStatus = 1,
                     thetaTol = 1e-10, aNaught = 1.0, tau = .899,
                     bMax = 3, bNaught = 1000.0, bMult = 1000.0, vCutoff = 13, holdConst = c(-1)) {
   
-  if(class(model) != "mixedMemModelVI"){
-    stop("Input model must be of class mixedMemModelVI")
+  if (class(model) != "mixedMemModelVarInf") {
+    stop("Input model must be of class mixedMemModelVarInf")
   }
   
-  checkModelVI(model) # R function which checks inputs for internal consistency
+  checkModelVarInf(model) # R function which checks inputs for internal consistency
 
   ret <- varInfInputC(model, printStatus, printMod, stepType, maxTotalIter, maxEIter, maxAlphaIter,
                  maxThetaIter, maxLSIter, elboTol, alphaTol, thetaTol, aNaught, tau, bMax, bNaught, 
@@ -134,16 +133,16 @@ mmVIFit <- function(model, printStatus = 1,
 #'      
 #' \eqn{E_Q{\log[p(X,Z, \Lambda)]} - E_Q{\log[Q(Z, \Lambda|\phi, \delta)]} \le\log P(obs |\alpha, \theta) }
 #'    
-#' @param model a \code{mixedMemModel} object created by the \code{mixedMemModel} constructor.
+#' @param model a \code{mixedMemModelVarInf} object created by the \code{mixedMemModelVarInf} constructor.
 #' @return \code{computeELBO} returns the lower bound on the log-likelihood, a real number.
 #' @export
-computeELBO = function(model) {
+computeELBO <- function(model) {
   
-  if(class(model) != "mixedMemModelVI"){
-    stop("Input model must be of class mixedMemModelVI")
+  if (class(model) != "mixedMemModelVarInf") {
+    stop("Input model must be of class mixedMemModelVarInf")
   }
   # check model for internal consistency
-  checkModelVI(model)
+  checkModelVarInf(model)
   return(computeElboInputC(model))
 
 }

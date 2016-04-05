@@ -10,16 +10,19 @@
 #' @param whichWrite, a vector of length 7 indicating which files to be read. 1 indicates read,
 #' 0 indicates skip
 #' @export
-getPosteriorEstimates <- function(model, fileNames, whichWrite = c(1, 1, 1, 0, 0, 1, 0)) {
+getPosteriorEstimates <- function(model,
+                                  fileNames = c("theta.csv", "alpha.csv", "ksi.csv",
+                                                "lambda.csv", "z.csv", "p.csv", "rho.csv"),
+                                  whichWrite = c(1, 1, 1, 0, 0, 1, 0)) {
   
-  if(model$extended){
+  if (model$extended) {
     names.list <- c("Theta", "Alpha", "Ksi", "Lambda", "Z", "P", "StayerStatus")
   } else {
     names.list <- c("Theta", "Alpha", "Ksi", "Lambda", "Z")
   }
   
-  for(n in 1:length(names.list)){
-    if(whichWrite[n] == 1){
+  for (n in 1:length(names.list)) {
+    if (whichWrite[n] == 1) {
       name <- paste("out_", names.list[n], sep = "")
       assign(name, read.csv(fileNames[n], header = F))
     }

@@ -94,18 +94,20 @@
 #' # Plot the current values for theta
 #' plot(test_model) 
 #' @export
-mixedMemModelVI = function(Total, J, Rj, Nijr, K, Vj, alpha, theta,
-                         phi = NULL, delta = NULL, dist, obs) {
+mixedMemModelVarInf <- function(Total, J, Rj = rep(1, J),
+                                Nijr = array(1, dim = c(Total, J, max(Rj))),
+                                K, Vj, alpha, theta, phi = NULL,
+                                delta = NULL, dist, obs) {
   
   # Checks if model defaults are used and fills in defaults
-  if(is.null(delta))
+  if (is.null(delta))
   {
     delta = array(0, dim = c(Total,J, max(Rj), max(Nijr), K))
     for (i in 1:Total) {
       for (j in 1:J) {
         for (r in 1:Rj[j]) {
           for (n in 1:Nijr[i,j,r]) {
-            delta[i, j, r, n, ] = rep(1/K,K)
+            delta[i, j, r, n, ] <- rep(1/K, K)
           }
         }
       }
@@ -116,6 +118,14 @@ mixedMemModelVI = function(Total, J, Rj, Nijr, K, Vj, alpha, theta,
     phi <- array(1/K, dim = c(Total,K))
   }
   
+  if (length(dim(obs)) == 2) {
+    obs <- array(obs, dim = c(dim(obs), 1, 1))
+  } else if (length(dim(obs)) == 3) {
+    obs <- array(obs, dim = c(dim(obs), 1))
+  }
+  
+  
+  
   #put objects in a list
   model_obj <- list(Total, J, Rj, Nijr, K, Vj,
                      alpha, theta , phi , delta,
@@ -124,9 +134,9 @@ mixedMemModelVI = function(Total, J, Rj, Nijr, K, Vj, alpha, theta,
   names(model_obj) = c("Total", "J", "Rj", "Nijr", "K", "Vj", "alpha","theta", "phi",
                          "delta", "dist" ,"obs")    
     
-  class(model_obj) <- "mixedMemModelVI" 
+  class(model_obj) <- "mixedMemModelVarInf" 
   #check for valid model parameters
-  checkModelVI(model_obj)
+  checkModelVarInf(model_obj)
   
   
   # relabel all attributes
@@ -217,12 +227,25 @@ mixedMemModelVI = function(Total, J, Rj, Nijr, K, Vj, alpha, theta,
 #' responses for a fixed group in the extended GoM model from Erosheva et al (2007).
 #' @return returns an object of class \code{mixedMemModelMCMC}.
 #' @export
-mixedMemModelMCMC <- function(Total, J, dist, Rj, Vj, obs, K, theta, alpha,
-                              ksi, lambda, Z, tau, beta, gamma,
+mixedMemModelMCMC <- function(Total, J, dist, Rj = rep(1, J), Vj, obs, K, theta, alpha0,
+                              ksi, lambda = NULL, Z = NULL, tau, beta, gamma,
                               extended = 0, P = NULL, S = NULL, fixedObs = NULL){
   
+  if (length(dim(obs)) == 2) {
+    obs <- array(obs, dim = c(dim(obs), 1))
+  }
+  
+  if (is.null(lambda)) {
+    lambda <- gtools::rdirichlet(Total, alpha0 * ksi)
+  }
+  
+  if (is.null(Z)) {
+    Z <- array(sample.int(K, size = Total * J * max(Rj),
+                          replace = T, prob = alpha0 * ksi), dim = c(Total, J, max(Rj)))
+  }
+  
   model <- list(Total = Total, J = J, dist = dist, Rj = Rj, Vj = Vj, obs = obs,
-                  K = K,  theta = theta, alpha = c(alpha), ksi = ksi,
+                  K = K,  theta = theta, alpha = c(alpha0), ksi = ksi,
                   lambda = lambda, Z = Z, tau = tau, beta = beta, gamma  = gamma, 
                   extended = extended, P = P, S = S, fixedObs = fixedObs)
   
@@ -274,16 +297,16 @@ mixedMemModelMCMC <- function(Total, J, dist, Rj, Vj, obs, K, theta, alpha,
 
 #' Summary of a Mixed Membership Model
 #' 
-#' Generic S3 summary function for \code{mixedMemModelVI} class. 
+#' Generic S3 summary function for \code{mixedMemModelVarInf} class. 
 #' 
-#' \code{summary} provides a summary of the given \code{mixedMemModelVI} object. The function 
+#' \code{summary} provides a summary of the given \code{mixedMemModelVarInf} object. The function 
 #' prints the ELBO, the dimensions of the model and each variable type.
 #'  
-#' @param object the \code{mixedMemModelVI} object to be summarized
+#' @param object the \code{mixedMemModelVarInf} object to be summarized
 #' @param ... additional parameters
 #' @seealso mixedMemModelVI
 #' @export
-summary.mixedMemModelVI = function(object,...)
+summary.mixedMemModelVarInf = function(object,...)
 {
   cat("== Summary for Mixed Membership Model ==\n")
   cat(paste("Total: ", object$Total, "\t\t K: ",object$K, "\t\t ELBO: ",round(computeELBO(object),2),"\n\n" ,sep = ""))
@@ -318,10 +341,10 @@ summary.mixedMemModelMCMC = function(object,...)
 
 #' Plot a Mixed Membership Model
 #' 
-#' Generic S3 function to produce visual representation of a \code{mixedMemModelVI} object. This function calls either the \code{vizTheta} or
+#' Generic S3 function to produce visual representation of a \code{mixedMemModelVarInf} object. This function calls either the \code{vizTheta} or
 #' the \code{vizMem} function. 
 #' 
-#' @param x the \code{mixedMemModel} object to be plotted.
+#' @param x the \code{mixedMemModelVarInf} object to be plotted.
 #' @param type a string which indicates which estimated parameters to plot; valid options are "theta" or "membership".
 #'  \code{vizTheta} is called when the type is "theta" and \code{vizMem} is called when the type is "membership". 
 #' @param compare an array or matrix for comparison. When type = "theta", \code{compare} should be an array the same size as x$theta.
@@ -338,7 +361,7 @@ summary.mixedMemModelMCMC = function(object,...)
 #' @param ... additional parameters to be passed.
 #' @seealso mixedMemModelVI, vizTheta, vizMem
 #' @export
-plot.mixedMemModelVI = function(x, type = "theta" , compare = NULL,
+plot.mixedMemModelVarInf = function(x, type = "theta" , compare = NULL,
                               main = NULL,
                               varNames = NULL,
                               groupNames = NULL,
@@ -384,15 +407,16 @@ plot.mixedMemModelMCMC = function(x, type = "theta" , compare = NULL,
                                 main = NULL,
                                 varNames = NULL,
                                 groupNames = NULL,
-                                nrow = NULL, ncol = NULL, indices = NULL, fitNames = NULL,...){
-  if(type =="theta") {
-    if(is.null(main)){
-      main = "Estimated Theta"
+                                nrow = NULL, ncol = NULL, indices = NULL, fitNames = NULL, ...){
+  
+  if (type == "theta") {
+    if (is.null(main)) {
+      main <- "Estimated Theta"
     }
     vizTheta(x, compare = compare, main = main, varNames = varNames,
              groupNames = groupNames, nrow = nrow, fitNames = fitNames, indices = indices)
   } else if (type == "membership") {
-    if(is.null(main)){
+    if (is.null(main)) {
       main = "Estimated Memberships"
     }
     vizMem(x,compare = compare, main = main, nrow = nrow, ncol = ncol,
@@ -411,63 +435,58 @@ plot.mixedMemModelMCMC = function(x, type = "theta" , compare = NULL,
 #' @seealso mixedMemModel, vizTheta
 #' @export
 theta.table <- function(model, digits = 3, top.level = "group"){
-  if(top.level == "group"){
-    for(k in 1:model$K){
-      cat(paste("=====", "Group", k, "=====", sep = " "))
+  if (top.level == "group"){
+    for (k in 1:model$K){
+      cat(paste("Group ", k, ":", "(alpha = ", round(model$alpha[k], 3),
+                "; relative freq = ", round(model$alpha[k] / sum(model$alpha), 2), ")", sep = ""))
       cat("\n")
-      for(j in 1:model$J)
+      for (j in 1:model$J)
       {
         cat(paste("> Var", j,":", model$dist[j], "\n\t"))
-        if(model$dist[j] == "bernoulli"){
-          for(v in 0:1)
-          {
+        if (model$dist[j] == "bernoulli") {
+          for (v in 0:1) {
             cat(paste("Cat", v,"\t"))
           }
           cat("\n\t")
           cat(paste(round(1 - model$theta[j,k,1], digits),"\t"))
           cat(paste(round(model$theta[j,k,1], digits),"\t"))
         } else{
-          for(v in 1:model$Vj[j])
-          {
-            cat(paste("Cat", v,"\t"))
+          for (v in 1:model$Vj[j]) {
+            cat(paste("Cat", v - 1,"\t"))
           }
           cat("\n\t")
-          for(v in 1:model$Vj[j])
-          {
-            cat(paste(round(model$theta[j,k,v],digits),"\t"))
+          for (v in 1:model$Vj[j]) {
+            cat(paste(round(model$theta[j, k, v],digits),"\t"))
           }
         }
         cat("\n")
       }
     }
   } else {
-      for(j in 1:model$J) {
-        cat(paste("===== Var", j,":", model$dist[j], "=====", "\n\t"))
-        if(model$dist[j] == "bernoulli"){
+      for (j in 1:model$J) {
+        cat(paste("Var", j,":", model$dist[j], "\n\t"))
+        if (model$dist[j] == "bernoulli") {
           cat("\t\t")
-          for(v in 0:1)
-          {
+          for (v in 0:1) {
             cat(paste("Cat", v,"\t"))
           }
           cat("\n")
-          for(k in 1:model$K){
+          for (k in 1:model$K) {
             cat(paste("\tGroup", k, "\t"))
-            cat(paste(round(1-model$theta[j,k,1],digits),"\t"))
-            cat(paste(round(model$theta[j,k,1],digits),"\t"))
+            cat(paste(round(1 - model$theta[j,k,1],digits), "\t"))
+            cat(paste(round(model$theta[j,k,1],digits), "\t"))
             cat("\n")
           }
           cat("\n")
-        } else{
+        } else {
           cat("\t\t")
-          for(v in 1:model$Vj[j])
-          {
+          for (v in 1:model$Vj[j]) {
             cat(paste("Cat", v,"\t"))
           }
           cat("\n")
-          for(k in 1:model$K){
+          for (k in 1:model$K) {
             cat(paste("\tGroup", k, "\t"))
-            for(v in 1:model$Vj[j])
-            {
+            for (v in 1:model$Vj[j]) {
               cat(paste(round(model$theta[j,k,v],digits),"\t"))
             }
             cat("\n")

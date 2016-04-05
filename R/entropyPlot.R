@@ -11,7 +11,8 @@
 #' @export
 entropyPlot = function(model, col = "white", main = "Exponentiated Entropy",
                        xlab = "Effective Profiles", ...) {
-  if(class(model) == "mixeMemModelVI"){
+  
+  if(class(model) == "mixedMemModelVarInf"){
     mem <- model$phi / rowSums(model$phi)
   } else if (class(model) == "mixedMemModelMCMC"){
     mem <- model$lambda

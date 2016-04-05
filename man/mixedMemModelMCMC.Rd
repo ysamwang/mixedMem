@@ -4,8 +4,9 @@
 \alias{mixedMemModelMCMC}
 \title{Constructor for a Mixed Membership Model object which can be fit through MCMC}
 \usage{
-mixedMemModelMCMC(Total, J, dist, Rj, Vj, obs, K, theta, alpha, ksi, lambda, Z,
-  tau, beta, gamma, extended = 0, P = NULL, S = NULL, fixedObs = NULL)
+mixedMemModelMCMC(Total, J, dist, Rj = rep(1, J), Vj, obs, K, theta, alpha0,
+  ksi, lambda = NULL, Z = NULL, tau, beta, gamma, extended = 0,
+  P = NULL, S = NULL, fixedObs = NULL)
 }
 \arguments{
 \item{Total}{the number of individuals in the sample.}
@@ -33,8 +34,6 @@ distributions. The parameter \code{theta}[j,k,] governs the distribution of vari
 variable j is a multinomial variable, \code{theta}[j,k, 1:Vj[j]] is the probability for each of the \code{Vj}[j] categories. Since the dimension of the relevant parameters
 can differ across variables, any unused elements of the array should be set to 0, while all other elements should be positive.}
 
-\item{alpha}{a scalar representing the sum of the dirichlet membership parameters}
-
 \item{ksi}{a vector which lies in the K-1 simplex which represents the relative frequency of each sub-population}
 
 \item{lambda}{a matrix with dimensions (\code{Total}, \code{K}) which represent the partial membership for individual i in group k}
@@ -60,6 +59,8 @@ The first S elements correspond to the stayer classes, while the S + 1 element i
 
 \item{fixedObs}{an array with dimensions (S, \code{J}, \code{max(Rj)}) corresonding to the observed
 responses for a fixed group in the extended GoM model from Erosheva et al (2007).}
+
+\item{alpha}{a scalar representing the sum of the dirichlet membership parameters}
 }
 \value{
 returns an object of class \code{mixedMemModelMCMC}.

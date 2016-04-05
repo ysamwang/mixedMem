@@ -5,8 +5,9 @@
 \title{Fit Mixed Membership models using a Metropolis Hastings within Gibbs MCMC sampler}
 \usage{
 mmMCMCFit(model, burnIn = 20000, samples = 1000, thin = 10, print = 100,
-  fileNames, newFiles = 1, omega = 100, eta = 1, whichWrite = c(1, 1, 1,
-  0, 0, 1, 0))
+  fileNames = c("theta.csv", "alpha.csv", "ksi.csv", "lambda.csv", "z.csv",
+  "p.csv", "rho.csv"), newFiles = 1, omega = 100, eta = 1,
+  whichWrite = c(1, 1, 1, 0, 0, 1, 0))
 }
 \arguments{
 \item{model}{a \code{mixedMemModelMCMC} object created by the \code{mixedMemModelMCMC} constructor}
@@ -19,7 +20,8 @@ mmMCMCFit(model, burnIn = 20000, samples = 1000, thin = 10, print = 100,
 
 \item{print}{positive integer indicating how often to print an update to the R console}
 
-\item{fileNames}{list of files names to write samples}
+\item{fileNames}{list of files locations to write samples. Should be vector of strings with length 5 
+(7 if using the extended mixed membership model) corresponding to: Theta, Alpha_0, Ksi, Lambda, Z, (P, rho).}
 
 \item{newFiles}{0 if samples should be appended to existing files; 1 if samples should overwrite any existing files}
 

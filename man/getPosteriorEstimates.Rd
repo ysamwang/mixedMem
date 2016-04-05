@@ -6,7 +6,9 @@
    
 \code{getPosteriorEstimates}}
 \usage{
-getPosteriorEstimates(model, fileNames, whichWrite = c(1, 1, 1, 0, 0, 1, 0))
+getPosteriorEstimates(model, fileNames = c("theta.csv", "alpha.csv",
+  "ksi.csv", "lambda.csv", "z.csv", "p.csv", "rho.csv"), whichWrite = c(1, 1,
+  1, 0, 0, 1, 0))
 }
 \arguments{
 \item{model}{the fitted \code{mixedMemModelMCMC} object.}

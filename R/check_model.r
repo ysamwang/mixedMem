@@ -1,5 +1,5 @@
 # Internal function to check consistency for mixedMemModelVI class
-checkModelVI = function(model)
+checkModelVarInf <- function(model)
 {
   Total <- model[[1]]
   J <- model[[2]]
@@ -14,8 +14,8 @@ checkModelVI = function(model)
   dist <- tolower(model[[11]])
   obs <- model[[12]]
 
-  if(class(model) != "mixedMemModelVI"){
-    stop("Input must be: mixedMemModelVI")
+  if (class(model) != "mixedMemModelVarInf") {
+    stop("Input must be: mixedMemModelVarInf")
   }
 
   #Check Total
@@ -30,7 +30,7 @@ checkModelVI = function(model)
   if (J < 1 || J != round(J)) {
     stop("Input must be positive Integer: ", "J")
   }
-  if (length(J)>1) {
+  if (length(J) > 1) {
     stop("Input of incorrect dimensions: ", "J", " must be of dimension ", "1")
   }
   
@@ -39,16 +39,17 @@ checkModelVI = function(model)
   if (Rj < 1 || Rj != round(Rj)) {
     stop("Input must be positive Integer: ", "Rj")
   }
-  if (length(Rj) != J|!is.null((dim(Rj)))) {
+  
+  if (length(Rj) != J | !is.null((dim(Rj)))) {
     stop("Input of incorrect dimensions: ", "Rj", " must be of dimension ", "J")
   }
   maxR = max(Rj)
   
   # Check Nijr
-  if (Nijr < 1 || Nijr != round(Nijr)) {
+  if ( any(Nijr < 1) | any(Nijr != round(Nijr))) {
     stop("Input must be positive Integer: ", "Nijr")
   }
-  if(any(dim(Nijr) != c(Total,J,maxR))) {
+  if (any(dim(Nijr) != c(Total,J,maxR))) {
     stop("Input of incorrect dimensions: ", "Nijr", " must be of dimension ", "{Total,J,max(Rj)}")
   }
   maxN = max(Nijr)
@@ -73,13 +74,13 @@ checkModelVI = function(model)
   if (Vj < 1 || Vj != round(Vj)) {
     stop("Input must be positive Integer: ", "Vj")
   }
-  if (length(Vj) !=J) {
+  if (length(Vj) != J) {
     stop("Input of incorrect dimensions: ", "Vj", " must be of dimension ", "J")}
-  if (Vj > 1 && dist=="bernoulli") {
+  if (Vj > 1 && dist == "bernoulli") {
     stop("V must be 1 for bernoulli variables")
   }
   
-  for(j in 1:J) {
+  for (j in 1:J) {
     if (any(Nijr[,j,] > Vj[j])) {
       stop(paste("For variable ",j, " N_ijr must be less than V_j"))
     }
@@ -91,7 +92,7 @@ checkModelVI = function(model)
   if (any(alpha < 0) ) {
     stop("Input must be positive: ", "alpha")
   }
-  if (length(alpha) !=K|!is.null(dim(alpha)) ) {
+  if (length(alpha) != K | !is.null(dim(alpha)) ) {
     stop("Input of incorrect dimensions: ", "alpha", " must be of dimension ", "K")
   }
   
@@ -99,20 +100,18 @@ checkModelVI = function(model)
   if (any(theta < 0) ) {
     stop("Input must be positive: ", "theta")
   }
-  if (any(dim(theta)!=c(J,K,maxV))) {
+  if (any(dim(theta) != c(J,K,maxV))) {
     stop("Input of incorrect dimensions: ", "theta", " must be of dimension ", "{1,J,K,max(V)}")}
   
-  for(j in 1:J)
-  {
-    for(k in 1:K)
-    {
-      if (abs(sum(theta[j,k,])-1) > 1e-8 & dist[j] !="bernoulli") {
+  for (j in 1:J) {
+    for (k in 1:K) {
+      if (abs(sum(theta[j,k,]) - 1) > 1e-8 & dist[j] != "bernoulli") {
         stop("Distribution must sum to 1 for theta for Variable ", j)
       }
-      if (any (theta[j,k,] > 1 )) {
+      if (any(theta[j,k,] > 1 )) {
         stop("Distribution must sum to 1 for theta for Variable ", j)
       }
-      if (any (theta[j,k, 1:Vj[j]] < 1e-13) ) {
+      if (any(theta[j,k, 1:Vj[j]] < 1e-13) ) {
         stop("Theta must be bounded away from 0 (for numerical stability)")
       }
     }
@@ -123,28 +122,24 @@ checkModelVI = function(model)
   if (any(phi < 0) ) {
     stop("Input must be positive: ", "phi")
   }
-  if (any(dim(phi)!=c(Total,K))) {
+  if (any(dim(phi) != c(Total,K))) {
     stop("Input of incorrect dimensions: ", "phi", " must be of dimension ", "{Total,K}")
   }
   
   
   #check delta
-  if(any(delta < 0) ) {
+  if (any(delta < 0) ) {
     stop("Input must be positive: ", "delta")
   }
-  if (any(dim(delta)!=c(Total,J,maxR,maxN,K))) {
+  if (any(dim(delta) != c(Total,J,maxR,maxN,K))) {
     stop("Input of incorrect dimensions: ", "delta", " must be of dimension ", "{Total,J,max(Rj),max(Nijr),K}")
   }
   
-  for(i in 1:Total)
-  {
-    for(j in 1:J)
-    {
-      for(r in 1:Rj[j])
-      {
-        for(n in 1:Nijr[i,j,r])
-        {
-          if (abs(sum(delta[i,j,r,n,])-1) > 1e-10) {
+  for (i in 1:Total) {
+    for (j in 1:J) {
+      for (r in 1:Rj[j]) {
+        for (n in 1:Nijr[i,j,r]) {
+          if (abs(sum(delta[i,j,r,n,]) - 1) > 1e-10) {
             stop("Delta must sum to 1 for delta[",paste(i,j,r,n,sep = ","),", ]")
           }
         }
@@ -156,7 +151,7 @@ checkModelVI = function(model)
   if (obs != round(obs) || obs < 0 )   {
     stop("obs must be non-negative integers")
   }
-  if (any(dim(obs)!= c(Total, J, maxR, maxN))) {
+  if (any(dim(obs) != c(Total, J, maxR, maxN))) {
     stop("Input of incorrect dimensions: ", "Obs", " must be of dimension ", "{Total,J,max(Rj),max(Nijr)}")
   }
 }

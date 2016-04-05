@@ -4,7 +4,8 @@
 \alias{rmixedMem}
 \title{Simulate Data from a discrete mixed membership model}
 \usage{
-rmixedMem(Total, J, Rj, Nijr, K, Vj, dist, theta, alpha, lambda = NULL)
+rmixedMem(Total, J, Rj = rep(1, J), Nijr = array(1, dim = c(Total, J,
+  max(Rj))), K, Vj, dist, theta, alpha, lambda = NULL)
 }
 \arguments{
 \item{Total}{the number of individuals in the sample.}

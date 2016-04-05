@@ -7,7 +7,7 @@
 computeELBO(model)
 }
 \arguments{
-\item{model}{a \code{mixedMemModel} object created by the \code{mixedMemModel} constructor.}
+\item{model}{a \code{mixedMemModelVarInf} object created by the \code{mixedMemModelVarInf} constructor.}
 }
 \value{
 \code{computeELBO} returns the lower bound on the log-likelihood, a real number.
